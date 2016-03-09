@@ -1,0 +1,238 @@
+#include <iostream>
+using namespace std;
+
+#include "packet.h"
+#include "ConnectionServerRecvOP.h"
+#include "ConnectionServerSendOP.h"
+#include "CenterServerRecvOP.h"
+
+#include "CenterServerConnection.h"
+#include "ClientMirror.h"
+#include "timer.h"
+#include "WrapLog.h"
+
+#include "UsePacketExtNetSession.h"
+#include "ConnectionServerConnection.h"
+#include "ConnectionServerPassword.h"
+#include "NetSession.h"
+
+extern ClientMirrorMgr::PTR   gClientMirrorMgr;
+extern WrapServer::PTR   gServer;
+int gSelfID;
+bool gIsPrimary;
+extern WrapLog::PTR gDailyLogger;
+extern TimerMgr::PTR    gTimerMgr;
+unordered_map<int32_t, ConnectionServerConnection*>     gAllLogicConnectionServerClient;
+
+unordered_map<int32_t, std::tuple<string, int>> alreadyConnectingServers;
+std::mutex alreadyConnectingServersLock;
+
+bool isAlreadyConnecting(int32_t id)
+{
+    bool ret = false;
+    alreadyConnectingServersLock.lock();
+    ret = alreadyConnectingServers.find(id) != alreadyConnectingServers.end();
+    alreadyConnectingServersLock.unlock();
+    return ret;
+}
+
+void eraseConnectingServer(int32_t id)
+{
+    alreadyConnectingServersLock.lock();
+    alreadyConnectingServers.erase(id);
+    alreadyConnectingServersLock.unlock();
+}
+
+void addConnectingServer(int32_t id, string& ip, int port)
+{
+    alreadyConnectingServersLock.lock();
+    alreadyConnectingServers[id] = std::make_tuple(ip, port);
+    alreadyConnectingServersLock.unlock();
+}
+
+void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int>>& servers)
+{
+    alreadyConnectingServersLock.lock();
+    for (auto& v : servers)
+    {
+        if (alreadyConnectingServers.find(v.first) == alreadyConnectingServers.end())
+        {
+            int idInEtcd = v.first;
+            string ip = std::get<0>(v.second);
+            int port = std::get<1>(v.second);
+
+            thread([ip, port, idInEtcd](){
+                gDailyLogger->info("ready connect connection server id:{}, addr :{}:{}", idInEtcd, ip, port);
+                sock fd = ox_socket_connect(ip.c_str(), port);
+                if (fd != SOCKET_ERROR)
+                {
+                    gDailyLogger->info("connect success {}:{}", ip, port);
+                    WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port)), 10000, 32 * 1024 * 1024);
+                }
+                else
+                {
+                    gDailyLogger->error("connect failed {}:{}", ip, port);
+                }
+            }).detach();
+        }
+    }
+    alreadyConnectingServersLock.unlock();
+}
+
+ConnectionServerConnection::ConnectionServerConnection(int idInEtcd, int port) : BaseLogicSession()
+{
+    mIsSuccess = false;
+    mPort = port;
+    mIDInEtcd = idInEtcd;
+    mConnectionServerID = -1;
+}
+
+ConnectionServerConnection::~ConnectionServerConnection()
+{
+    if (mPingTimer.lock())
+    {
+        mPingTimer.lock()->Cancel();
+    }
+}
+
+void ConnectionServerConnection::onEnter()
+{
+    if (!isAlreadyConnecting(mIDInEtcd))
+    {
+        mIsSuccess = true;
+        addConnectingServer(mIDInEtcd, getIP(), mPort);
+
+        gDailyLogger->warn("connect connection server success ");
+        /*  发送自己的ID给连接服务器 */
+        FixedPacket<128> packet;
+        packet.setOP(CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN);
+        packet.writeBinary(ConnectionServerPassword::getInstance().getPassword());
+        packet.writeINT32(gSelfID);
+        packet.writeBool(gIsPrimary);
+        packet.end();
+
+        sendPacket(packet);
+
+        ping();
+    }
+}
+
+void ConnectionServerConnection::ping()
+{
+    FixedPacket<128> p;
+    p.setOP(CONNECTION_SERVER_RECV_PING);
+    p.end();
+
+    sendPacket(p);
+
+    mPingTimer = gTimerMgr->AddTimer(5000, [this](){
+        ping();
+    });
+}
+
+void ConnectionServerConnection::onClose()
+{
+    gDailyLogger->warn("dis connect of connection server");
+    gAllLogicConnectionServerClient.erase(mConnectionServerID);
+
+    if (mIsSuccess)
+    {
+        eraseConnectingServer(mIDInEtcd);
+    }
+}
+
+void ConnectionServerConnection::onMsg(const char* data, size_t len)
+{
+    ReadPacket rp(data, len);
+    rp.readPacketLen();
+    PACKET_OP_TYPE op = rp.readOP();
+
+    switch (op)
+    {
+        case CONNECTION_SERVER_SEND_PONG:
+        {
+
+        }
+        break;
+        case CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT:
+        {
+            int64_t runtimeID = rp.readINT64();
+            ClientMirror* p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            if (p != nullptr)
+            {
+                /*TODO::路由给用户代码*/
+                gDailyLogger->warn("client disconnect, runtimeid:{}", runtimeID);
+            }
+        }
+        break;
+        case CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID:
+        {
+            /*收到所链接的连接服务器的ID*/
+            mConnectionServerID = rp.readINT32();
+            bool isSuccess = rp.readBool();
+            string reason = rp.readBinary();
+
+            if (isSuccess)
+            {
+                gDailyLogger->info("登陆链接服务器 {} 成功", mConnectionServerID);
+                assert(gAllLogicConnectionServerClient.find(mConnectionServerID) == gAllLogicConnectionServerClient.end());
+                gAllLogicConnectionServerClient[mConnectionServerID] = this;
+            }
+            else
+            {
+                gDailyLogger->error("登陆链接服务器 {} 失败,原因:{}", mConnectionServerID, reason);
+            }
+        }
+        break;
+        case CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR:
+        {
+            int64_t socketID = rp.readINT64();
+            int64_t runtimeID = rp.readINT64();
+
+            gDailyLogger->info("recv init client {} :{}", socketID, runtimeID);
+
+            ClientMirror* p = new ClientMirror;
+            p->setRuntimeInfo(mConnectionServerID, socketID, runtimeID);
+            gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
+
+            /*TODO::路由给用户代码*/
+        }
+        break;
+        case CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT:
+        {
+            int64_t runtimeID = rp.readINT64();
+            gDailyLogger->info("recv destroy client, runtime id:{}", runtimeID);
+            ClientMirror* p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            /*TODO::路由给用户代码*/
+            gClientMirrorMgr->DelClientByRuntimeID(runtimeID);
+        }
+        break;
+        case CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT:
+        {
+            /*  表示收到链接服转发过来的玩家消息包   */
+            int64_t clientRuntimeID = rp.readINT64();
+            const char* s = nullptr;
+            size_t len = 0;
+            rp.readBinary(s, len);
+            if (s != nullptr)
+            {
+                ClientMirror* client = gClientMirrorMgr->FindClientByRuntimeID(clientRuntimeID);
+                if (client != nullptr)
+                {
+                    client->procData(s, len);
+                }
+            }
+        }
+        break;
+        default:
+        {
+            assert(false);
+        }
+        break;
+    }
+}
+
+void ConnectionServerConnection::sendPacket(Packet& packet)
+{
+    send(packet.getData(), packet.getLen());
+}

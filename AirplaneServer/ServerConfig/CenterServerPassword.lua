@@ -1,0 +1,1 @@
+gLoginCenterServerPassword = "haha1"
