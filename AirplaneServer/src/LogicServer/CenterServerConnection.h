@@ -27,10 +27,8 @@ public:
     template<typename... Args>
     void            sendv(PACKET_OP_TYPE op, const Args&... args)
     {
-        BigPacket packet;
-        packet.setOP(op);
+        BigPacket packet(op);
         packet.writev(args...);
-        packet.end();
         sendPacket(packet);
     }
 
@@ -38,10 +36,8 @@ public:
     template<typename... Args>
     void            sendUserV(PACKET_OP_TYPE op, const Args&... args)
     {
-        BigPacket packet;
-        packet.setOP(op);
+        BigPacket packet(op);
         packet.writev(args...);
-        packet.end();
         sendUserPacket(packet);
     }
 
@@ -51,10 +47,8 @@ public:
     void            call(const char* funname, const Args&... args)
     {
         string tmp = gCenterServerConnectioinRpc.call(funname, args...);
-        BigPacket p;
-        p.setOP(CENTERSERVER_RECV_OP_RPC);
+        BigPacket p(CENTERSERVER_RECV_OP_RPC);
         p.writeBinary(tmp);
-        p.end();
         sendPacket(p);
     }
 

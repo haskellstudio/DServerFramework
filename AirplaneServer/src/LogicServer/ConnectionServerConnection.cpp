@@ -104,12 +104,10 @@ void ConnectionServerConnection::onEnter()
 
         gDailyLogger->warn("connect connection server success ");
         /*  发送自己的ID给连接服务器 */
-        FixedPacket<128> packet;
-        packet.setOP(CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN);
+        TinyPacket packet(CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN);
         packet.writeBinary(ConnectionServerPassword::getInstance().getPassword());
         packet.writeINT32(gSelfID);
         packet.writeBool(gIsPrimary);
-        packet.end();
 
         sendPacket(packet);
 
@@ -119,9 +117,7 @@ void ConnectionServerConnection::onEnter()
 
 void ConnectionServerConnection::ping()
 {
-    FixedPacket<128> p;
-    p.setOP(CONNECTION_SERVER_RECV_PING);
-    p.end();
+    TinyPacket p(CONNECTION_SERVER_RECV_PING);
 
     sendPacket(p);
 

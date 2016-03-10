@@ -19,65 +19,97 @@ const static PACKET_LEN_TYPE PACKET_HEAD_LEN = sizeof(PACKET_LEN_TYPE) + sizeof(
 
 namespace socketendian
 {
-    const static bool IS_ENDIAN = false;
+    const static bool ENABLE_CONVERT_ENDIAN = false;
+
+    inline uint64_t  hl64ton(uint64_t   host)
+    {
+        uint64_t   ret = 0;
+        uint32_t   high, low;
+
+        low = host & 0xFFFFFFFF;
+        high = (host >> 32) & 0xFFFFFFFF;
+        low = htonl(low);
+        high = htonl(high);
+        ret = low;
+        ret <<= 32;
+        ret |= high;
+
+        return   ret;
+    }
+
+    inline uint64_t  ntohl64(uint64_t   host)
+    {
+        uint64_t   ret = 0;
+        uint32_t   high, low;
+
+        low = host & 0xFFFFFFFF;
+        high = (host >> 32) & 0xFFFFFFFF;
+        low = ntohl(low);
+        high = ntohl(high);
+        ret = low;
+        ret <<= 32;
+        ret |= high;
+
+        return   ret;
+    }
 
 #ifdef PLATFORM_WINDOWS
     inline uint64_t hostToNetwork64(uint64_t host64)
     {
-        return host64;
+        return ENABLE_CONVERT_ENDIAN ? hl64ton(host64) : host64;
     }
     inline uint32_t hostToNetwork32(uint32_t host32)
     {
-        return IS_ENDIAN ? htonl(host32) : host32;
+        return ENABLE_CONVERT_ENDIAN ? htonl(host32) : host32;
     }
 
     inline uint16_t hostToNetwork16(uint16_t host16)
     {
-        return IS_ENDIAN ? htons(host16) : host16;
+        return ENABLE_CONVERT_ENDIAN ? htons(host16) : host16;
     }
 
     inline uint64_t networkToHost64(uint64_t net64)
     {
-        return net64;
+        return ENABLE_CONVERT_ENDIAN ? ntohl64(net64) : net64;
     }
 
     inline uint32_t networkToHost32(uint32_t net32)
     {
-        return IS_ENDIAN ? ntohl(net32) : net32;
+        return ENABLE_CONVERT_ENDIAN ? ntohl(net32) : net32;
     }
 
     inline uint16_t networkToHost16(uint16_t net16)
     {
-        return IS_ENDIAN ? ntohs(net16) : net16;
+        return ENABLE_CONVERT_ENDIAN ? ntohs(net16) : net16;
     }
 #else
     inline uint64_t hostToNetwork64(uint64_t host64)
     {
-        return IS_ENDIAN ? htobe64(host64) : host64;
+        return ENABLE_CONVERT_ENDIAN ? htobe64(host64) : host64;
     }
     inline uint32_t hostToNetwork32(uint32_t host32)
     {
-        return IS_ENDIAN ? htobe32(host32) : host32;
+        return ENABLE_CONVERT_ENDIAN ? htobe32(host32) : host32;
     }
 
     inline uint16_t hostToNetwork16(uint16_t host16)
     {
-        return IS_ENDIAN ? htobe16(host16) : host16;
+        return ENABLE_CONVERT_ENDIAN ? htobe16(host16) : host16;
     }
 
     inline uint64_t networkToHost64(uint64_t net64)
     {
-        return IS_ENDIAN ? be64toh(net64) : net64;
+        return ENABLE_CONVERT_ENDIAN ? be64toh(net64) : net64;
     }
 
     inline uint32_t networkToHost32(uint32_t net32)
     {
-        return IS_ENDIAN ? be32toh(net32) : net32;
+        return ENABLE_CONVERT_ENDIAN ? be32toh(net32) : net32;
     }
 
     inline uint16_t networkToHost16(uint16_t net16)
     {
-        return IS_ENDIAN ? be16toh(net16) : net16;
+        return ENABLE_CONVERT_ENDIAN ? be16toh(net16) : net16;
     }
 #endif
 }
@@ -85,13 +117,12 @@ namespace socketendian
 class Packet
 {
 public:
-    Packet(char* buffer, size_t len, bool isAutoMalloc = false)
+    Packet(char* buffer, size_t len, bool isAutoMalloc = false) : mIsAutoMalloc(isAutoMalloc)
     {
         mMaxLen = len;
         mPos = 0;
         mBuffer = buffer;
         mIsFinish = false;
-        mIsAutoMalloc = isAutoMalloc;
         mMallocBuffer = nullptr;
     }
     
@@ -127,8 +158,11 @@ public:
     void    setOP(PACKET_OP_TYPE op)
     {
         assert(mPos == 0);
-        this->operator<< (static_cast<PACKET_LEN_TYPE>(PACKET_HEAD_LEN));
-        this->operator<< (op);
+        if (mPos == 0)
+        {
+            this->operator<< (static_cast<PACKET_LEN_TYPE>(PACKET_HEAD_LEN));
+            this->operator<< (op);
+        }
     }
     void    writeBool(bool value)
     {
@@ -279,22 +313,9 @@ public:
         return *this;
     }
 
-    void        end()
-    {
-        PACKET_LEN_TYPE len = socketendian::hostToNetwork32(mPos);
-        if (sizeof(len) <= mMaxLen)
-        {
-            memcpy(mBuffer, &len, sizeof(len));
-            mIsFinish = true;
-        }
-        else
-        {
-            assert(false);
-        }
-    }
-
     size_t      getLen()
     {
+        end();
         return mPos;
     }
 
@@ -340,21 +361,33 @@ private:
         }
     }
 
+    void        end()
+    {
+        PACKET_LEN_TYPE len = socketendian::hostToNetwork32(mPos);
+        if (sizeof(len) <= mMaxLen)
+        {
+            memcpy(mBuffer, &len, sizeof(len));
+            mIsFinish = true;
+        }
+        else
+        {
+            assert(false);
+        }
+    }
 private:
     bool        mIsFinish;
     size_t      mPos;
     size_t      mMaxLen;
     char*       mBuffer;
-    bool        mIsAutoMalloc;
+    const bool  mIsAutoMalloc;
     char*       mMallocBuffer;
 };
 
 class ReadPacket
 {
 public:
-    ReadPacket(const char* buffer, size_t len)
+    ReadPacket(const char* buffer, size_t len) : mMaxLen(len)
     {
-        mMaxLen = len;
         mPos = 0;
         mBuffer = buffer;
     }
@@ -366,7 +399,17 @@ public:
             assert(mPos == mMaxLen);
         }
     }
-    
+
+    PACKET_LEN_TYPE readPacketLen()
+    {
+        return readUINT32();
+    }
+
+    PACKET_OP_TYPE  readOP()
+    {
+        return readUINT16();
+    }
+
     bool        readBool()
     {
         static_assert(sizeof(bool) == sizeof(int8_t), "");
@@ -374,7 +417,6 @@ public:
         read(value);
         return value;
     }
-
     int8_t      readINT8()
     {
         int8_t  value = 0;
@@ -387,15 +429,6 @@ public:
         read(value);
         return value;
     }
-    PACKET_LEN_TYPE readPacketLen()
-    {
-        return readUINT32();
-    }
-    PACKET_OP_TYPE  readOP()
-    {
-        return readUINT16();
-    }
-
     int16_t      readINT16()
     {
         int16_t  value = 0;
@@ -495,26 +528,35 @@ public:
     }
 private:
     size_t          mPos;
-    size_t          mMaxLen;
+    const size_t    mMaxLen;
     const char*     mBuffer;
 };
 
-template<int SIZE>
-class FixedPacket : public Packet
+class SendPacket : public Packet
 {
 public:
-    FixedPacket() : Packet(mData, SIZE)
+    SendPacket(PACKET_OP_TYPE op, char* buffer, size_t len, bool isAutoMalloc = false) : Packet(buffer, len, isAutoMalloc)
+    {
+        setOP(op);
+    }
+};
+
+template<size_t SIZE>
+class FixedPacket : public SendPacket
+{
+public:
+    FixedPacket(PACKET_OP_TYPE op) : SendPacket(op, mData, SIZE)
     {}
     
 private:
     char        mData[SIZE];
 };
 
-template<int SIZE>
-class AutoMallocPacket : public Packet
+template<size_t SIZE>
+class AutoMallocPacket : public SendPacket
 {
 public:
-    AutoMallocPacket() : Packet(mData, SIZE, true)
+    AutoMallocPacket(PACKET_OP_TYPE op) : SendPacket(op, mData, SIZE, true)
     {}
 private:
     char        mData[SIZE];

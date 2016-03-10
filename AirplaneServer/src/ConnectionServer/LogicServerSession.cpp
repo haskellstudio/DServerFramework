@@ -55,12 +55,10 @@ bool LogicServerSession::checkPassword(const string& password)
 
 void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const string& reason)
 {
-    FixedPacket<128> sp;
-    sp.setOP(CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID);
+    TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID);
     sp.writeINT32(gSelfID);
     sp.writeBool(isSuccess);
     sp.writeBinary(reason);
-    sp.end();
     sendPacket(sp.getData(), sp.getLen());
 }
 
@@ -251,8 +249,6 @@ void LogicServerSession::onPing(ReadPacket& rp)
 {
     gDailyLogger->info("recv ping from logic server, id :{}", mID);
 
-    FixedPacket<128> sp;
-    sp.setOP(CONNECTION_SERVER_SEND_PONG);
-    sp.end();
+    TinyPacket sp(CONNECTION_SERVER_SEND_PONG);
     sendPacket(sp.getData(), sp.getLen());
 }

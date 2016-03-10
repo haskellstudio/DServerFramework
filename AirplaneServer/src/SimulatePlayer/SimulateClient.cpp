@@ -31,10 +31,8 @@ public:
 
     virtual void    onEnter()
     {
-        FixedPacket<1024 * 16> packet;
-        packet.setOP(1);
+        FixedPacket<1024 * 16> packet(CLIENT_OP_TEST);
         packet.writeBinary("test");
-        packet.end();
         sendPacket(packet.getData(), packet.getLen());
     }
 
@@ -76,18 +74,14 @@ public:
 
     void            sendSoloRpcString(const string& value)
     {
-        FixedPacket<1024 * 16> packet;
-        packet.setOP(1);
+        FixedPacket<1024 * 16> packet(1);
         packet.writeBinary(value);
-        packet.end();
         sendPacket(packet.getData(), packet.getLen());
     }
     void            sendGameServerRpcString(const string& value)
     {
-        FixedPacket<1024 * 16> packet;
-        packet.setOP(1);
+        FixedPacket<1024 * 16> packet(1);
         packet.writeBinary(value);
-        packet.end();
         sendPacket(packet.getData(), packet.getLen());
     }
 private:

@@ -52,11 +52,9 @@ void CenterServerConnection::onEnter()
 {
     gDailyLogger->warn("connect to center server success!");
 
-    FixedPacket<128> sp;
-    sp.setOP(CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN);
+    TinyPacket sp(CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN);
     sp.writeBinary(CenterServerPassword::getInstance().getPassword());
     sp.writeINT32(gSelfID);
-    sp.end();
 
     sendPacket(sp);
 
@@ -67,9 +65,7 @@ void CenterServerConnection::onEnter()
 
 void CenterServerConnection::ping()
 {
-    FixedPacket<128> p;
-    p.setOP(CENTERSERVER_RECV_OP_PING);
-    p.end();
+    TinyPacket p(CENTERSERVER_RECV_OP_PING);
 
     sendPacket(p);
 
@@ -179,10 +175,8 @@ void CenterServerConnection::sendPacket(Packet& packet)
 
 void CenterServerConnection::sendUserPacket(Packet& subPacket)
 {
-    BigPacket packet;
-    packet.setOP(CENTERSERVER_RECV_OP_USER);
+    BigPacket packet(CENTERSERVER_RECV_OP_USER);
     packet.writeBinary(subPacket.getData(), subPacket.getLen());
-    packet.end();
 
     sendPacket(packet);
 }

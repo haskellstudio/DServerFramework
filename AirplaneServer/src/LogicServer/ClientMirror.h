@@ -37,10 +37,8 @@ public:
     template<typename... Args>
     void            sendv(int16_t op, const Args&... args)
     {
-        BigPacket packet;
-        packet.setOP(op);
+        BigPacket packet(op);
         packet.writev(args...);
-        packet.end();
         sendPacket(packet);
     }
 

@@ -75,10 +75,8 @@ ClientObject::~ClientObject()
     {
         eraseClientByRuntimeID(mRuntimeID);
 
-        FixedPacket<128> sp;
-        sp.setOP(CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT);
+        TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT);
         sp.writeINT64(mRuntimeID);
-        sp.end();
 
         sendPacketToPrimaryServer(sp);
         sendPacketToSlaveServer(sp);
@@ -89,10 +87,8 @@ ClientObject::~ClientObject()
 
 void ClientObject::notifyDisConnect()
 {
-    FixedPacket<128> sp;
-    sp.setOP(CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT);
+    TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT);
     sp.writeINT64(mRuntimeID);
-    sp.end();
 
     sendPacketToPrimaryServer(sp);
 }
@@ -141,11 +137,9 @@ void ClientObject::procPacket(PACKET_OP_TYPE op, const char* packerBuffer, PACKE
 
     if (mPrimaryServerID != -1)
     {
-        BigPacket packet;
-        packet.setOP(CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT);
+        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT);
         packet.writeINT64(mRuntimeID);
         packet.writeBinary(packerBuffer, packetLen);
-        packet.end();
 
         if (mSlaveServerID == -1)
         {
@@ -242,11 +236,9 @@ void ClientObject::claimPrimaryServer()
             }
         }
 
-        BigPacket packet;
-        packet.setOP(CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR);
+        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR);
         packet.writeINT64(mSocketID);
         packet.writeINT64(mRuntimeID);
-        packet.end();
 
         sendPacketToPrimaryServer(packet);
     }

@@ -73,13 +73,11 @@ ClientMirror::~ClientMirror()
 void ClientMirror::sendPacket(Packet& packet)
 {
     /*构造消息发送到网络线程*/
-    BigPacket sp;
-    sp.setOP(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
+    BigPacket sp(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
     sp.writeBinary(packet.getData(), packet.getLen());
     sp.writeINT16(1);
     sp.writeINT32(mConnectionServerID);
     sp.writeINT64(mSocketIDOnConnectionServer);
-    sp.end();
 
     ConnectionServerConnection* l = gAllLogicConnectionServerClient[mConnectionServerID];
     if (l != nullptr)
@@ -91,13 +89,11 @@ void ClientMirror::sendPacket(Packet& packet)
 void ClientMirror::sendPacket(const std::string& realPacketBinary)
 {
     /*构造消息发送到网络线程*/
-    BigPacket sp;
-    sp.setOP(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
+    BigPacket sp(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
     sp.writeBinary(realPacketBinary);
     sp.writeINT16(1);
     sp.writeINT32(mConnectionServerID);
     sp.writeINT64(mSocketIDOnConnectionServer);
-    sp.end();
 
     ConnectionServerConnection* l = gAllLogicConnectionServerClient[mConnectionServerID];
     if (l != nullptr)
@@ -109,13 +105,11 @@ void ClientMirror::sendPacket(const std::string& realPacketBinary)
 void ClientMirror::sendPacket(const char* buffer, size_t len)
 {
     /*构造消息发送到网络线程*/
-    BigPacket sp;
-    sp.setOP(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
+    BigPacket sp(CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO);
     sp.writeBinary(buffer, len);
     sp.writeINT16(1);
     sp.writeINT32(mConnectionServerID);
     sp.writeINT64(mSocketIDOnConnectionServer);
-    sp.end();
 
     ConnectionServerConnection* l = gAllLogicConnectionServerClient[mConnectionServerID];
     if (l != nullptr)
@@ -148,11 +142,9 @@ int32_t ClientMirror::getConnectionServerID() const
 
 void ClientMirror::requestConnectionServerSlave(bool isSet)
 {
-    FixedPacket<128> sp;
-    sp.setOP(CONNECTION_SERVER_RECV_IS_SETCLIENT_SLAVEID);
+    TinyPacket sp(CONNECTION_SERVER_RECV_IS_SETCLIENT_SLAVEID);
     sp.writeINT64(mRuntimeID);
     sp.writeBool(isSet);
-    sp.end();
 
     ConnectionServerConnection* cs = gAllLogicConnectionServerClient[mConnectionServerID];
     if (cs != nullptr)

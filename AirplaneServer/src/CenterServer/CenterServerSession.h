@@ -27,10 +27,8 @@ public:
     template<typename... Args>
     void            sendv(PACKET_OP_TYPE op, const Args&... args)
     {
-        BigPacket packet;
-        packet.setOP(op);
+        BigPacket packet(op);
         packet.writev(args...);
-        packet.end();
         sendPacket(packet);
     }
 
@@ -39,10 +37,8 @@ public:
     template<typename... Args>
     void            sendUserMsgV(PACKET_OP_TYPE op, const Args&... args)
     {
-        BigPacket packet;
-        packet.setOP(op);
+        BigPacket packet(op);
         packet.writev(args...);
-        packet.end();
 
         sendUserPacket(packet);
     }

@@ -88,10 +88,8 @@ void    CenterServerSession::sendPacket(Packet& packet)
 
 void CenterServerSession::sendUserPacket(Packet& subPacket)
 {
-    BigPacket packet;
-    packet.setOP(CENTERSERVER_SEND_OP_USER);
+    BigPacket packet(CENTERSERVER_SEND_OP_USER);
     packet.writeBinary(subPacket.getData(), subPacket.getLen());
-    packet.end();
 
     sendPacket(packet);
 }
@@ -129,10 +127,8 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
 
                 mID = id;
 
-                BigPacket sp;
-                sp.setOP(CENTERSERVER_SEND_OP_LOGICSERVER_SELFID);
+                BigPacket sp(CENTERSERVER_SEND_OP_LOGICSERVER_SELFID);
                 sp.writeINT32(mID);
-                sp.end();
                 sendPacket(sp);
 
                 gAllLogicServer[mID] = this;
@@ -151,12 +147,10 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
 
 void CenterServerSession::sendPacket2Client(int64_t runtimeID, Packet& realPacket)
 {
-    BigPacket packet;
-    packet.setOP(CENTERSERVER_SEND_OP_PACKET2CLIENTMIRROR);
+    BigPacket packet(CENTERSERVER_SEND_OP_PACKET2CLIENTMIRROR);
     packet.writeBinary(realPacket.getData(), realPacket.getLen());
     packet.writeINT16(1);
     packet.writeINT64(runtimeID);
-    packet.end();
 
     sendPacket(packet);
 }
