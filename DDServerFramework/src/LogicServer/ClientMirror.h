@@ -17,45 +17,55 @@ class ConnectionServerConnection;
 class ClientMirror
 {
 public:
-    ClientMirror();
+    typedef std::shared_ptr<ClientMirror>   PTR;
+    typedef std::function<void(ClientMirror::PTR)> ENTER_HANDLE;
+    typedef std::function<void(ClientMirror::PTR)> DISCONNECT_HANDLE;
+
+    ClientMirror(int32_t csID, int64_t runtimeID);
     ~ClientMirror();
 
     typedef std::function<void(ClientMirror&, ReadPacket&)>   USER_MSG_HANDLE;
 
-    int32_t         getConnectionServerID() const;
+    /*重新设置客户端在连接服务器上的session id (可断线重连成功用)*/
+    void            setSocketIDOnConnectionServer(int64_t socketID);
 
-    void            setRuntimeInfo(int32_t csID, int64_t socketID, int64_t runtimeID);
+    int32_t         getConnectionServerID() const;
     int64_t         getRuntimeID() const;
 
     void            sendPacket(Packet& packet);
     void            sendPacket(const std::string& realPacketBinary);
     void            sendPacket(const char* buffer, size_t len);
 
-    /*重新设置玩家在连接服务器上的session id (断线重连成功用)*/
-    void            resetSocketInfo(int64_t socketID);
-
     template<typename... Args>
-    void            sendv(int16_t op, const Args&... args)
+    void            sendv(PACKET_OP_TYPE op, const Args&... args)
     {
         BigPacket packet(op);
         packet.writev(args...);
         sendPacket(packet);
     }
 
+    /*  请求客户端所在链接服务器设置(或取消设置)当前客户端的slave为当前logic server*/
     void            requestConnectionServerSlave(bool isSet);
 public:
     static void     registerUserMsgHandle(PACKET_OP_TYPE, USER_MSG_HANDLE);
 
+    static void     setClientEnterCallback(ENTER_HANDLE);
+    static void     setClientDisConnectCallback(DISCONNECT_HANDLE);
+
+    static  ENTER_HANDLE        getClientEnterCallback();
+    static  DISCONNECT_HANDLE   getClientDisConnectCallback();
 private:
     void            procData(const char* buffer, size_t len);
 
 private:
-    int32_t         mConnectionServerID;            /*  此玩家所属连接服务器的ID   */
-    int64_t         mSocketIDOnConnectionServer;    /*  此玩家在所属链接服务器上的socketid   */
-    int64_t         mRuntimeID;                     /*  此玩家在游戏运行时的ID    */
+    const int32_t   mConnectionServerID;            /*  此客户端所属连接服务器的ID   */
+    const int64_t   mRuntimeID;                     /*  此客户端在游戏运行时的ID    */
+    int64_t         mSocketIDOnConnectionServer;    /*  此客户端在所属链接服务器上的socketid   */
 
 private:
     static  std::unordered_map<PACKET_OP_TYPE, USER_MSG_HANDLE> sUserMsgHandlers;
+    static  ENTER_HANDLE        sEnterHandle;                   /*  客户端的进入回调    */
+    static  DISCONNECT_HANDLE   sDisConnectHandle;          /*  客户端的断开回调*/
 
     friend class ConnectionServerConnection;
 };
@@ -66,10 +76,10 @@ class ClientMirrorMgr
 public:
     typedef std::shared_ptr<ClientMirrorMgr> PTR;
     /*key 为客户端的RuntimeID*/
-    typedef std::unordered_map<int64_t, ClientMirror*> CLIENT_MIRROR_MAP;
+    typedef std::unordered_map<int64_t, ClientMirror::PTR> CLIENT_MIRROR_MAP;
 public:
-    ClientMirror*                               FindClientByRuntimeID(int64_t id);
-    void                                        AddClientOnRuntimeID(ClientMirror* p, int64_t id);
+    ClientMirror::PTR                           FindClientByRuntimeID(int64_t id);
+    void                                        AddClientOnRuntimeID(ClientMirror::PTR p, int64_t id);
     void                                        DelClientByRuntimeID(int64_t id);
 
 

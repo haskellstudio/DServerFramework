@@ -200,7 +200,7 @@ void LogicServerSession::onPacket2ClientByRuntimeID(ReadPacket& rp)
             ClientObject::PTR client = findClientByRuntimeID(runtimeID);
             if (client != nullptr)
             {
-                int64_t socketID = client->getSocketID();  /*如果玩家刚好处于断线重连状态，则可能socketID 为-1*/
+                int64_t socketID = client->getSocketID();  /*如果客户端刚好处于断线重连状态，则可能socketID 为-1*/
                 if (socketID != -1)
                 {
                     if (IsPrintPacketSendedLog)

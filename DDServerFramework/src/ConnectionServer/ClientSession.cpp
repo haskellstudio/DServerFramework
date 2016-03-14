@@ -36,7 +36,7 @@ void ConnectionClientSession::onEnter()
 
 void ConnectionClientSession::onClose()
 {
-    /*  TODO::当此网络对象断开时，所在的逻辑玩家对象开启断线重连的等待定时器*/
+    /*  TODO::当此网络对象断开时，所在的逻辑客户端对象开启断线重连的等待定时器*/
     gDailyLogger->warn("client close, ip:{}, socket id :{}", getIP(), getSocketID());
     if (true)
     {
@@ -58,11 +58,11 @@ void ConnectionClientSession::onClose()
 //    /*如果此网络链接还没有分配RuntimeID，也即还没在内部服务器分配任何资源*/
 //    if (mclient->getRuntimeID() == -1)
 //    {
-//        /*TODO::重连需要验证合法性，避免随意重连到某一个断开的玩家对象上*/
+//        /*TODO::重连需要验证合法性，避免随意重连到某一个断开的客户端对象上*/
 //        ReadPacket rp(packerBuffer, packetLen);
 //        rp.readPacketLen();
 //        rp.readOP();
-//        /*要重连的玩家的RuntimeID*/
+//        /*要重连的客户端的RuntimeID*/
 //        int64_t oldRuntimeID = rp.readINT64();
 //        ClientObject::PTR oldClient = findClientByRuntimeID(oldRuntimeID);
 //        if (oldClient != nullptr && oldClient->isInDelayWait())

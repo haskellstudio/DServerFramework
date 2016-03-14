@@ -14,7 +14,7 @@ extern unordered_map<int, BaseNetSession::PTR>      gAllPrimaryServers;
 extern TimerMgr::PTR                                gTimerMgr;
 extern WrapLog::PTR gDailyLogger;
 
-unordered_map<int64_t, ClientObject::PTR>   gAllClientObject;   //所有的玩家对象,key为运行时ID
+unordered_map<int64_t, ClientObject::PTR>   gAllClientObject;   //所有的客户端对象,key为运行时ID
 
 ClientObject::PTR findClientByRuntimeID(int64_t runtimeID)
 {
@@ -65,7 +65,7 @@ int64_t ClientObject::getSocketID() const
     return mSocketID;
 }
 
-/*当此玩家对象销毁时，通知内部服务器强制退出此RuntimeID标示的玩家--真正退出游戏*/
+/*当此客户端对象销毁时，通知内部服务器强制退出此RuntimeID标示的客户端--真正退出游戏*/
 ClientObject::~ClientObject()
 {
     gDailyLogger->info("~ client object : {}", mRuntimeID);
@@ -104,7 +104,7 @@ void ClientObject::startDelayWait()
     {
         mSocketID = -1;
         mDelayTimer = gTimerMgr->AddTimer(30000, [=](){
-            cout << "等待超时,删除玩家" << endl;
+            cout << "等待超时,删除客户端" << endl;
             eraseClientByRuntimeID(mRuntimeID);
         });
     }

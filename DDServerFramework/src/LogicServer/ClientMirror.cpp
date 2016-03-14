@@ -29,8 +29,10 @@ extern struct lua_State* gLua;
 extern WrapLog::PTR  gDailyLogger;
 std::unordered_map<PACKET_OP_TYPE, ClientMirror::USER_MSG_HANDLE> ClientMirror::sUserMsgHandlers;
 ClientMirrorMgr::PTR  gClientMirrorMgr;
+ClientMirror::ENTER_HANDLE ClientMirror::sEnterHandle = nullptr;
+ClientMirror::DISCONNECT_HANDLE ClientMirror::sDisConnectHandle = nullptr;
 
-ClientMirror* ClientMirrorMgr::FindClientByRuntimeID(int64_t id)
+ClientMirror::PTR ClientMirrorMgr::FindClientByRuntimeID(int64_t id)
 {
     auto it = mAllClientMirrorOnRuntimeID.find(id);
     if (it != mAllClientMirrorOnRuntimeID.end())
@@ -43,7 +45,7 @@ ClientMirror* ClientMirrorMgr::FindClientByRuntimeID(int64_t id)
     }
 }
 
-void ClientMirrorMgr::AddClientOnRuntimeID(ClientMirror* p, int64_t id)
+void ClientMirrorMgr::AddClientOnRuntimeID(ClientMirror::PTR p, int64_t id)
 {
     mAllClientMirrorOnRuntimeID[id] = p;
 }
@@ -58,11 +60,9 @@ ClientMirrorMgr::CLIENT_MIRROR_MAP& ClientMirrorMgr::getAllClientMirror()
     return mAllClientMirrorOnRuntimeID;
 }
 
-ClientMirror::ClientMirror()
+ClientMirror::ClientMirror(int32_t csID, int64_t runtimeID) : mConnectionServerID(csID), mRuntimeID(runtimeID)
 {
-    mConnectionServerID = -1;
     mSocketIDOnConnectionServer = -1;
-    mRuntimeID = -1;
 }
 
 ClientMirror::~ClientMirror()
@@ -118,21 +118,14 @@ void ClientMirror::sendPacket(const char* buffer, size_t len)
     }
 }
 
-void ClientMirror::setRuntimeInfo(int32_t csID, int64_t socketID, int64_t runtimeID)
+void ClientMirror::setSocketIDOnConnectionServer(int64_t socketID)
 {
-    mConnectionServerID = csID;
     mSocketIDOnConnectionServer = socketID;
-    mRuntimeID = runtimeID;
 }
 
 int64_t ClientMirror::getRuntimeID() const
 {
     return mRuntimeID;
-}
-
-void ClientMirror::resetSocketInfo(int64_t socketID)
-{
-    mSocketIDOnConnectionServer = socketID;
 }
 
 int32_t ClientMirror::getConnectionServerID() const
@@ -157,6 +150,26 @@ void ClientMirror::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE hand
 {
     assert(sUserMsgHandlers.find(op) == sUserMsgHandlers.end());
     sUserMsgHandlers[op] = handle;
+}
+
+void ClientMirror::setClientEnterCallback(ClientMirror::ENTER_HANDLE handle)
+{
+    sEnterHandle = handle;
+}
+
+void ClientMirror::setClientDisConnectCallback(DISCONNECT_HANDLE handle)
+{
+    sDisConnectHandle = handle;
+}
+
+ClientMirror::ENTER_HANDLE ClientMirror::getClientEnterCallback()
+{
+    return sEnterHandle;
+}
+
+ClientMirror::DISCONNECT_HANDLE ClientMirror::getClientDisConnectCallback()
+{
+    return sDisConnectHandle;
 }
 
 void ClientMirror::procData(const char* buffer, size_t len)

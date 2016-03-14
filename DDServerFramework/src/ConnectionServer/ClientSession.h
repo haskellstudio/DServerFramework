@@ -5,7 +5,7 @@
 #include "ClientLogicObject.h"
 #include "UsePacketSingleNetSession.h"
 
-/*  玩家链接会话(玩家网络掉线，此对象就销毁)    */
+/*  客户端链接会话(客户端网络掉线，此对象就销毁)    */
 class ConnectionClientSession : public UsePacketSingleNetSession
 {
 public:

@@ -54,7 +54,7 @@ public:
     typedef std::function<void (EventLoop&)>                            FRAME_CALLBACK;
     typedef std::function<void(int64_t, std::string)>                   ENTER_CALLBACK;
     typedef std::function<void(int64_t)>                                DISCONNECT_CALLBACK;
-    typedef std::function<int (int64_t, const char* buffer, int len)>   DATA_CALLBACK;
+    typedef std::function<int (int64_t, const char* buffer, size_t len)>   DATA_CALLBACK;
 
 public:
     TcpService();
@@ -74,6 +74,8 @@ public:
 
     void                                flushCachePackectList();
 
+    void                                shutdown(int64_t id);
+
     /*主动断开此id链接，但仍然会收到此id的断开回调，需要上层逻辑自己处理这个"问题"(尽量统一在断开回调函数里做清理等工作) */
     void                                disConnect(int64_t id);
 
@@ -84,7 +86,8 @@ public:
                                                         TcpService::DISCONNECT_CALLBACK disConnectCallback,
                                                         TcpService::DATA_CALLBACK dataCallback,
                                                         bool isUseSSL,
-                                                        int maxRecvBufferSize);
+                                                        int maxRecvBufferSize,
+                                                        bool forceSameThreadLoop = false);
 
     /*  开启监听线程  */
     void                                startListen(int port, int maxSessionRecvBufferSize, const char *certificate = nullptr, const char *privatekey = nullptr);
@@ -111,7 +114,8 @@ private:
                                                     const std::string& ip,
                                                     TcpService::ENTER_CALLBACK enterCallback,
                                                     TcpService::DISCONNECT_CALLBACK disConnectCallback,
-                                                    TcpService::DATA_CALLBACK dataCallback);
+                                                    TcpService::DATA_CALLBACK dataCallback,
+                                                    bool forceSameThreadLoop = false);
 private:
     int64_t                             MakeID(int loopIndex);
 

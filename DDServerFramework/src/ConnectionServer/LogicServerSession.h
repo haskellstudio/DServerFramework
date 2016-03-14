@@ -21,13 +21,13 @@ private:
 private:
     /*内部服务器登陆此链接服务器*/
     void                onLogicServerLogin(ReadPacket& rp);
-    /*内部服务器请求转发消息给玩家(以SocketID标识)*/
+    /*内部服务器请求转发消息给客户端(以SocketID标识)*/
     void                onPacket2ClientBySocketInfo(ReadPacket& rp);
-    /*内部服务器请求转发消息给玩家(以RuntimeID标识)*/
+    /*内部服务器请求转发消息给客户端(以RuntimeID标识)*/
     void                onPacket2ClientByRuntimeID(ReadPacket& rp);
 
     void                onSlaveServerIsSetClient(ReadPacket& rp);
-    /*强制踢出某RuntimeID所标识的玩家*/
+    /*强制踢出某RuntimeID所标识的客户端*/
     void                onKickClientByRuntimeID(ReadPacket& rp);
 
     void                onPing(ReadPacket& rp);

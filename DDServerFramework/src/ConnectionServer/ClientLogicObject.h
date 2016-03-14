@@ -10,7 +10,7 @@
 
 class Packet;
 
-/*  链接服务器上的客户端对象(用于将网络对象分离-支持断线重连)(此对象存在则表示玩家还处于服务器，逻辑并未离线) */
+/*  链接服务器上的客户端对象(用于将网络对象分离-支持断线重连)(此对象存在则表示客户端还处于服务器，逻辑并未离线) */
 class ClientObject : public std::enable_shared_from_this<ClientObject>
 {
 public:
@@ -24,12 +24,12 @@ public:
 
     ~ClientObject();
 
-    /*通知内部服务器，此玩家网络断开*/
+    /*通知内部服务器，此客户端网络断开*/
     void                notifyDisConnect();
 
     int64_t             getRuntimeID() const;
 
-    /*  玩家掉线，进入延时等待   */
+    /*  客户端掉线，进入延时等待   */
     void                startDelayWait();
     /*是否处于断线重连等待状态*/
     bool                isInDelayWait();

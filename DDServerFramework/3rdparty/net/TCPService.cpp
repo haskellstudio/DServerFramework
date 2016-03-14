@@ -137,8 +137,6 @@ void ListenThread::RunListen()
                 }
             }
 
-            printf("accept fd : %d \n", client_fd);
-
             if (SOCKET_ERROR != client_fd && mRunListen)
             {
                 ox_socket_nodelay(client_fd);
@@ -153,7 +151,6 @@ void ListenThread::RunListen()
     else
     {
         printf("listen failed, error:%d \n", sErrno);
-        return;
     }
 }
 
@@ -273,6 +270,26 @@ void TcpService::flushCachePackectList()
             });
             mCachePacketList[i] = std::make_shared<MSG_LIST>();
         }
+    }
+}
+
+void TcpService::shutdown(int64_t id)
+{
+    union  SessionId sid;
+    sid.id = id;
+    assert(sid.data.loopIndex < mLoopNum);
+    if (sid.data.loopIndex < mLoopNum)
+    {
+        mLoops[sid.data.loopIndex].pushAsyncProc([this, sid](){
+            DataSocket::PTR tmp = nullptr;
+            if (mIds[sid.data.loopIndex].get(sid.data.index, tmp))
+            {
+                if (tmp != nullptr && tmp->getUserData() == sid.id)
+                {
+                    tmp->postShutdown();
+                }
+            }
+        });
     }
 }
 
@@ -484,11 +501,34 @@ void TcpService::procDataSocketClose(DataSocket::PTR ds)
     mIds[sid.data.loopIndex].reclaimID(sid.data.index);
 }
 
-void TcpService::helpAddChannel(DataSocket::PTR channel, const std::string& ip, TcpService::ENTER_CALLBACK enterCallback, TcpService::DISCONNECT_CALLBACK disConnectCallback, TcpService::DATA_CALLBACK dataCallback)
+void TcpService::helpAddChannel(DataSocket::PTR channel, const std::string& ip, TcpService::ENTER_CALLBACK enterCallback, TcpService::DISCONNECT_CALLBACK disConnectCallback, TcpService::DATA_CALLBACK dataCallback,
+    bool forceSameThreadLoop)
 {
-    /*  随机为此链接分配一个eventloop */
-    int loopIndex = rand() % mLoopNum;
-    EventLoop* loop = mLoops+loopIndex;
+    int loopIndex = -1;
+
+    if (forceSameThreadLoop)
+    {
+        for (size_t i = 0; i < mLoopNum; i++)
+        {
+            if (mLoops[i].isInLoopThread())
+            {
+                loopIndex = i;
+            }
+        }
+    }
+    else
+    {
+        /*  随机为此链接分配一个eventloop */
+        loopIndex = rand() % mLoopNum;
+    }
+
+    assert(loopIndex != -1);
+    if (loopIndex == -1)
+    {
+        return;
+    }
+
+    EventLoop* loop = mLoops + loopIndex;
 
     channel->setEnterCallback([this, loopIndex, enterCallback, disConnectCallback, dataCallback, ip](DataSocket::PTR dataSocket){
         int64_t id = MakeID(loopIndex);
@@ -496,7 +536,7 @@ void TcpService::helpAddChannel(DataSocket::PTR channel, const std::string& ip, 
         sid.id = id;
         mIds[loopIndex].set(dataSocket, sid.data.index);
         dataSocket->setUserData(id);
-        dataSocket->setDataCallback([this, dataCallback](DataSocket::PTR ds, const char* buffer, int len){
+        dataSocket->setDataCallback([this, dataCallback](DataSocket::PTR ds, const char* buffer, size_t len){
             return dataCallback(ds->getUserData(), buffer, len);
         });
 
@@ -526,7 +566,8 @@ void TcpService::addDataSocket(int fd,
                                 TcpService::DISCONNECT_CALLBACK disConnectCallback,
                                 TcpService::DATA_CALLBACK dataCallback,
                                 bool isUseSSL,
-                                int maxRecvBufferSize)
+                                int maxRecvBufferSize,
+                                bool forceSameThreadLoop)
 {
     std::string ip = ox_socket_getipoffd(fd);
     DataSocket::PTR channel = new DataSocket(fd, maxRecvBufferSize);
@@ -536,5 +577,5 @@ void TcpService::addDataSocket(int fd,
         channel->setupConnectSSL();
     }
 #endif
-    helpAddChannel(channel, ip, enterCallback, disConnectCallback, dataCallback);
+    helpAddChannel(channel, ip, enterCallback, disConnectCallback, dataCallback, forceSameThreadLoop);
 }

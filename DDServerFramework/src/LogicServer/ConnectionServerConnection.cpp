@@ -153,7 +153,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
         case CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT:
         {
             int64_t runtimeID = rp.readINT64();
-            ClientMirror* p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
             if (p != nullptr)
             {
                 /*TODO::路由给用户代码*/
@@ -187,32 +187,40 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
 
             gDailyLogger->info("recv init client {} :{}", socketID, runtimeID);
 
-            ClientMirror* p = new ClientMirror;
-            p->setRuntimeInfo(mConnectionServerID, socketID, runtimeID);
+            ClientMirror::PTR p = std::make_shared<ClientMirror>(mConnectionServerID, runtimeID);
+            p->setSocketIDOnConnectionServer(socketID);
             gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
 
-            /*TODO::路由给用户代码*/
+            auto callback = ClientMirror::getClientEnterCallback();
+            if (callback != nullptr)
+            {
+                callback(p);
+            }
         }
         break;
         case CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT:
         {
             int64_t runtimeID = rp.readINT64();
             gDailyLogger->info("recv destroy client, runtime id:{}", runtimeID);
-            ClientMirror* p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
-            /*TODO::路由给用户代码*/
+            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
             gClientMirrorMgr->DelClientByRuntimeID(runtimeID);
+            auto callback = ClientMirror::getClientDisConnectCallback();
+            if (callback != nullptr)
+            {
+                callback(p);
+            }
         }
         break;
         case CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT:
         {
-            /*  表示收到链接服转发过来的玩家消息包   */
+            /*  表示收到链接服转发过来的客户端消息包   */
             int64_t clientRuntimeID = rp.readINT64();
             const char* s = nullptr;
             size_t len = 0;
             rp.readBinary(s, len);
             if (s != nullptr)
             {
-                ClientMirror* client = gClientMirrorMgr->FindClientByRuntimeID(clientRuntimeID);
+                ClientMirror::PTR client = gClientMirrorMgr->FindClientByRuntimeID(clientRuntimeID);
                 if (client != nullptr)
                 {
                     client->procData(s, len);

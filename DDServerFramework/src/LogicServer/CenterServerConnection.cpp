@@ -138,7 +138,7 @@ void CenterServerConnection::onCenterServerSendPacket2Client(ReadPacket& rp)
         for (int i = 0; i < destNum; ++i)
         {
             int64_t runtimeID = rp.readINT64();
-            ClientMirror* p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
             if (p != nullptr)
             {
                 p->sendPacket(s, len);
