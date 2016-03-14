@@ -6,7 +6,8 @@
 	* n个`逻辑服务器`：负责处理(由链接服务器转发过来的)客户端的网络消息
 	* 1个`全局服务器`：负责处理全局逻辑
 	* 其实还额外需要一个神器：[etcd](https://github.com/coreos/etcd)，作为服务器框架中的`逻辑服务器`感知`链接服务器`的新增和失效
-	* 无论拓扑图请参考[架构图](https://github.com/IronsDu/DServerFramework/blob/master/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png)
+	* 无论拓扑图请参考`架构图`:
+	![Alt text](%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png)
 
 *  框架内置组件:
 	*  多连接ssdb客户端
