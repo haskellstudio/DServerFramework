@@ -77,6 +77,7 @@ ClientObject::~ClientObject()
 
         TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT);
         sp.writeINT64(mRuntimeID);
+        sp.getLen();
 
         sendPacketToPrimaryServer(sp);
         sendPacketToSlaveServer(sp);

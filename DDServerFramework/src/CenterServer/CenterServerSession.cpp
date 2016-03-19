@@ -1,19 +1,14 @@
 #include <iostream>
 
+using namespace std;
+
 #include "packet.h"
 #include "CenterServerRecvOP.h"
 #include "CenterServerSendOP.h"
-
-#include "SSDBMultiClient.h"
-
 #include "WrapLog.h"
-
 #include "CenterServerPassword.h"
 #include "CenterServerSession.h"
 
-using namespace std;
-
-extern  SSDBMultiClient::PTR                    gSSDBProcyClient;
 unordered_map<int, CenterServerSession*>        gAllLogicServer;
 unordered_map<int, CenterServerSession*>        gAllGameServer;
 unordered_map<int, std::pair<string, int>>      gAllconnectionservers;

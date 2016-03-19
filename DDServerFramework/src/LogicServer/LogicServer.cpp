@@ -1,46 +1,26 @@
 #include "WrapTCPService.h"
-#include "msgpackrpc.h"
-#include "drpc.h"
-#include "socketlibfunction.h"
-#include "platform.h"
-#include "packet.h"
-#include "ConnectionServerRecvOP.h"
-#include "ConnectionServerSendOP.h"
-#include "CenterServerRecvOP.h"
-#include "CenterServerSendOP.h"
-#include "msgqueue.h"
-#include "eventloop.h"
-#include "NetThreadSession.h"
-#include "ClientMirror.h"
-#include "ConnectionServerConnection.h"
-#include "CenterServerConnection.h"
 #include "timer.h"
 #include "SSDBMultiClient.h"
-#include "spdlog/spdlog.h"
 #include "ox_file.h"
 #include "WrapLog.h"
-#include "NetSession.h"
-#include "UsePacketExtNetSession.h"
 #include "etcdclient.h"
 #include "WrapJsonValue.h"
 #include "app_status.h"
-
-WrapLog::PTR                                gDailyLogger;
-TimerMgr::PTR                               gTimerMgr;
-WrapServer::PTR                             gServer;
-SSDBMultiClient::PTR                        gSSDBProxyClient;
-struct lua_State* gLua = nullptr;
-
 #include "lua_readtable.h"
 
 #include "HelpFunction.h"
 #include "AutoConnectionServer.h"
 #include "CenterServerPassword.h"
 #include "ConnectionServerPassword.h"
-#include "google/protobuf/text_format.h"
 
-string centerServerIP;
-int centerServerPort;
+#include "ClientMirror.h"
+#include "ConnectionServerConnection.h"
+#include "CenterServerConnection.h"
+
+WrapLog::PTR                                gDailyLogger;
+TimerMgr::PTR                               gTimerMgr;
+WrapServer::PTR                             gServer;
+SSDBMultiClient::PTR                        gSSDBClient;
 
 extern void initLogicServerExt();
 
@@ -48,8 +28,8 @@ int main()
 {
 	srand(time(nullptr));
 
-	string ssdbProxyIP;
-	int ssdbProxyPort;
+	string ssdbServerIP;
+	int ssdbServerPort;
     std::vector<std::tuple<string, int>> etcdServers;
 
 	try
@@ -65,7 +45,7 @@ int main()
 
 		if (lua_tinker::dofile(L, "ServerConfig//LogicServerConfig.lua"))
 		{
-			aux_readluatable_byname(L, "SoloServerConfig", &config);
+			aux_readluatable_byname(L, "LogicServerConfig", &config);
 		}
 		else
 		{
@@ -74,13 +54,12 @@ int main()
 
 		map<string, msvalue_s*>& _submapvalue = *config._map;
 
-		ssdbProxyIP = map_at(_submapvalue, string("ssdbProxyIP"))->_str;
-		ssdbProxyPort = atoi(map_at(_submapvalue, string("ssdbProxyPort"))->_str.c_str());
-		centerServerIP = map_at(_submapvalue, string("centerServerIP"))->_str;
-		centerServerPort = atoi(map_at(_submapvalue, string("centerServerPort"))->_str.c_str());
+		ssdbServerIP = map_at(_submapvalue, string("ssdbServerIP"))->_str;
+		ssdbServerPort = atoi(map_at(_submapvalue, string("ssdbServerPort"))->_str.c_str());
+		gCenterServerIP = map_at(_submapvalue, string("centerServerIP"))->_str;
+		gCenterServerPort = atoi(map_at(_submapvalue, string("centerServerPort"))->_str.c_str());
 		gSelfID = atoi(map_at(_submapvalue, string("id"))->_str.c_str());
-        /*TODO::读取配置*/
-        gIsPrimary = true;
+        gIsPrimary = atoi(map_at(_submapvalue, string("isPrimary"))->_str.c_str()) == 1;
         map<string, msvalue_s*>& etcdConfig = *map_at(_submapvalue, string("etcdservers"))->_map;
         for (auto& v : etcdConfig)
         {
@@ -96,31 +75,29 @@ int main()
 		errorExit(e.what());
 	}
 
-	gLua = luaL_newstate();
-	luaopen_base(gLua);
-	luaL_openlibs(gLua);
-
 	gDailyLogger = std::make_shared<WrapLog>();
 	gServer = std::make_shared<WrapServer>();
 	gTimerMgr = std::make_shared<TimerMgr>();
-	gSSDBProxyClient = std::make_shared<SSDBMultiClient>();
+	gSSDBClient = std::make_shared<SSDBMultiClient>();
 	gClientMirrorMgr = std::make_shared<ClientMirrorMgr>();
 	
 	ox_dir_create("logs");
-	ox_dir_create("logs/SoloServer");
-	gDailyLogger->setFile("", "logs/SoloServer/daily");
+	ox_dir_create("logs/LogicServer");
+    std::string logDir = std::string("logs/LogicServer/") + std::to_string(gSelfID);
+    ox_dir_create(logDir.c_str());
+    gDailyLogger->setFile("", (logDir + "/daily").c_str());
 
 	gDailyLogger->info("server start!");
 
 	EventLoop mainLoop;
 
-	gSSDBProxyClient->startNetThread([&](){
+	gSSDBClient->startNetThread([&](){
 		mainLoop.wakeup();
 	});
 
-	gDailyLogger->info("try connect ssdb proxy server: {}:{}", ssdbProxyIP, ssdbProxyPort);
+	gDailyLogger->info("try connect ssdb server: {}:{}", ssdbServerIP, ssdbServerPort);
     /*链接ssdb 路由服务器*/
-	gSSDBProxyClient->asyncConnectionProxy(ssdbProxyIP.c_str(), ssdbProxyPort, 5000, true);
+	gSSDBClient->asyncConnection(ssdbServerIP.c_str(), ssdbServerPort, 5000, true);
 
 	gServer->startWorkThread(1, [&](EventLoop&)
 	{
@@ -128,9 +105,9 @@ int main()
 	});
 
 	{
-		gDailyLogger->info("try connect center server: {}:{}", centerServerIP, centerServerPort);
+		gDailyLogger->info("try connect center server: {}:{}", gCenterServerIP, gCenterServerPort);
 		/*链接中心服务器*/
-        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger, gServer, centerServerIP, centerServerPort);
+        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger, gServer, gCenterServerIP, gCenterServerPort);
 	}
 
     initLogicServerExt();
@@ -200,8 +177,8 @@ int main()
 
 		procNet2LogicMsgList();
 
-		gSSDBProxyClient->pull();
-		gSSDBProxyClient->forceSyncRequest();
+		gSSDBClient->pull();
+		gSSDBClient->forceSyncRequest();
 	}
 
 	return 0;

@@ -1,15 +1,9 @@
 #include <set>
 
 #include "WrapTCPService.h"
-#include "NetSession.h"
-#include "socketlibfunction.h"
-#include "platform.h"
-#include "packet.h"
 #include "timer.h"
 #include "ox_file.h"
 #include "WrapLog.h"
-#include "ClientSession.h"
-#include "LogicServerSession.h"
 #include "lua_readtable.h"
 #include "HelpFunction.h"
 #include "ConnectionServerPassword.h"
@@ -17,8 +11,8 @@
 #include "etcdclient.h"
 #include "WrapJsonValue.h"
 #include "app_status.h"
-
-WrapLog::PTR gDailyLogger;
+#include "ClientSession.h"
+#include "LogicServerSession.h"
 
 /*  所有的primary server和slave server链接(key为内部游戏服务器运行时所分配的逻辑ID   */
 unordered_map<int, BaseNetSession::PTR>     gAllPrimaryServers;
@@ -26,6 +20,7 @@ unordered_map<int, BaseNetSession::PTR>     gAllSlaveServers;
 
 WrapServer::PTR                         gServer;
 TimerMgr::PTR                           gTimerMgr;
+WrapLog::PTR gDailyLogger;
 
 string selfIP;
 int gSelfID = 0;

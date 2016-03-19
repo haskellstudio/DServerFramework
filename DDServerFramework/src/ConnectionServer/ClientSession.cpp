@@ -50,7 +50,7 @@ void ConnectionClientSession::onClose()
     }
 }
 
-//  断线重连由客户端发送user msg来做，然后再经由solo server反向让connection server来操作
+//  断线重连由客户端发送user msg来做，然后再经由logic server反向让connection server来操作
 
 ///*  客户端请求断线重连(新启动的一个链接，请求重连之前的某一个clientObject    */
 //void ConnectionclientSession::reConnect(const char* packerBuffer, PACKET_OP_TYPE packetLen)

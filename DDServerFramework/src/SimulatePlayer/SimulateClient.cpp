@@ -59,11 +59,10 @@ public:
         cout << "on fake client dis connect" << endl;
     }
 
-
     template<typename... Args>
     void    call(const char* funname, const Args&... args)
     {
-        sendSoloRpcString(gRPC.call(funname, args...));
+        sendLogicRpcString(gRPC.call(funname, args...));
     }
 
     template<typename... Args>
@@ -72,7 +71,7 @@ public:
         sendGameServerRpcString(gRPC.call(funname, args...));
     }
 
-    void            sendSoloRpcString(const string& value)
+    void            sendLogicRpcString(const string& value)
     {
         FixedPacket<1024 * 16> packet(1);
         packet.writeBinary(value);

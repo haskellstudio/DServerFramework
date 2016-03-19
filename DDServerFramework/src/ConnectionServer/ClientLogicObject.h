@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <memory>
 
+#include "packet.h"
 #include "timer.h"
 #include "NetSession.h"
 

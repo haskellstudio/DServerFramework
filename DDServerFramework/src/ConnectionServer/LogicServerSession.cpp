@@ -2,14 +2,12 @@
 #include <set>
 using namespace std;
 
-#include "socketlibtypes.h"
 #include "ConnectionServerSendOP.h"
 #include "ConnectionServerRecvOP.h"
+#include "ClientSession.h"
 #include "WrapLog.h"
 #include "packet.h"
-#include "ClientSession.h"
 #include "ClientLogicObject.h"
-#include "NetThreadSession.h"
 #include "ConnectionServerPassword.h"
 
 #include "LogicServerSession.h"

@@ -12,9 +12,8 @@ using namespace std;
 #include "WrapLog.h"
 
 #include "UsePacketExtNetSession.h"
-#include "ConnectionServerConnection.h"
 #include "ConnectionServerPassword.h"
-#include "NetSession.h"
+#include "ConnectionServerConnection.h"
 
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
 extern WrapServer::PTR   gServer;

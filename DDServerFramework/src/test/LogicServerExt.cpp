@@ -11,7 +11,7 @@
 void initLogicServerExt()
 {
     /*处理客户端发送的消息*/
-    ClientMirror::registerUserMsgHandle(CLIENT_OP_TEST, [](ClientMirror&, ReadPacket& rp){
+    ClientMirror::registerUserMsgHandle(CLIENT_OP_TEST, [](ClientMirror::PTR&, ReadPacket& rp){
         std::string a = rp.readBinary();
         if (gLogicCenterServerClient != nullptr)
         {

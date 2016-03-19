@@ -1,27 +1,24 @@
 #include <iostream>
 using namespace std;
 
-#include "socketlibfunction.h"
 #include "packet.h"
 #include "CenterServerRecvOP.h"
 #include "CenterServerSendOP.h"
-#include "NetThreadSession.h"
 #include "ConnectionServerConnection.h"
 #include "ClientMirror.h"
 #include "ConnectionServerRecvOP.h"
 #include "WrapLog.h"
-#include "UsePacketExtNetSession.h"
 #include "AutoConnectionServer.h"
-#include "CenterServerConnection.h"
 #include "CenterServerPassword.h"
+#include "CenterServerConnection.h"
 
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
 extern TimerMgr::PTR   gTimerMgr;
 extern int gSelfID;
 extern WrapServer::PTR   gServer;
 extern WrapLog::PTR  gDailyLogger;
-extern string centerServerIP;
-extern int centerServerPort;
+string gCenterServerIP;
+int gCenterServerPort;
 
 CenterServerConnection* gLogicCenterServerClient = nullptr;
 dodo::rpc<dodo::MsgpackProtocol>    gCenterServerConnectioinRpc;
@@ -39,7 +36,7 @@ CenterServerConnection::~CenterServerConnection()
         mPingTimer.lock()->Cancel();
     }
 
-    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, centerServerIP, centerServerPort);
+    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, gCenterServerIP, gCenterServerPort);
 }
 
 void CenterServerConnection::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle)

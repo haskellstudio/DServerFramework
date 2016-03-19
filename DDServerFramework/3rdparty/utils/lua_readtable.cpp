@@ -84,6 +84,12 @@ void readluatable(lua_State* l, msvalue_s* outmap)
             v = std::to_string(v_value);
             (*outmap->_map)[k] = new msvalue_s(v);
         }
+        else if (v_type == LUA_TBOOLEAN)
+        {
+            lua_Number v_value = lua_toboolean(l, -1);
+            v = std::to_string(v_value);
+            (*outmap->_map)[k] = new msvalue_s(v);
+        }
         else
         {
             assert(false);

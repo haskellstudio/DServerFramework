@@ -1,21 +1,17 @@
-#include "socketlibfunction.h"
+#include "app_status.h"
 #include "WrapTCPService.h"
-#include "NetSession.h"
-#include "NetThreadSession.h"
-#include "CenterServerSession.h"
 #include "ox_file.h"
 #include "WrapLog.h"
 #include "timer.h"
 #include "SSDBMultiClient.h"
 #include "lua_readtable.h"
-#include "UsePacketExtNetSession.h"
 #include "HelpFunction.h"
 #include "AutoConnectionServer.h"
 #include "CenterServerPassword.h"
-#include "app_status.h"
+#include "CenterServerSession.h"
 
 WrapLog::PTR            gDailyLogger;
-SSDBMultiClient::PTR    gSSDBProcyClient;
+SSDBMultiClient::PTR    gSSDBClient;
 WrapServer::PTR         gServer;
 TimerMgr::PTR           logicTimerMgr;
 
@@ -24,8 +20,8 @@ extern void initCenterServerExt();
 int main()
 {
     int listenPort;
-    string ssdbProxyIP;
-    int ssdbProxyPort;
+    string ssdbServerIP;
+    int ssdbServerPort;
     
     try
     {
@@ -48,8 +44,8 @@ int main()
         map<string, msvalue_s*>& _submapvalue = *config._map;
 
         listenPort = atoi(map_at(_submapvalue, string("listenPort"))->_str.c_str());
-        ssdbProxyIP = map_at(_submapvalue, string("ssdbProxyIP"))->_str;
-        ssdbProxyPort = atoi(map_at(_submapvalue, string("ssdbProxyPort"))->_str.c_str());
+        ssdbServerIP = map_at(_submapvalue, string("ssdbServerIP"))->_str;
+        ssdbServerPort = atoi(map_at(_submapvalue, string("ssdbServerPort"))->_str.c_str());
         lua_close(L);
         L = nullptr;
     }
@@ -61,7 +57,7 @@ int main()
     logicTimerMgr = std::make_shared<TimerMgr>();
     gDailyLogger = std::make_shared<WrapLog>();
     gServer = std::make_shared<WrapServer>();
-    gSSDBProcyClient = std::make_shared<SSDBMultiClient>();
+    gSSDBClient = std::make_shared<SSDBMultiClient>();
 
     spdlog::set_level(spdlog::level::info);
 
@@ -71,12 +67,12 @@ int main()
 
     EventLoop mainLoop;
 
-    gSSDBProcyClient->startNetThread([&](){
+    gSSDBClient->startNetThread([&](){
         mainLoop.wakeup();
     });
 
-    gDailyLogger->info("try connect ssdb proxy server:{}:{}", ssdbProxyIP, ssdbProxyPort);
-    gSSDBProcyClient->asyncConnectionProxy(ssdbProxyIP.c_str(), ssdbProxyPort, 5000, true);
+    gDailyLogger->info("try connect ssdb server:{}:{}", ssdbServerIP, ssdbServerPort);
+    gSSDBClient->asyncConnection(ssdbServerIP.c_str(), ssdbServerPort, 5000, true);
 
     /*开启内部监听服务器，处理逻辑服务器的链接*/
     gDailyLogger->info("listen logic server port:{}", listenPort);
@@ -113,12 +109,12 @@ int main()
         
         procNet2LogicMsgList();
 
-        gSSDBProcyClient->pull();
-        gSSDBProcyClient->forceSyncRequest();
+        gSSDBClient->pull();
+        gSSDBClient->forceSyncRequest();
     }
 
     logicServerListen.closeListenThread();
-    gSSDBProcyClient->stopService();
+    gSSDBClient->stopService();
 
     return 0;
 }
