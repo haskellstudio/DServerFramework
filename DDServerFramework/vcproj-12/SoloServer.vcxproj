@@ -127,8 +127,6 @@
     <ClCompile Include="..\3rdparty\net\socketlibfunction.c" />
     <ClCompile Include="..\3rdparty\net\TCPService.cpp" />
     <ClCompile Include="..\3rdparty\net\WrapTCPService.cpp" />
-    <ClCompile Include="..\3rdparty\plist\plist.cpp" />
-    <ClCompile Include="..\3rdparty\pugixml\pugixml.cpp" />
     <ClCompile Include="..\3rdparty\ssdb\RedisSSDBCovert.cpp" />
     <ClCompile Include="..\3rdparty\ssdb\SSDBMultiClient.cpp" />
     <ClCompile Include="..\3rdparty\ssdb\SSDBProtocol.cpp" />
@@ -191,9 +189,6 @@
     <ClInclude Include="..\3rdparty\net\TCPService.h" />
     <ClInclude Include="..\3rdparty\net\typeids.h" />
     <ClInclude Include="..\3rdparty\net\WrapTCPService.h" />
-    <ClInclude Include="..\3rdparty\plist\plist.h" />
-    <ClInclude Include="..\3rdparty\pugixml\pugiconfig.hpp" />
-    <ClInclude Include="..\3rdparty\pugixml\pugixml.hpp" />
     <ClInclude Include="..\3rdparty\ssdb\RedisSSDBCovert.h" />
     <ClInclude Include="..\3rdparty\ssdb\SSDBMultiClient.h" />
     <ClInclude Include="..\3rdparty\ssdb\SSDBProtocol.h" />

@@ -121,6 +121,7 @@ void LogicServerSession::onLogicServerLogin(ReadPacket& rp)
         unordered_map<int, BaseNetSession::PTR>* servers = isPrimary ? &gAllPrimaryServers : &gAllSlaveServers;
         if (servers->find(id) == servers->end())
         {
+            mIsPrimary = isPrimary;
             loginResult = true;
             mID = id;
             (*servers)[mID] = shared_from_this();

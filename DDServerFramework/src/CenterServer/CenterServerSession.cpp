@@ -9,10 +9,10 @@ using namespace std;
 #include "CenterServerPassword.h"
 #include "CenterServerSession.h"
 
-unordered_map<int, CenterServerSession*>        gAllLogicServer;
-unordered_map<int, CenterServerSession*>        gAllGameServer;
+unordered_map<int, CenterServerSession::PTR>    gAllLogicServer;
 unordered_map<int, std::pair<string, int>>      gAllconnectionservers;
 dodo::rpc < dodo::MsgpackProtocol>              gCenterServerSessionRpc;
+CenterServerSession::PTR                        gCenterServerSessionRpcFromer;
 
 extern WrapLog::PTR gDailyLogger;
 
@@ -101,6 +101,7 @@ void CenterServerSession::onLogicServerRpc(ReadPacket& rp)
     size_t len = 0;
     if (rp.readBinary(msg, len))
     {
+        gCenterServerSessionRpcFromer = shared_from_this();
         gCenterServerSessionRpc.handleRpc(msg, len);
     }
 }
@@ -126,7 +127,7 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
                 sp.writeINT32(mID);
                 sendPacket(sp);
 
-                gAllLogicServer[mID] = this;
+                gAllLogicServer[mID] = shared_from_this();
             }
             else
             {

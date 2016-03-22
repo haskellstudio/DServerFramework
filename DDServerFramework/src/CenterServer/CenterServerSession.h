@@ -15,9 +15,11 @@ class ReadPacket;
 
 /*内部服务器链接中心服务器的会话*/
 
-class CenterServerSession : public BaseLogicSession
+class CenterServerSession : public BaseLogicSession, public std::enable_shared_from_this<CenterServerSession>
 {
 public:
+    typedef std::shared_ptr<CenterServerSession> PTR;
+
     CenterServerSession();
 
     typedef std::function<void(CenterServerSession&, ReadPacket& rp)>   USER_MSG_HANDLE;
@@ -65,8 +67,9 @@ public:
     static std::unordered_map<PACKET_OP_TYPE, USER_MSG_HANDLE>   sUserMsgHandles;
 };
 
-extern std::unordered_map<int, CenterServerSession*>        gAllLogicServer;
+extern std::unordered_map<int, CenterServerSession::PTR>    gAllLogicServer;
 extern std::unordered_map<int, std::pair<std::string, int>> gAllconnectionservers;
 extern dodo::rpc < dodo::MsgpackProtocol>                   gCenterServerSessionRpc;
+extern CenterServerSession::PTR                             gCenterServerSessionRpcFromer;
 
 #endif

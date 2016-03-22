@@ -28,12 +28,6 @@
     <Filter Include="ssdb">
       <UniqueIdentifier>{79918538-df65-4edc-987a-f58d8fb47c03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="pugixml">
-      <UniqueIdentifier>{a1473d74-67f7-4249-9028-bf7875a30647}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="plist">
-      <UniqueIdentifier>{7a0b1826-3318-4564-8955-6884b0ab3a9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="http">
       <UniqueIdentifier>{032537c6-b4af-40f9-a7db-e99953243101}</UniqueIdentifier>
     </Filter>
@@ -171,14 +165,8 @@
     <ClCompile Include="..\src\Common\NetThreadSession.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\pugixml\pugixml.cpp">
-      <Filter>pugixml</Filter>
-    </ClCompile>
     <ClCompile Include="..\3rdparty\base64\base64.cpp">
       <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\plist\plist.cpp">
-      <Filter>plist</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdparty\ssdb\SSDBMultiClient.cpp">
       <Filter>ssdb</Filter>
@@ -374,17 +362,8 @@
     <ClInclude Include="..\3rdparty\net\WrapTCPService.h">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\pugixml\pugiconfig.hpp">
-      <Filter>pugixml</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\pugixml\pugixml.hpp">
-      <Filter>pugixml</Filter>
-    </ClInclude>
     <ClInclude Include="..\3rdparty\base64\base64.h">
       <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\plist\plist.h">
-      <Filter>plist</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdparty\ssdb\SSDBMultiClient.h">
       <Filter>ssdb</Filter>
