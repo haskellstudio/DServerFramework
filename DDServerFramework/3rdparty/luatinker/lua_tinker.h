@@ -27,20 +27,20 @@ extern "C"
 namespace lua_tinker
 {
     // init LuaTinker
-    void	init(lua_State *L);
+    void    init(lua_State *L);
 
-    void	init_s64(lua_State *L);
-    void	init_u64(lua_State *L);
+    void    init_s64(lua_State *L);
+    void    init_u64(lua_State *L);
 
     // string-buffer excution
-    bool	dofile(lua_State *L, const char *filename);
-    void	dostring(lua_State *L, const char* buff);
-    void	dobuffer(lua_State *L, const char* buff, size_t sz);
+    bool    dofile(lua_State *L, const char *filename);
+    void    dostring(lua_State *L, const char* buff);
+    void    dobuffer(lua_State *L, const char* buff, size_t sz);
 
     // debug helpers
-    void	enum_stack(lua_State *L);
-    int		on_error(lua_State *L);
-    void	print_error(lua_State *L, const char* fmt, ...);
+    void    enum_stack(lua_State *L);
+    int     on_error(lua_State *L);
+    void    print_error(lua_State *L, const char* fmt, ...);
 
     // dynamic type extention
     struct lua_value
@@ -53,8 +53,8 @@ namespace lua_tinker
     struct table;
 
     template<bool C, typename A, typename B> struct if_ {};
-    template<typename A, typename B>		struct if_ < true, A, B > { typedef A type; };
-    template<typename A, typename B>		struct if_ < false, A, B > { typedef B type; };
+    template<typename A, typename B>        struct if_ < true, A, B > { typedef A type; };
+    template<typename A, typename B>        struct if_ < false, A, B > { typedef B type; };
 
     template<typename A>
     struct is_ptr { static const bool value = false; };
@@ -146,7 +146,7 @@ namespace lua_tinker
     {
         static T invoke(void* ptr)
         {
-            return	if_<is_ptr<T>::value
+            return  if_<is_ptr<T>::value
                 , void2ptr<typename base_type<T>::type>
                 , typename if_<is_ref<T>::value
                 , void2ref<typename base_type<T>::type>
@@ -186,7 +186,7 @@ namespace lua_tinker
     template<typename T>
     T lua2type(lua_State *L, int index)
     {
-        return	if_<is_enum<T>::value
+        return  if_<is_enum<T>::value
             , lua2enum<T>
             , lua2object<T>
         >::type::invoke(L, index);
@@ -255,58 +255,58 @@ namespace lua_tinker
 
     // read a value from lua stack 
     template<typename T>
-    T read(lua_State *L, int index)				{ return lua2type<T>(L, index); }
+    T read(lua_State *L, int index)             { return lua2type<T>(L, index); }
 
-    template<>	char*				read(lua_State *L, int index);
-    template<>	const char*			read(lua_State *L, int index);
-    template<>	char				read(lua_State *L, int index);
-    template<>	unsigned char		read(lua_State *L, int index);
-    template<>	short				read(lua_State *L, int index);
-    template<>	unsigned short		read(lua_State *L, int index);
-    template<>	long				read(lua_State *L, int index);
-    template<>	unsigned long		read(lua_State *L, int index);
-    template<>	int					read(lua_State *L, int index);
-    template<>	unsigned int		read(lua_State *L, int index);
-    template<>	float				read(lua_State *L, int index);
-    template<>	double				read(lua_State *L, int index);
-    template<>	bool				read(lua_State *L, int index);
-    template<>	void				read(lua_State *L, int index);
-    template<>	long long			read(lua_State *L, int index);
-    template<>	unsigned long long	read(lua_State *L, int index);
-    template<>	table				read(lua_State *L, int index);
-    template<>	std::string		    read(lua_State *L, int index);
+    template<>  char*               read(lua_State *L, int index);
+    template<>  const char*         read(lua_State *L, int index);
+    template<>  char                read(lua_State *L, int index);
+    template<>  unsigned char       read(lua_State *L, int index);
+    template<>  short               read(lua_State *L, int index);
+    template<>  unsigned short      read(lua_State *L, int index);
+    template<>  long                read(lua_State *L, int index);
+    template<>  unsigned long       read(lua_State *L, int index);
+    template<>  int                 read(lua_State *L, int index);
+    template<>  unsigned int        read(lua_State *L, int index);
+    template<>  float               read(lua_State *L, int index);
+    template<>  double              read(lua_State *L, int index);
+    template<>  bool                read(lua_State *L, int index);
+    template<>  void                read(lua_State *L, int index);
+    template<>  long long           read(lua_State *L, int index);
+    template<>  unsigned long long  read(lua_State *L, int index);
+    template<>  table               read(lua_State *L, int index);
+    template<>  std::string         read(lua_State *L, int index);
 
     // push a value to lua stack 
     template<typename T>
-    void push(lua_State *L, T ret)					{ type2lua<T>(L, ret); }
+    void push(lua_State *L, T ret)                  { type2lua<T>(L, ret); }
 
-    template<>	void push(lua_State *L, char ret);
-    template<>	void push(lua_State *L, unsigned char ret);
-    template<>	void push(lua_State *L, short ret);
-    template<>	void push(lua_State *L, unsigned short ret);
-    template<>	void push(lua_State *L, long ret);
-    template<>	void push(lua_State *L, unsigned long ret);
-    template<>	void push(lua_State *L, int ret);
-    template<>	void push(lua_State *L, unsigned int ret);
-    template<>	void push(lua_State *L, float ret);
-    template<>	void push(lua_State *L, double ret);
-    template<>	void push(lua_State *L, char* ret);
-    template<>	void push(lua_State *L, const char* ret);
+    template<>  void push(lua_State *L, char ret);
+    template<>  void push(lua_State *L, unsigned char ret);
+    template<>  void push(lua_State *L, short ret);
+    template<>  void push(lua_State *L, unsigned short ret);
+    template<>  void push(lua_State *L, long ret);
+    template<>  void push(lua_State *L, unsigned long ret);
+    template<>  void push(lua_State *L, int ret);
+    template<>  void push(lua_State *L, unsigned int ret);
+    template<>  void push(lua_State *L, float ret);
+    template<>  void push(lua_State *L, double ret);
+    template<>  void push(lua_State *L, char* ret);
+    template<>  void push(lua_State *L, const char* ret);
     template<>  void push(lua_State *L, std::string ret);
     template<>  void push(lua_State *L, const std::string& ret);
     template<>  void push(lua_State *L, std::string&& ret);
-    template<>	void push(lua_State *L, bool ret);
-    template<>	void push(lua_State *L, lua_value* ret);
-    template<>	void push(lua_State *L, long long ret);
-    template<>	void push(lua_State *L, unsigned long long ret);
-    template<>	void push(lua_State *L, table ret);
+    template<>  void push(lua_State *L, bool ret);
+    template<>  void push(lua_State *L, lua_value* ret);
+    template<>  void push(lua_State *L, long long ret);
+    template<>  void push(lua_State *L, unsigned long long ret);
+    template<>  void push(lua_State *L, table ret);
 
     // pop a value from lua stack
     template<typename T>
     T pop(lua_State *L) { T t = read<T>(L, -1); lua_pop(L, 1); return t; }
 
-    template<>	void	pop(lua_State *L);
-    template<>	table	pop(lua_State *L);
+    template<>  void    pop(lua_State *L);
+    template<>  table   pop(lua_State *L);
 
     static void RecursionRead(lua_State *L, int index)
     {}
@@ -382,8 +382,8 @@ namespace lua_tinker
     {
         V T::*_var;
         mem_var(V T::*val) : _var(val) {}
-        void get(lua_State *L)	{ push<if_<is_obj<V>::value, V&, V>::type>(L, read<T*>(L, 1)->*(_var)); }
-        void set(lua_State *L)	{ read<T*>(L, 1)->*(_var) = read<V>(L, 3); }
+        void get(lua_State *L)  { push<if_<is_obj<V>::value, V&, V>::type>(L, read<T*>(L, 1)->*(_var)); }
+        void set(lua_State *L)  { read<T*>(L, 1)->*(_var) = read<V>(L, 3); }
     };
 
     template<typename RVal, typename P, typename ...Args>
@@ -705,10 +705,10 @@ namespace lua_tinker
             return pop<T>(m_L);
         }
 
-        lua_State*		m_L;
-        int				m_index;
-        const void*		m_pointer;
-        int				m_ref;
+        lua_State*      m_L;
+        int             m_index;
+        const void*     m_pointer;
+        int             m_ref;
     };
 
     // Table Object Holder
@@ -732,7 +732,7 @@ namespace lua_tinker
             return m_obj->get<T>(name);
         }
 
-        table_obj*		m_obj;
+        table_obj*      m_obj;
     };
 
 } // namespace lua_tinker

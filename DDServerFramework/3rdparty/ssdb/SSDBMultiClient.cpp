@@ -629,7 +629,10 @@ void SSDBMultiClient::stopService()
     {
         mRunIOLoop = false;
         mNetService.wakeup();
-        mNetThread->join();
+        if (mNetThread->joinable())
+        {
+            mNetThread->join();
+        }
         delete mNetThread;
         mNetThread = nullptr;
     }

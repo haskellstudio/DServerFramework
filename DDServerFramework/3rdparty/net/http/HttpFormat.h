@@ -1,8 +1,8 @@
-#ifndef _HTTPREQUEST_H
+#ifndef _HTTPFORMAT_H
 #define _HTTPFORMAT_H
 
 #include <string>
-using namespace std;
+#include <map>
 
 class HttpFormat
 {
@@ -65,7 +65,7 @@ public:
         mHeadField[field] = value;
     }
 
-    string      getResult()
+    string      getResult() const
     {
         string ret;
         if(m_eProtocol == HRP_GET)
@@ -120,9 +120,9 @@ public:
     }
 private:
 
-    string                  m_url;
-    HTTPREQUEST_PROTOCOL    m_eProtocol;
-    string                  m_parameter;
+    std::string                 m_url;
+    HTTPREQUEST_PROTOCOL        m_eProtocol;
+    std::string                 m_parameter;
     std::map<string, string>    mHeadField;
 };
 

@@ -290,25 +290,25 @@ void lua_tinker::enum_stack(lua_State *L)
                 print_error(L, "\t%s", lua_typename(L, lua_type(L, i)));
                 break;
             case LUA_TBOOLEAN:
-                print_error(L, "\t%s	%s", lua_typename(L, lua_type(L, i)), lua_toboolean(L, i) ? "true" : "false");
+                print_error(L, "\t%s    %s", lua_typename(L, lua_type(L, i)), lua_toboolean(L, i) ? "true" : "false");
                 break;
             case LUA_TLIGHTUSERDATA:
-                print_error(L, "\t%s	0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+                print_error(L, "\t%s    0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
                 break;
             case LUA_TNUMBER:
-                print_error(L, "\t%s	%f", lua_typename(L, lua_type(L, i)), lua_tonumber(L, i));
+                print_error(L, "\t%s    %f", lua_typename(L, lua_type(L, i)), lua_tonumber(L, i));
                 break;
             case LUA_TSTRING:
-                print_error(L, "\t%s	%s", lua_typename(L, lua_type(L, i)), lua_tostring(L, i));
+                print_error(L, "\t%s    %s", lua_typename(L, lua_type(L, i)), lua_tostring(L, i));
                 break;
             case LUA_TTABLE:
-                print_error(L, "\t%s	0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+                print_error(L, "\t%s    0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
                 break;
             case LUA_TFUNCTION:
-                print_error(L, "\t%s()	0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+                print_error(L, "\t%s()  0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
                 break;
             case LUA_TUSERDATA:
-                print_error(L, "\t%s	0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
+                print_error(L, "\t%s    0x%08p", lua_typename(L, lua_type(L, i)), lua_topointer(L, i));
                 break;
             case LUA_TTHREAD:
                 print_error(L, "\t%s", lua_typename(L, lua_type(L, i)));

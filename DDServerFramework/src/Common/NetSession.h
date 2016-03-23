@@ -1,9 +1,7 @@
 #ifndef _NETSESSION_H
 #define _NETSESSION_H
 
-#include <iostream>
-using namespace std;
-
+#include <string>
 #include "WrapTCPService.h"
 
 /*应用服务器的网络层会话对象基类*/
@@ -22,7 +20,7 @@ public:
         mSocketID = 0;
     }
 
-    void    setSession(WrapServer::PTR server, int64_t socketID, const string& ip)
+    void    setSession(WrapServer::PTR server, int64_t socketID, const std::string& ip)
     {
         mServer = server;
         mSocketID = socketID;

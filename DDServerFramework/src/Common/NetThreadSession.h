@@ -63,6 +63,7 @@ protected:
 void pushDataMsg2LogicMsgList(BaseLogicSession::PTR, const char* data, size_t len);
 void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK& callback);
 void syncNet2LogicMsgList(EventLoop& eventLoop);
-void procNet2LogicMsgList();
+
+void procNet2LogicMsgList();    /*单线程,非线程安全*/
 
 #endif

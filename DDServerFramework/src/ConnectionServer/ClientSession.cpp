@@ -10,7 +10,6 @@ ConnectionClientSession::ConnectionClientSession()
 {
     gDailyLogger->info("ConnectionClientSession : {}, {}", getSocketID(), getIP());
     mClient = nullptr;
-    mPingCount = 0;
 }
 
 ConnectionClientSession::~ConnectionClientSession()
@@ -18,7 +17,7 @@ ConnectionClientSession::~ConnectionClientSession()
     gDailyLogger->info("~ ConnectionClientSession : {}, {}", getSocketID(), getIP());
 }
 
-ClientObject::PTR ConnectionClientSession::getClientObject()
+ClientObject::PTR& ConnectionClientSession::getClientObject()
 {
     return mClient;
 }
@@ -36,7 +35,8 @@ void ConnectionClientSession::onEnter()
 
 void ConnectionClientSession::onClose()
 {
-    /*  TODO::当此网络对象断开时，所在的逻辑客户端对象开启断线重连的等待定时器*/
+    /*  TODO::配置是否允许断线重连，但重连倒计时需要所在Primary逻辑服务器来控制  */
+    /*  当此client所属Primary服务器断开后，需要关闭它所管理的所有Client   */
     gDailyLogger->warn("client close, ip:{}, socket id :{}", getIP(), getSocketID());
     if (true)
     {
@@ -45,7 +45,7 @@ void ConnectionClientSession::onClose()
     }
     else
     {
-        mClient->startDelayWait();
+        mClient->setClosed();
         mClient->notifyDisConnect();
     }
 }

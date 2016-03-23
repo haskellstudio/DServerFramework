@@ -13,34 +13,75 @@ extern unordered_map<int, BaseNetSession::PTR>      gAllSlaveServers;
 extern unordered_map<int, BaseNetSession::PTR>      gAllPrimaryServers;
 extern TimerMgr::PTR                                gTimerMgr;
 extern WrapLog::PTR gDailyLogger;
+extern WrapServer::PTR                              gServer;
 
 unordered_map<int64_t, ClientObject::PTR>   gAllClientObject;   //所有的客户端对象,key为运行时ID
+std::mutex                                  gAllClientObjectLock;
 
 ClientObject::PTR findClientByRuntimeID(int64_t runtimeID)
 {
+    ClientObject::PTR ret = nullptr;
+
+    gAllClientObjectLock.lock();
+
     auto it = gAllClientObject.find(runtimeID);
     if (it != gAllClientObject.end())
     {
-        return it->second;
+        ret = it->second;
     }
-    else
-    {
-        return nullptr;
-    }
+    gAllClientObjectLock.unlock();
+
+    return ret;
 }
 
 void addClientByRuntimeID(ClientObject::PTR client, int64_t runtimeID)
 {
     assert(findClientByRuntimeID(runtimeID) == nullptr);
+    gAllClientObjectLock.lock();
     gAllClientObject[runtimeID] = client;
+    gAllClientObjectLock.unlock();
 
     gDailyLogger->warn("add client, runtime id :{}, current online client num:{}", runtimeID, gAllClientObject.size());
 }
 
 void eraseClientByRuntimeID(int64_t runtimeID)
 {
+    gAllClientObjectLock.lock();
     gAllClientObject.erase(runtimeID);
+    gAllClientObjectLock.unlock();
+
     gDailyLogger->warn("remove client, runtime id:{}, current online client num:{}", runtimeID, gAllClientObject.size());
+}
+
+void kickClientByRuntimeID(int64_t runtimeID)
+{
+    ClientObject::PTR p = findClientByRuntimeID(runtimeID);
+    if (p != nullptr)
+    {
+        int64_t socketID = p->getSocketID();
+        if (socketID != -1)
+        {
+            gDailyLogger->warn("kick client, runtime id: {}, socket id{}", runtimeID, socketID);
+            gServer->getService()->disConnect(socketID);
+        }
+
+        eraseClientByRuntimeID(runtimeID);
+    }
+}
+
+void kickClientOfPrimary(int primaryServerID)
+{
+    gAllClientObjectLock.lock();
+    auto copyList = gAllClientObject;
+    gAllClientObjectLock.unlock();
+
+    for (auto& v : copyList)
+    {
+        if (v.second->getPrimaryServerID() == primaryServerID)
+        {
+            kickClientByRuntimeID(v.second->getRuntimeID());
+        }
+    }
 }
 
 ClientObject::ClientObject(int64_t id)
@@ -55,8 +96,6 @@ void ClientObject::resetSocketID(int64_t id)
 {
     /*重设连接id，通常是重连后重新设置，所以加下面两个断言*/
     assert(mSocketID == -1);
-    assert(mDelayTimer.lock() == nullptr);  /*已经取消了断线重连定时器*/
-
     mSocketID = id;
 }
 
@@ -69,7 +108,6 @@ int64_t ClientObject::getSocketID() const
 ClientObject::~ClientObject()
 {
     gDailyLogger->info("~ client object : {}", mRuntimeID);
-    cancelDelayTimer();
 
     if (mRuntimeID != -1)
     {
@@ -99,29 +137,9 @@ int64_t ClientObject::getRuntimeID() const
     return mRuntimeID;
 }
 
-void ClientObject::startDelayWait()
+void ClientObject::setClosed()
 {
-    if (!isInDelayWait())
-    {
-        mSocketID = -1;
-        mDelayTimer = gTimerMgr->AddTimer(30000, [=](){
-            cout << "等待超时,删除客户端" << endl;
-            eraseClientByRuntimeID(mRuntimeID);
-        });
-    }
-}
-
-bool ClientObject::isInDelayWait()
-{
-    return mDelayTimer.lock() != nullptr;
-}
-
-void ClientObject::cancelDelayTimer()
-{
-    if (mDelayTimer.lock())
-    {
-        mDelayTimer.lock()->Cancel();
-    }
+    mSocketID = -1;
 }
 
 void ClientObject::procPacket(PACKET_OP_TYPE op, const char* packerBuffer, PACKET_OP_TYPE packetLen)
@@ -153,10 +171,15 @@ void ClientObject::procPacket(PACKET_OP_TYPE op, const char* packerBuffer, PACKE
     }
 }
 
-void ClientObject::setSlaveServerID(int32_t id)
+void ClientObject::setSlaveServerID(int id)
 {
     gDailyLogger->info("set client {} slave server id:{}", mRuntimeID, id);
     mSlaveServerID = id;
+}
+
+int ClientObject::getPrimaryServerID() const
+{
+    return mPrimaryServerID;
 }
 
 /*TODO::是否保持所在的服务器会话指针，避免每次查找*/

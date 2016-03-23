@@ -43,49 +43,59 @@ public:
 
         setColor(CONSOLE_GREEN);
         setLevel(spdlog::level::debug);
-        mIsInit = false;
+        mIsClose = false;
+    }
+
+    ~WrapLog()
+    {
+        stop();
+    }
+
+    void                            stop()
+    {
+        mIsClose = true;
+        if (mLogThread.joinable())
+        {
+            mLogThread.join();
+        }
     }
 
     void                            setFile(std::string name, std::string fileName)
     {
-        if (mIsInit)
+        if (!mLogThread.joinable())
         {
-            return;
-        }
+            mConsoleLogger = spdlog::stdout_logger_st("console");
+            mDiskLogger = spdlog::daily_logger_st("file_logger", fileName, 0, 0, true);
 
-        mIsInit = true;
-        mConsoleLogger = spdlog::stdout_logger_st("console");
-        mDiskLogger = spdlog::daily_logger_st("file_logger", fileName, 0, 0, true);
-
-        std::thread([this](){
-            while (true)
-            {
-                ThreadLog tmp;
-                mLogQueue.SyncRead(5);
-                const int maxConsole = 100;
-                try
+            mLogThread = std::thread([this](){
+                while (!mIsClose)
                 {
-                    while (mLogQueue.PopFront(&tmp))
+                    ThreadLog tmp;
+                    mLogQueue.SyncRead(5);
+                    const int maxConsole = 100;
+                    try
                     {
-                        //全部写硬盘
-
-                        outputDisk(tmp);
-
-                        if (mLogQueue.ReadListSize() < maxConsole)
+                        while (mLogQueue.PopFront(&tmp))
                         {
-                            //只有最近的maxConsole行日志写屏幕
-                            outputConcole(tmp);
+                            //全部写硬盘
+                            outputDisk(tmp);
+
+                            if (mLogQueue.ReadListSize() < maxConsole)
+                            {
+                                //只有最近的maxConsole行日志写屏幕
+                                outputConcole(tmp);
+                            }
                         }
                     }
-                }
-                catch (const spdlog::spdlog_ex& ex)
-                {
-                    _error(ex.what());
-                }
+                    catch (const spdlog::spdlog_ex& ex)
+                    {
+                        _error(ex.what());
+                    }
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));    //也即每一秒最多写10*100=400行屏幕日志
-            }
-        }).detach();    /*todo::进程关闭通知并等待线程结束*/
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));    //也即每一秒最多写10*100=400行屏幕日志
+                }
+            });
+        }
     }
 
     void    setLevel(spdlog::level::level_enum num)
@@ -114,27 +124,25 @@ public:
 private:
     template <typename... Args> void    pushLog(spdlog::level::level_enum type, const char* fmt, const Args&... args)
     {
-        mQuequLock.lock();
+        std::lock_guard<std::mutex> lck(mQuequLock);
 
         if (shouldLog(type))
         {
             try
             {
-                string&& str = fmt::format(fmt, std::forward<const Args&>(args)...);
-                mLogQueue.Push({ type, std::make_shared<string>(std::move(str)) });
+                std::string&& str = fmt::format(fmt, std::forward<const Args&>(args)...);
+                mLogQueue.Push({ type, std::make_shared<std::string>(std::move(str)) });
                 mLogQueue.ForceSyncWrite();
             }
             catch(const fmt::FormatError& e)
             {
-                string tmp = fmt;
+                std::string tmp = fmt;
                 tmp.append(" format error:");
                 tmp.append(e.what());
-                mLogQueue.Push({ spdlog::level::err, std::make_shared<string>(tmp) });
+                mLogQueue.Push({ spdlog::level::err, std::make_shared<std::string>(tmp) });
                 mLogQueue.ForceSyncWrite();
             }
         }
-
-        mQuequLock.unlock();
     }
 
     void                            _error(const char* what)
@@ -246,8 +254,9 @@ private:
 
     HANDLE                          _handle;
     ConsoleAttribute                mCurrentColor;
-    bool                            mIsInit;
     std::mutex                      mQuequLock;
+    std::thread                     mLogThread;
+    bool                            mIsClose;
 };
 
 #endif

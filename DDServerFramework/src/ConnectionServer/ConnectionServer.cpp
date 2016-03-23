@@ -19,8 +19,9 @@ unordered_map<int, BaseNetSession::PTR>     gAllPrimaryServers;
 unordered_map<int, BaseNetSession::PTR>     gAllSlaveServers;
 
 WrapServer::PTR                         gServer;
-TimerMgr::PTR                           gTimerMgr;
-WrapLog::PTR gDailyLogger;
+ListenThread::PTR                       gListenClient;
+ListenThread::PTR                       gListenLogic;
+WrapLog::PTR                            gDailyLogger;
 
 string selfIP;
 int gSelfID = 0;
@@ -33,9 +34,11 @@ int portForLogicServer;
     2：负责处理客户端和内部逻辑服务器的链接，转发客户端和内部服务器之间的通信
 */
 
-int main()
+static std::vector<std::tuple<string, int>> etcdServers;
+
+static bool readConfig()
 {
-    std::vector<std::tuple<string, int>> etcdServers;
+    bool ret = false;
 
     try
     {
@@ -68,73 +71,88 @@ int main()
         }
         lua_close(L);
         L = nullptr;
+        ret = true;
     }
     catch (const std::exception& e)
     {
         errorExit(e.what());
     }
 
-    gDailyLogger = std::make_shared<WrapLog>();
-    gTimerMgr = std::make_shared<TimerMgr>();
+    return ret;
+}
 
+static void startServer()
+{
     gServer = std::make_shared<WrapServer>();
-    /*  这里线程数为1， gTimerMgr 安全，且还有全局逻辑链接管理，1个线程是安全的*/
-    gServer->startWorkThread(1, [](EventLoop&){
-        gTimerMgr->Schedule();
+    gServer->startWorkThread(ox_getcpunum(), [](EventLoop&){
     });
 
-    ox_dir_create("logs");
-    ox_dir_create("logs/ConnectionServer");
-    gDailyLogger->setFile("", "logs/ConnectionServer/daily");
-
-    gDailyLogger->info("start port:{} for client", portForClient);
     /*开启对外客户端端口*/
-    ListenThread    clientListen;
-    clientListen.startListen(portForClient, nullptr, nullptr, [&](int fd){
-        WrapAddNetSession(gServer, fd, std::make_shared<ConnectionClientSession>(), -1, 32*1024);
+    gListenClient = std::make_shared<ListenThread>();
+    gListenClient->startListen(portForClient, nullptr, nullptr, [&](int fd){
+        WrapAddNetSession(gServer, fd, std::make_shared<ConnectionClientSession>(), -1, 32 * 1024);
     });
 
-    gDailyLogger->info("start port:{} for logic server", portForLogicServer);
     /*开启对内逻辑服务器端口*/
-    ListenThread logicServerListen;
-    logicServerListen.startListen(portForLogicServer, nullptr, nullptr, [&](int fd){
-        WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 10000, 32*1024*1024);
+    gListenLogic = std::make_shared<ListenThread>();
+    gListenLogic->startListen(portForLogicServer, nullptr, nullptr, [&](int fd){
+        WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 10000, 32 * 1024 * 1024);
     });
+}
 
-    std::map<string, string> etcdKV;
-
-    WrapJsonValue serverJson(rapidjson::kObjectType);
-    serverJson.AddMember("ID", gSelfID);
-    serverJson.AddMember("IP", selfIP);
-    serverJson.AddMember("portForClient", portForClient);
-    serverJson.AddMember("portForLogicServer", portForLogicServer);
-
-    etcdKV["value"] = serverJson.toString();
-    etcdKV["ttl"] = std::to_string(15); /*存活时间为15秒*/
-
-    while (true)
+int main()
+{
+    if (readConfig())
     {
-        if (app_kbhit())
-        {
-            string input;
-            std::getline(std::cin, input);
-            gDailyLogger->warn("console input {}", input);
+        ox_dir_create("logs");
+        ox_dir_create("logs/ConnectionServer");
 
-            if (input == "quit")
+        gDailyLogger = std::make_shared<WrapLog>();
+        gDailyLogger->setFile("", "logs/ConnectionServer/daily");
+
+        startServer();
+
+        std::map<string, string> etcdKV;
+
+        WrapJsonValue serverJson(rapidjson::kObjectType);
+        serverJson.AddMember("ID", gSelfID);
+        serverJson.AddMember("IP", selfIP);
+        serverJson.AddMember("portForClient", portForClient);
+        serverJson.AddMember("portForLogicServer", portForLogicServer);
+
+        etcdKV["value"] = serverJson.toString();
+        etcdKV["ttl"] = std::to_string(15); /*存活时间为15秒*/
+
+        while (true)
+        {
+            if (app_kbhit())
             {
-                break;
+                string input;
+                std::getline(std::cin, input);
+                gDailyLogger->warn("console input {}", input);
+
+                if (input == "quit")
+                {
+                    break;
+                }
             }
+
+            for (auto& etcd : etcdServers)
+            {
+                if (!etcdSet(std::get<0>(etcd), std::get<1>(etcd), string("ConnectionServerList/") + std::to_string(gSelfID), etcdKV, 5000).getBody().empty())
+                {
+                    break;
+                }
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(5000));   /*5s 重设一次*/
         }
 
-        for (auto& etcd : etcdServers)
-        {
-            if (!etcdSet(std::get<0>(etcd), std::get<1>(etcd), string("ConnectionServerList/") + std::to_string(gSelfID), etcdKV, 5000).getBody().empty())
-            {
-                break;
-            }
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));   /*5s 重设一次*/
+        gListenClient->closeListenThread();
+        gListenLogic->closeListenThread();
+        gServer->getService()->closeListenThread();
+        gServer->getService()->stopWorkerThread();
+        gDailyLogger->stop();
     }
 
     return 0;

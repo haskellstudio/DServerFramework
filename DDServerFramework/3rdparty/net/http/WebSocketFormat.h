@@ -7,7 +7,6 @@
 #include "../../utils/SHA1.h"
 #include "base64.h"
 
-
 #define WS_OPCODE_TEXT (0x1)
 #define WS_OPCODE_BINARY (0x2)
 

@@ -35,6 +35,7 @@ private:
 private:
     bool                checkPassword(const string& password);
     void                sendLogicServerLoginResult(bool isSuccess, const string& reason);
+
 private:
     bool                mIsPrimary;
     int                 mID;

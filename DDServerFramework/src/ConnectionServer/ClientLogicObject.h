@@ -30,17 +30,12 @@ public:
 
     int64_t             getRuntimeID() const;
 
-    /*  客户端掉线，进入延时等待   */
-    void                startDelayWait();
-    /*是否处于断线重连等待状态*/
-    bool                isInDelayWait();
-
-    /*  取消等待定时器 */
-    void                cancelDelayTimer();
+    void                setClosed();
 
     void                procPacket(PACKET_OP_TYPE op, const char* packerBuffer, PACKET_OP_TYPE packetLen);
 
-    void                setSlaveServerID(int32_t id);
+    void                setSlaveServerID(int id);
+    int                 getPrimaryServerID() const;
 
 private:
     /*TODO::是否保持所在的服务器会话指针，避免每次查找*/
@@ -48,7 +43,7 @@ private:
 
     void                sendPacketToSlaveServer(Packet& packet);
 
-    void                _sendPacketToServer(Packet& packet, unordered_map<int32_t, BaseNetSession::PTR>& servers, int32_t serverID);
+    void                _sendPacketToServer(Packet& packet, std::unordered_map<int32_t, BaseNetSession::PTR>& servers, int32_t serverID);
 
     void                claimRuntimeID();
     void                claimPrimaryServer();
@@ -62,12 +57,12 @@ private:
 
     /*由内部logic server进行设置客户端的slave server，当其存在后，客户端发送的任意消息包都转发给它*/
     int                 mSlaveServerID;         /*  临时接管客户端的logic server id */
-
-    Timer::WeakPtr      mDelayTimer;
 };
 
 ClientObject::PTR findClientByRuntimeID(int64_t runtimeID);
 void    addClientByRuntimeID(ClientObject::PTR client, int64_t runtimeID);
 void    eraseClientByRuntimeID(int64_t runtimeID);
+void    kickClientByRuntimeID(int64_t runtimeID);
+void    kickClientOfPrimary(int primaryServerID);
 
 #endif

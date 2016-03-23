@@ -81,7 +81,7 @@ int main()
         WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32*1024*1024);
     });
 
-    gServer->startWorkThread(1, [&](EventLoop& el){
+    gServer->startWorkThread(ox_getcpunum(), [&](EventLoop& el){
         syncNet2LogicMsgList(mainLoop);
     });
 
@@ -114,6 +114,7 @@ int main()
     }
 
     logicServerListen.closeListenThread();
+    gServer->getService()->stopWorkerThread();
     gSSDBClient->stopService();
 
     return 0;

@@ -37,12 +37,16 @@ void LogicServerSession::onClose()
     {
         if (mIsPrimary)
         {
+            kickClientOfPrimary(mID);
             gAllPrimaryServers.erase(mID);
         }
         else
         {
             gAllSlaveServers.erase(mID);
         }
+
+        mIsPrimary = false;
+        mID = -1;
     }
 }
 
@@ -232,16 +236,7 @@ void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
 void LogicServerSession::onKickClientByRuntimeID(ReadPacket& rp)
 {
     int64_t runtimeID = rp.readINT64();
-    ClientObject::PTR p = findClientByRuntimeID(runtimeID);
-    if (p != nullptr)
-    {
-        int64_t socketID = p->getSocketID();
-        if (socketID != -1)
-        {
-            gDailyLogger->warn("kick client, runtime id: {}, socket id{}", runtimeID, socketID);
-            gServer->getService()->disConnect(socketID);
-        }
-    }
+    kickClientByRuntimeID(runtimeID);
 }
 
 void LogicServerSession::onPing(ReadPacket& rp)

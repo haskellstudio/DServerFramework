@@ -1,4 +1,8 @@
 #include <set>
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 #include "NetSession.h"
 #include "WrapTCPService.h"
@@ -89,6 +93,13 @@ private:
         static int num = 0;
         static int starttime = GetTickCount();
         num++;
+
+        if (op == CLIENT_OP_TEST)
+        {
+            FixedPacket<1024 * 16> packet(CLIENT_OP_TEST);
+            packet.writeBinary("test");
+            sendPacket(packet.getData(), packet.getLen());
+        }
 
         if ((GetTickCount() - starttime) >= 1000)
         {
