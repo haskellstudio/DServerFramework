@@ -11,6 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\CurrentThread.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\DataSocket.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\EventLoop.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\NetSession.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\SocketLibFunction.c" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\TCPService.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\timer\timer.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\app_status.c" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\base64.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\buffer.c" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\ox_file.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\SHA1.cpp" />
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\systemlib.c" />
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\lapi.c" />
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\lauxlib.c" />
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\lbaselib.c" />
@@ -41,23 +55,32 @@
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\lvm.c" />
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\lzio.c" />
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\print.c" />
-    <ClCompile Include="..\3rdparty\luatinker\lua_tinker.cpp" />
-    <ClCompile Include="..\3rdparty\net\buffer.c" />
-    <ClCompile Include="..\3rdparty\net\currentthread.cpp" />
-    <ClCompile Include="..\3rdparty\net\datasocket.cpp" />
-    <ClCompile Include="..\3rdparty\net\eventloop.cpp" />
-    <ClCompile Include="..\3rdparty\net\socketlibfunction.c" />
-    <ClCompile Include="..\3rdparty\net\TCPService.cpp" />
-    <ClCompile Include="..\3rdparty\net\WrapTCPService.cpp" />
-    <ClCompile Include="..\3rdparty\utils\lua_readtable.cpp" />
-    <ClCompile Include="..\3rdparty\utils\systemlib.c" />
-    <ClCompile Include="..\3rdparty\utils\timer.cpp" />
-    <ClCompile Include="..\src\Common\NetSession.cpp" />
+    <ClCompile Include="..\3rdparty\lua_tinker\lua_readtable.cpp" />
+    <ClCompile Include="..\3rdparty\lua_tinker\lua_tinker.cpp" />
     <ClCompile Include="..\src\Common\NetThreadSession.cpp" />
+    <ClCompile Include="..\src\Common\UsePacketExtNetSession.cpp" />
     <ClCompile Include="..\src\Common\UsePacketSingleNetSession.cpp" />
     <ClCompile Include="..\src\SimulatePlayer\SimulateClient.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\Channel.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\CurrentThread.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\DataSocket.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\EventLoop.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\NetSession.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\Platform.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibFunction.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibTypes.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\TCPService.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\timer\timer.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\app_status.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\base64.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\buffer.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\ox_file.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\packet.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\SHA1.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\systemlib.h" />
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lapi.h" />
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lauxlib.h" />
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lcode.h" />
@@ -81,23 +104,9 @@
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lundump.h" />
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lvm.h" />
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lzio.h" />
-    <ClInclude Include="..\3rdparty\luatinker\lua_tinker.h" />
-    <ClInclude Include="..\3rdparty\net\buffer.h" />
-    <ClInclude Include="..\3rdparty\net\channel.h" />
-    <ClInclude Include="..\3rdparty\net\currentthread.h" />
-    <ClInclude Include="..\3rdparty\net\datasocket.h" />
-    <ClInclude Include="..\3rdparty\net\dllconf.h" />
-    <ClInclude Include="..\3rdparty\net\eventloop.h" />
-    <ClInclude Include="..\3rdparty\net\platform.h" />
-    <ClInclude Include="..\3rdparty\net\socketlibfunction.h" />
-    <ClInclude Include="..\3rdparty\net\socketlibtypes.h" />
-    <ClInclude Include="..\3rdparty\net\TCPService.h" />
-    <ClInclude Include="..\3rdparty\net\typeids.h" />
-    <ClInclude Include="..\3rdparty\net\WrapTCPService.h" />
-    <ClInclude Include="..\3rdparty\utils\lua_readtable.h" />
-    <ClInclude Include="..\3rdparty\utils\msgqueue.h" />
-    <ClInclude Include="..\3rdparty\utils\systemlib.h" />
-    <ClInclude Include="..\3rdparty\utils\timer.h" />
+    <ClInclude Include="..\3rdparty\lua_tinker\lua_readtable.h" />
+    <ClInclude Include="..\3rdparty\lua_tinker\lua_tinker.h" />
+    <ClInclude Include="..\src\Common\UsePacketExtNetSession.h" />
     <ClInclude Include="..\src\Common\UsePacketSingleNetSession.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -140,7 +149,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\3rdparty\net;..\3rdparty\lua-5.1.4\src;..\3rdparty\luatinker;..\3rdparty\utils;..\src\Common;..\src\Common\prototol;..\3rdparty\ssdb;..\3rdparty\rapidjson\include;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -155,7 +164,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\3rdparty\net;..\3rdparty\lua-5.1.4\src;..\3rdparty\luatinker;..\3rdparty\utils;..\src\Common;..\src\Common\prototol;..\3rdparty\ssdb;..\3rdparty\rapidjson\include;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

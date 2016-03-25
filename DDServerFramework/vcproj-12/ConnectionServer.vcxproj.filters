@@ -17,16 +17,22 @@
       <UniqueIdentifier>{008af404-da1f-4784-b961-65287bcdd963}</UniqueIdentifier>
     </Filter>
     <Filter Include="luatinker">
-      <UniqueIdentifier>{ad05fb54-9189-452f-a5ef-7abad1a06042}</UniqueIdentifier>
+      <UniqueIdentifier>{eac1cc33-2410-407d-9ed5-8069549349b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="net">
-      <UniqueIdentifier>{adfa6f14-131d-4d93-9ddc-1a0953a5eb8b}</UniqueIdentifier>
+      <UniqueIdentifier>{7142ab19-690d-4595-9e18-0fa3476fdd59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ssdb">
+      <UniqueIdentifier>{4206ce11-94d8-42a1-a04f-27831cd889d5}</UniqueIdentifier>
     </Filter>
     <Filter Include="utils">
-      <UniqueIdentifier>{da99c6f1-80b8-4aea-a923-23d4f64fe9ee}</UniqueIdentifier>
+      <UniqueIdentifier>{5d49d447-3047-4152-976f-2c4a1bf3d0e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="http">
-      <UniqueIdentifier>{3ef8fa07-6c87-42fb-9672-592917d7b030}</UniqueIdentifier>
+      <UniqueIdentifier>{c1744af7-d513-41f0-b6bb-c05664e7dcb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{5d279a42-99b7-4f31-8fca-ef21393ba976}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -120,53 +126,23 @@
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\ltablib.c">
       <Filter>lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\luatinker\lua_tinker.cpp">
-      <Filter>luatinker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\buffer.c">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\datasocket.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\eventloop.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\socketlibfunction.c">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\lua_readtable.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\systemlib.c">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\timer.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ConnectionServer\ConnectionServer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\net\currentthread.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\ox_file.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\TCPService.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\WrapTCPService.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Common\NetSession.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Common\NetThreadSession.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ConnectionServer\LogicServerSession.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConnectionServer\ClientLogicObject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConnectionServer\ClientSession.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\lua_tinker\lua_readtable.cpp">
+      <Filter>luatinker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\lua_tinker\lua_tinker.cpp">
+      <Filter>luatinker</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Common\UsePacketExtNetSession.cpp">
       <Filter>net</Filter>
@@ -174,29 +150,68 @@
     <ClCompile Include="..\src\Common\UsePacketSingleNetSession.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\SHA1.cpp">
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\CurrentThread.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\DataSocket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\EventLoop.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\NetSession.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\SocketLibFunction.c">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\TCPService.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.cpp">
+      <Filter>ssdb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.cpp">
+      <Filter>ssdb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.cpp">
+      <Filter>ssdb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\ox_file.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\net\http\http_parser.c">
-      <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\http\HttpParser.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\net\http\HttpServer.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\base64\base64.cpp">
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\app_status.c">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\utils\app_status.c">
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\buffer.c">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ConnectionServer\ClientLogicObject.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\timer\timer.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ConnectionServer\ClientSession.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\systemlib.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\http\http_parser.c">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\http\HttpParser.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\net\http\HttpServer.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\SHA1.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\base64.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Common\NetThreadSession.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,48 +284,6 @@
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lzio.h">
       <Filter>lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\luatinker\lua_tinker.h">
-      <Filter>luatinker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\buffer.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\channel.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\datasocket.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\dllconf.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\eventloop.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\platform.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\socketlibfunction.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\socketlibtypes.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\typeids.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\lua_readtable.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\msgqueue.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\systemlib.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\timer.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Common\prototol\CenterServerRecvOP.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -323,23 +296,23 @@
     <ClInclude Include="..\src\Common\prototol\ConnectionServerSendOP.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\net\currentthread.h">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Common\packet.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\ox_file.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\TCPService.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\WrapTCPService.h">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ConnectionServer\LogicServerSession.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConnectionServer\ClientLogicObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConnectionServer\ClientSession.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\lua_tinker\lua_readtable.h">
+      <Filter>luatinker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\lua_tinker\lua_tinker.h">
+      <Filter>luatinker</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Common\UsePacketExtNetSession.h">
       <Filter>net</Filter>
@@ -347,35 +320,86 @@
     <ClInclude Include="..\src\Common\UsePacketSingleNetSession.h">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\SHA1.h">
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\Channel.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\CurrentThread.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\DataSocket.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\EventLoop.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\NetSession.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\Platform.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibFunction.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibTypes.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\TCPService.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.h">
+      <Filter>ssdb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.h">
+      <Filter>ssdb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.h">
+      <Filter>ssdb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\buffer.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\net\http\http_parser.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\http\HttpFormat.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\http\HttpParser.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\http\HttpServer.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\net\http\WebSocketFormat.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\base64\base64.h">
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\ox_file.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdparty\utils\app_status.h">
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\app_status.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ConnectionServer\ClientLogicObject.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\packet.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ConnectionServer\ClientSession.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\timer\timer.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\systemlib.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\http_parser.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\HttpFormat.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\HttpParser.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\HttpServer.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\WebSocketFormat.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\SHA1.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\base64.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Common\NetThreadSession.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
