@@ -47,8 +47,6 @@ public:
 
     void            sendPacket2Client(int64_t runtimeID, Packet& realPacket);
 
-    static  void    registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle);
-
 private:
     virtual void    onEnter() final;
     virtual void    onClose() final;
@@ -61,15 +59,32 @@ private:
     void            onLogicServerLogin(ReadPacket& rp);
     void            onUserMsg(ReadPacket& rp);
 
-public:
+private:
     int             mID;
-
-    static std::unordered_map<PACKET_OP_TYPE, USER_MSG_HANDLE>   sUserMsgHandles;
 };
 
-extern std::unordered_map<int, CenterServerSession::PTR>    gAllLogicServer;
-extern std::unordered_map<int, std::pair<std::string, int>> gAllconnectionservers;
-extern dodo::rpc < dodo::MsgpackProtocol>                   gCenterServerSessionRpc;
-extern CenterServerSession::PTR                             gCenterServerSessionRpcFromer;
+class CenterServerSessionGlobalData
+{
+public:
+    static  void                        init();
+    static  void                        destroy();
+
+    static  CenterServerSession::PTR    findLogicServer(int id);
+    static  void                        removeLogicServer(int id);
+    static  void                        insertLogicServer(CenterServerSession::PTR, int id);
+
+    static  CenterServerSession::PTR&   getRpcFromer();
+    static  void                        setRpcFrommer(CenterServerSession::PTR);
+
+    static  std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>&    getCenterServerSessionRpc();
+
+    static  void                        registerUserMsgHandle(PACKET_OP_TYPE op, CenterServerSession::USER_MSG_HANDLE handle);
+    static  CenterServerSession::USER_MSG_HANDLE    findUserMsgHandle(PACKET_OP_TYPE op);
+private:
+    static  std::unordered_map<int, CenterServerSession::PTR>    sAllLogicServer;
+    static  std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>  sCenterServerSessionRpc;
+    static  CenterServerSession::PTR                             sCenterServerSessionRpcFromer;
+    static std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE> sUserMsgHandles;
+};
 
 #endif

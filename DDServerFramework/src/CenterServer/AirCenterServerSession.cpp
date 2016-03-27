@@ -17,5 +17,5 @@ static void onClientRequestCreateRoom(CenterServerSession&, ReadPacket& rp)
 
 void InitAirCenterServerSessionMsgHandle()
 {
-    CenterServerSession::registerUserMsgHandle(AIR_CENTERSERVER_SESSION_SUB_RECV_TEST, onClientRequestCreateRoom);
+    CenterServerSessionGlobalData::registerUserMsgHandle(AIR_CENTERSERVER_SESSION_SUB_RECV_TEST, onClientRequestCreateRoom);
 }

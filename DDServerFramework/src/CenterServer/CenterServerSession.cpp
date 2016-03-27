@@ -9,19 +9,29 @@ using namespace std;
 #include "CenterServerPassword.h"
 #include "CenterServerSession.h"
 
-unordered_map<int, CenterServerSession::PTR>    gAllLogicServer;
-unordered_map<int, std::pair<string, int>>      gAllconnectionservers;
-dodo::rpc < dodo::MsgpackProtocol>              gCenterServerSessionRpc;
-CenterServerSession::PTR                        gCenterServerSessionRpcFromer;
+unordered_map<int, CenterServerSession::PTR> CenterServerSessionGlobalData::sAllLogicServer;
+std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>> CenterServerSessionGlobalData::sCenterServerSessionRpc;
+CenterServerSession::PTR CenterServerSessionGlobalData::sCenterServerSessionRpcFromer;
 
 extern WrapLog::PTR gDailyLogger;
 
-std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE>   CenterServerSession::sUserMsgHandles;
+std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE>   CenterServerSessionGlobalData::sUserMsgHandles;
 
-void CenterServerSession::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle)
+void CenterServerSessionGlobalData::registerUserMsgHandle(PACKET_OP_TYPE op, CenterServerSession::USER_MSG_HANDLE handle)
 {
     assert(sUserMsgHandles.find(op) == sUserMsgHandles.end());
     sUserMsgHandles[op] = handle;
+}
+
+CenterServerSession::USER_MSG_HANDLE CenterServerSessionGlobalData::findUserMsgHandle(PACKET_OP_TYPE op)
+{
+    auto it = sUserMsgHandles.find(op);
+    if (it != sUserMsgHandles.end())
+    {
+        return (*it).second;
+    }
+
+    return nullptr;
 }
 
 CenterServerSession::CenterServerSession() : BaseLogicSession()
@@ -38,7 +48,7 @@ void CenterServerSession::onClose()
     if (mID != -1)
     {
         gDailyLogger->warn("内部服务器断开, id: {}", mID);
-        gAllLogicServer.erase(mID);
+        CenterServerSessionGlobalData::removeLogicServer(mID);
     }
 }
 
@@ -101,8 +111,8 @@ void CenterServerSession::onLogicServerRpc(ReadPacket& rp)
     size_t len = 0;
     if (rp.readBinary(msg, len))
     {
-        gCenterServerSessionRpcFromer = shared_from_this();
-        gCenterServerSessionRpc.handleRpc(msg, len);
+        CenterServerSessionGlobalData::setRpcFrommer(shared_from_this());
+        CenterServerSessionGlobalData::getCenterServerSessionRpc()->handleRpc(msg, len);
     }
 }
 
@@ -117,7 +127,7 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
 
         if (password == CenterServerPassword::getInstance().getPassword())
         {
-            if (gAllLogicServer.find(id) == gAllLogicServer.end())
+            if (CenterServerSessionGlobalData::findLogicServer(id) == nullptr)
             {
                 gDailyLogger->info("id 为:{}", id);
 
@@ -127,7 +137,7 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
                 sp.writeINT32(mID);
                 sendPacket(sp);
 
-                gAllLogicServer[mID] = shared_from_this();
+                CenterServerSessionGlobalData::insertLogicServer(shared_from_this(), mID);
             }
             else
             {
@@ -161,14 +171,63 @@ void CenterServerSession::onUserMsg(ReadPacket& rp)
         subRP.readPacketLen();
         PACKET_OP_TYPE subOP = subRP.readOP();
 
-        auto handleIT = sUserMsgHandles.find(subOP);
-        if (handleIT != sUserMsgHandles.end())
+        auto handle = CenterServerSessionGlobalData::findUserMsgHandle(subOP);
+        if (handle != nullptr)
         {
-            (*handleIT).second(*this, subRP);
+            handle(*this, subRP);
         }
         else
         {
             gDailyLogger->info("recv not register op , op :{}", getIP(), subOP);
         }
     }
+}
+
+void CenterServerSessionGlobalData::init()
+{
+    sCenterServerSessionRpc = std::make_shared<dodo::rpc < dodo::MsgpackProtocol>>();
+}
+
+void CenterServerSessionGlobalData::destroy()
+{
+    sAllLogicServer.clear();
+    sCenterServerSessionRpc = nullptr;
+    sCenterServerSessionRpcFromer = nullptr;
+    sUserMsgHandles.clear();
+}
+
+CenterServerSession::PTR CenterServerSessionGlobalData::findLogicServer(int id)
+{
+    auto it = sAllLogicServer.find(id);
+    if (it != sAllLogicServer.end())
+    {
+        return (*it).second;
+    }
+
+    return nullptr;
+}
+
+void CenterServerSessionGlobalData::removeLogicServer(int id)
+{
+    sAllLogicServer.erase(id);
+}
+
+void CenterServerSessionGlobalData::insertLogicServer(CenterServerSession::PTR logicServer, int id)
+{
+    sAllLogicServer[id] = logicServer;
+}
+
+CenterServerSession::PTR& CenterServerSessionGlobalData::getRpcFromer()
+{
+    return sCenterServerSessionRpcFromer;
+}
+
+void CenterServerSessionGlobalData::setRpcFrommer(CenterServerSession::PTR fromer)
+{
+    sCenterServerSessionRpcFromer = fromer;
+}
+
+std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>& CenterServerSessionGlobalData::getCenterServerSessionRpc()
+{
+    return sCenterServerSessionRpc;
 }

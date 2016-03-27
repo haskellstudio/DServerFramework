@@ -1,3 +1,5 @@
+#include "vld.h"
+
 #include "app_status.h"
 #include "WrapTCPService.h"
 #include "ox_file.h"
@@ -13,7 +15,7 @@
 WrapLog::PTR            gDailyLogger;
 SSDBMultiClient::PTR    gSSDBClient;
 WrapServer::PTR         gServer;
-TimerMgr::PTR           logicTimerMgr;
+TimerMgr::PTR           gLogicTimerMgr;
 
 extern void initCenterServerExt();
 
@@ -54,10 +56,11 @@ int main()
         errorExit(e.what());
     }
 
-    logicTimerMgr = std::make_shared<TimerMgr>();
+    gLogicTimerMgr = std::make_shared<TimerMgr>();
     gDailyLogger = std::make_shared<WrapLog>();
     gServer = std::make_shared<WrapServer>();
     gSSDBClient = std::make_shared<SSDBMultiClient>();
+    CenterServerSessionGlobalData::init();
 
     spdlog::set_level(spdlog::level::info);
 
@@ -65,57 +68,69 @@ int main()
     ox_dir_create("logs/CenterServer");
     gDailyLogger->setFile("", "logs/CenterServer/daily");
 
-    EventLoop mainLoop;
-
-    gSSDBClient->startNetThread([&](){
-        mainLoop.wakeup();
-    });
-
-    gDailyLogger->info("try connect ssdb server:{}:{}", ssdbServerIP, ssdbServerPort);
-    gSSDBClient->asyncConnection(ssdbServerIP.c_str(), ssdbServerPort, 5000, true);
-
-    /*开启内部监听服务器，处理逻辑服务器的链接*/
-    gDailyLogger->info("listen logic server port:{}", listenPort);
-    ListenThread    logicServerListen;
-    logicServerListen.startListen(listenPort, nullptr, nullptr, [&](int fd){
-        WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32*1024*1024);
-    });
-
-    gServer->startWorkThread(ox_getcpunum(), [&](EventLoop& el){
-        syncNet2LogicMsgList(mainLoop);
-    });
-
-    gDailyLogger->info("server start!");
-
-    initCenterServerExt();
-
-    while (true)
     {
-        if (app_kbhit())
-        {
-            string input;
-            std::getline(std::cin, input);
-            gDailyLogger->warn("console input {}", input);
+        EventLoop mainLoop;
 
-            if (input == "quit")
+        gSSDBClient->startNetThread([&](){
+            mainLoop.wakeup();
+        });
+
+        gDailyLogger->info("try connect ssdb server:{}:{}", ssdbServerIP, ssdbServerPort);
+        gSSDBClient->asyncConnection(ssdbServerIP.c_str(), ssdbServerPort, 5000, true);
+
+        /*开启内部监听服务器，处理逻辑服务器的链接*/
+        gDailyLogger->info("listen logic server port:{}", listenPort);
+        ListenThread    logicServerListen;
+        logicServerListen.startListen(listenPort, nullptr, nullptr, [&](int fd){
+            WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32 * 1024 * 1024);
+        });
+
+        gServer->startWorkThread(ox_getcpunum(), [&](EventLoop& el){
+            syncNet2LogicMsgList(mainLoop);
+        });
+
+        gDailyLogger->info("server start!");
+
+        initCenterServerExt();
+
+        while (true)
+        {
+            if (app_kbhit())
             {
-                break;
+                string input;
+                std::getline(std::cin, input);
+                gDailyLogger->warn("console input {}", input);
+
+                if (input == "quit")
+                {
+                    break;
+                }
             }
+
+            mainLoop.loop(gLogicTimerMgr->IsEmpty() ? 1 : gLogicTimerMgr->NearEndMs());
+
+            gLogicTimerMgr->Schedule();
+
+            procNet2LogicMsgList();
+
+            gSSDBClient->pull();
+            gSSDBClient->forceSyncRequest();
         }
 
-        mainLoop.loop(logicTimerMgr->IsEmpty() ? 1 : logicTimerMgr->NearEndMs());
-
-        logicTimerMgr->Schedule();
-        
-        procNet2LogicMsgList();
-
-        gSSDBClient->pull();
-        gSSDBClient->forceSyncRequest();
+        logicServerListen.closeListenThread();
     }
 
-    logicServerListen.closeListenThread();
     gServer->getService()->stopWorkerThread();
     gSSDBClient->stopService();
+    gDailyLogger->stop();
+
+    gDailyLogger = nullptr;
+    gSSDBClient = nullptr;
+    gServer = nullptr;
+    gLogicTimerMgr = nullptr;
+    CenterServerSessionGlobalData::destroy();
+
+    VLDReportLeaks();
 
     return 0;
 }
