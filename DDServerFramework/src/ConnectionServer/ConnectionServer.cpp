@@ -89,13 +89,13 @@ static void startServer()
 
     /*开启对外客户端端口*/
     gListenClient = std::make_shared<ListenThread>();
-    gListenClient->startListen(portForClient, nullptr, nullptr, [&](int fd){
+    gListenClient->startListen(false, "127.0.0.1", portForClient, nullptr, nullptr, [&](int fd){
         WrapAddNetSession(gServer, fd, std::make_shared<ConnectionClientSession>(), -1, 32 * 1024);
     });
 
     /*开启对内逻辑服务器端口*/
     gListenLogic = std::make_shared<ListenThread>();
-    gListenLogic->startListen(portForLogicServer, nullptr, nullptr, [&](int fd){
+    gListenLogic->startListen(false, "127.0.0.1", portForLogicServer, nullptr, nullptr, [&](int fd){
         WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 10000, 32 * 1024 * 1024);
     });
 }

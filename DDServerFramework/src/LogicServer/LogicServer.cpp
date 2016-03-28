@@ -56,6 +56,7 @@ int main()
 
         ssdbServerIP = map_at(_submapvalue, string("ssdbServerIP"))->_str;
         ssdbServerPort = atoi(map_at(_submapvalue, string("ssdbServerPort"))->_str.c_str());
+        gCenterServerIPIsIPV6 = atoi(map_at(_submapvalue, string("centerServerIsIPV6"))->_str.c_str()) == 1;
         gCenterServerIP = map_at(_submapvalue, string("centerServerIP"))->_str;
         gCenterServerPort = atoi(map_at(_submapvalue, string("centerServerPort"))->_str.c_str());
         gSelfID = atoi(map_at(_submapvalue, string("id"))->_str.c_str());
@@ -107,7 +108,7 @@ int main()
     {
         gDailyLogger->info("try connect center server: {}:{}", gCenterServerIP, gCenterServerPort);
         /*链接中心服务器*/
-        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger, gServer, gCenterServerIP, gCenterServerPort);
+        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger, gServer, gCenterServerIPIsIPV6, gCenterServerIP, gCenterServerPort);
     }
 
     initLogicServerExt();

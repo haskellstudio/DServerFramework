@@ -80,6 +80,7 @@ void procNet2LogicMsgList()
             }
             break;
             default:
+                assert(false);
                 break;
         }
     }

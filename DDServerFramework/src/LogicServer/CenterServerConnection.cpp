@@ -19,6 +19,7 @@ extern WrapServer::PTR   gServer;
 extern WrapLog::PTR  gDailyLogger;
 string gCenterServerIP;
 int gCenterServerPort;
+bool gCenterServerIPIsIPV6;
 
 CenterServerConnection* gLogicCenterServerClient = nullptr;
 dodo::rpc<dodo::MsgpackProtocol>    gCenterServerConnectioinRpc;
@@ -36,7 +37,7 @@ CenterServerConnection::~CenterServerConnection()
         mPingTimer.lock()->Cancel();
     }
 
-    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, gCenterServerIP, gCenterServerPort);
+    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, gCenterServerIPIsIPV6, gCenterServerIP, gCenterServerPort);
 }
 
 void CenterServerConnection::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle)

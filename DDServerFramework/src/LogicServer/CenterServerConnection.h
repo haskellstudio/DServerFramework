@@ -81,6 +81,7 @@ private:
 
 extern CenterServerConnection*              gLogicCenterServerClient;
 extern dodo::rpc<dodo::MsgpackProtocol>     gCenterServerConnectioinRpc;
+extern bool                                 gCenterServerIPIsIPV6;
 extern std::string                          gCenterServerIP;
 extern int                                  gCenterServerPort;
 
