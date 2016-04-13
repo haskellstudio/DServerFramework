@@ -32,7 +32,7 @@ template<typename T, typename TT>
 void    autoConnectServer(WrapLog::PTR log, WrapServer::PTR server, std::string ip, int port)
 {
     log->warn("start connect {}-{} : {} : {}", typeid(T).name(), typeid(TT).name(), ip, port);
-    sock fd = ox_socket_connect(ip.c_str(), port);
+    sock fd = ox_socket_connect(false, ip.c_str(), port);
     if (fd != SOCKET_ERROR)
     {
         log->warn("connect success");

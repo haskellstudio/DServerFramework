@@ -62,7 +62,7 @@ void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int>>& servers)
 
             thread([ip, port, idInEtcd](){
                 gDailyLogger->info("ready connect connection server id:{}, addr :{}:{}", idInEtcd, ip, port);
-                sock fd = ox_socket_connect(ip.c_str(), port);
+                sock fd = ox_socket_connect(false, ip.c_str(), port);
                 if (fd != SOCKET_ERROR)
                 {
                     gDailyLogger->info("connect success {}:{}", ip, port);

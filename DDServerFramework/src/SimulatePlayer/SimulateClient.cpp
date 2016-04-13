@@ -121,7 +121,7 @@ int main()
     });
 
     /*Ä£Äâ¿Í»§¶Ë*/
-    sock fd = ox_socket_connect("127.0.0.1", 29071);
+    sock fd = ox_socket_connect(false,"127.0.0.1", 29071);
     WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), 10000, 32*1024*1024);
     std::cin.get();
     return 0;

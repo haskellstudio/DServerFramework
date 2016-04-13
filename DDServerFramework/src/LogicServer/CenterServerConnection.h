@@ -47,9 +47,19 @@ public:
     void            call(const char* funname, const Args&... args)
     {
         string tmp = gCenterServerConnectioinRpc.call(funname, args...);
-        BigPacket p(CENTERSERVER_RECV_OP_RPC);
-        p.writeBinary(tmp);
-        sendPacket(p);
+        sendv(CENTERSERVER_RECV_OP_RPC, tmp);
+    }
+
+    template<typename... Args>
+    void            reply(dodo::RpcRequestInfo& info, const Args&... args)
+    {
+        if (info.getRequestID() != -1)
+        {
+            string rpcstr = gCenterServerConnectioinRpc.reply(info.getRequestID(), args...);
+            sendv(CENTERSERVER_RECV_OP_RPC, rpcstr);
+
+            info.setRequestID(-1);
+        }
     }
 
     template<typename PBType, typename... Args>

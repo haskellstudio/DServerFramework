@@ -81,7 +81,7 @@ int main()
         /*开启内部监听服务器，处理逻辑服务器的链接*/
         gDailyLogger->info("listen logic server port:{}", listenPort);
         ListenThread    logicServerListen;
-        logicServerListen.startListen(listenPort, nullptr, nullptr, [&](int fd){
+        logicServerListen.startListen(false, "127.0.0.1", listenPort, nullptr, nullptr, [&](int fd){
             WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32 * 1024 * 1024);
         });
 

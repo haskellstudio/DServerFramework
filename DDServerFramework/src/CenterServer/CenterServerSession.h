@@ -41,11 +41,35 @@ public:
     {
         BigPacket packet(op);
         packet.writev(args...);
-
         sendUserPacket(packet);
     }
 
     void            sendPacket2Client(int64_t runtimeID, Packet& realPacket);
+
+    template<typename... Args>
+    void            reply(dodo::RpcRequestInfo& info, const Args&... args)
+    {
+        if (info.getRequestID() != -1)
+        {
+            string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc().reply(info.getRequestID(), args...);
+            sendv(CENTERSERVER_SEND_OP_RPC, rpcstr);
+
+            info.setRequestID(-1);
+        }
+    }
+
+    template<typename... Args>
+    void            call(const std::string& funname, const Args&... args)
+    {
+        string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc().call(funname.c_str(), args...);
+        sendv(CENTERSERVER_SEND_OP_RPC, rpcstr);
+    }
+
+    template<typename PBType, typename... Args>
+    void            callPB(const PBType& pb, const Args&... args)
+    {
+        call(std::remove_reference<PBType>::type::descriptor()->full_name().c_str(), pb, args...);
+    }
 
 private:
     virtual void    onEnter() final;

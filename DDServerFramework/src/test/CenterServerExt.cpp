@@ -8,7 +8,7 @@ extern WrapLog::PTR gDailyLogger;
 void initCenterServerExt()
 {
     /*处理来自内部服务器的rpc请求,请求者为:gCenterServerSessionRpcFromer*/
-    CenterServerSessionGlobalData::getCenterServerSessionRpc()->def("testrpc", [](const std::string& a, int b){
+    CenterServerSessionGlobalData::getCenterServerSessionRpc()->def("testrpc", [](const std::string& a, int b, dodo::RpcRequestInfo info){
         gDailyLogger->info("rpc handle: {} - {}", a, b);
     });
 
