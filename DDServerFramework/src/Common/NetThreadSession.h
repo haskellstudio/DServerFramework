@@ -8,8 +8,6 @@
 #include "NetSession.h"
 #include "EventLoop.h"
 
-using namespace std;
-
 /*将网络层（线程）事件转换为消息，放入消息队列，提供给逻辑线程处理*/
 
 /*网络消息类型*/
@@ -30,6 +28,23 @@ public:
 
     Net2LogicMsg(BaseLogicSession::PTR session, Net2LogicMsgType msgType) : mSession(session), mMsgType(msgType)
     {}
+
+    Net2LogicMsg(Net2LogicMsg&& outher) : mSession(outher.mSession), mMsgType(outher.mMsgType), mPacket(std::move(outher.mPacket)), mSendCompleteCallback(std::move(outher.mSendCompleteCallback))
+    {
+    }
+
+    Net2LogicMsg& operator =(Net2LogicMsg&& outher)
+    {
+        if (this != &outher)
+        {
+            mSession = outher.mSession;
+            mMsgType = outher.mMsgType;
+            mPacket = std::move(outher.mPacket);
+            mSendCompleteCallback = std::move(outher.mSendCompleteCallback);
+        }
+
+        return *this;
+    }
 
     void                setData(const char* data, size_t len)
     {

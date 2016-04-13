@@ -29,10 +29,10 @@ struct MyFuck<T, void>
 };
 
 template<typename T, typename TT>
-void    autoConnectServer(WrapLog::PTR log, WrapServer::PTR server, std::string ip, int port)
+void    autoConnectServer(WrapLog::PTR log, WrapServer::PTR server, bool isIPV6, std::string ip, int port)
 {
     log->warn("start connect {}-{} : {} : {}", typeid(T).name(), typeid(TT).name(), ip, port);
-    sock fd = ox_socket_connect(false, ip.c_str(), port);
+    sock fd = ox_socket_connect(isIPV6, ip.c_str(), port);
     if (fd != SOCKET_ERROR)
     {
         log->warn("connect success");
@@ -42,14 +42,14 @@ void    autoConnectServer(WrapLog::PTR log, WrapServer::PTR server, std::string 
     {
         log->warn("connect failed, sleep {} s, will reconnect", AUTO_CONNECT_DELAY/1000);
         std::this_thread::sleep_for(std::chrono::milliseconds(AUTO_CONNECT_DELAY));
-        startConnectThread<T, TT>(log, server, ip, port);
+        startConnectThread<T, TT>(log, server, isIPV6, ip, port);
     }
 }
 
 template<typename T, typename TT>
-void    startConnectThread(WrapLog::PTR log, WrapServer::PTR server, std::string ip, int port)
+void    startConnectThread(WrapLog::PTR log, WrapServer::PTR server, bool isIPV6, std::string ip, int port)
 {
-    std::thread(autoConnectServer<T, TT>, log, server, ip, port).detach();
+    std::thread(autoConnectServer<T, TT>, log, server, isIPV6, ip, port).detach();
 }
 
 #endif

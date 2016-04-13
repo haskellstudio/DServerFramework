@@ -1,3 +1,4 @@
+#define VLD_FORCE_ENABLE
 #include "vld.h"
 
 #include "app_status.h"
@@ -21,7 +22,12 @@ extern void initCenterServerExt();
 
 int main()
 {
+    VLDEnable();
+    VLDGlobalEnable();
+
+    bool isIPV6 = false;
     int listenPort;
+    string bindIP;
     string ssdbServerIP;
     int ssdbServerPort;
     
@@ -45,7 +51,9 @@ int main()
 
         map<string, msvalue_s*>& _submapvalue = *config._map;
 
+        isIPV6 = atoi(map_at(_submapvalue, string("enableIPV6"))->_str.c_str()) == 1;
         listenPort = atoi(map_at(_submapvalue, string("listenPort"))->_str.c_str());
+        bindIP = map_at(_submapvalue, string("bindIP"))->_str;
         ssdbServerIP = map_at(_submapvalue, string("ssdbServerIP"))->_str;
         ssdbServerPort = atoi(map_at(_submapvalue, string("ssdbServerPort"))->_str.c_str());
         lua_close(L);
@@ -81,7 +89,7 @@ int main()
         /*开启内部监听服务器，处理逻辑服务器的链接*/
         gDailyLogger->info("listen logic server port:{}", listenPort);
         ListenThread    logicServerListen;
-        logicServerListen.startListen(false, "127.0.0.1", listenPort, nullptr, nullptr, [&](int fd){
+        logicServerListen.startListen(isIPV6, bindIP, listenPort, nullptr, nullptr, [&](int fd){
             WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32 * 1024 * 1024);
         });
 
