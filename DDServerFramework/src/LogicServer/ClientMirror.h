@@ -7,12 +7,12 @@
 #include <functional>
 
 #include "packet.h"
+#include "ConnectionServerConnection.h"
 
 class ReadPacket;
 class Packet;
-class ConnectionServerConnection;
 
-/*  logic server上的客户端镜像 */
+/*  logic server上的客户端网络镜像 */
 class ClientMirror : public std::enable_shared_from_this<ClientMirror>
 {
 public:
@@ -20,13 +20,10 @@ public:
     typedef std::function<void(ClientMirror::PTR)> ENTER_HANDLE;
     typedef std::function<void(ClientMirror::PTR)> DISCONNECT_HANDLE;
 
-    ClientMirror(int32_t csID, int64_t runtimeID);
+    ClientMirror(int64_t runtimeID, int csID, int64_t socketID);
     ~ClientMirror();
 
     typedef std::function<void(ClientMirror::PTR&, ReadPacket&)>   USER_MSG_HANDLE;
-
-    /*重新设置客户端在连接服务器上的session id (可断线重连成功用)*/
-    void            setSocketIDOnConnectionServer(int64_t socketID);
 
     int32_t         getConnectionServerID() const;
     int64_t         getRuntimeID() const;
@@ -57,9 +54,11 @@ private:
     void            procData(const char* buffer, size_t len);
     void            sendToConnectionServer(Packet& packet) const;
 private:
-    const int32_t   mConnectionServerID;            /*  此客户端所属连接服务器的ID   */
-    const int64_t   mRuntimeID;                     /*  此客户端在游戏运行时的ID    */
-    int64_t         mSocketIDOnConnectionServer;    /*  此客户端在所属链接服务器上的socketid   */
+    const int64_t   mRuntimeID;                         /*  此客户端在游戏运行时的ID    */
+    const int32_t   mConnectionServerID;                /*  此客户端所属连接服务器的ID   */
+    const int64_t   mSocketIDOnConnectionServer;        /*  此客户端在所属链接服务器上的socketid   */
+
+    ConnectionServerConnection::WEAK_PTR mConnectionServer;
 
 private:
     static  std::unordered_map<PACKET_OP_TYPE, USER_MSG_HANDLE> sUserMsgHandlers;       /*  用户业务逻辑消息处理函数表   */

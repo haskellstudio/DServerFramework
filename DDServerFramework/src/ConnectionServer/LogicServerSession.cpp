@@ -13,10 +13,84 @@ using namespace std;
 #include "LogicServerSession.h"
 
 extern int                                              gSelfID;
-extern WrapLog::PTR gDailyLogger;
-extern unordered_map<int, BaseNetSession::PTR>          gAllPrimaryServers;
-extern unordered_map<int, BaseNetSession::PTR>          gAllSlaveServers;
 extern WrapServer::PTR                                  gServer;
+extern WrapLog::PTR gDailyLogger;
+
+unordered_map<int, BaseNetSession::PTR>          gAllPrimaryServers;
+unordered_map<int, BaseNetSession::PTR>          gAllSlaveServers;
+
+std::mutex                                              gAllPrimaryServersLock;
+std::mutex                                              gAllSlaveServersLock;
+
+void    AddPrimaryLogicServer(int id, BaseNetSession::PTR p)
+{
+    gAllPrimaryServersLock.lock();
+    gAllPrimaryServers[id] = p;
+    gAllPrimaryServersLock.unlock();
+}
+
+BaseNetSession::PTR FindPrimaryLogicServer(int id)
+{
+    BaseNetSession::PTR tmp;
+
+    gAllPrimaryServersLock.lock();
+    tmp = gAllPrimaryServers[id];
+    gAllPrimaryServersLock.unlock();
+
+    return tmp;
+}
+
+void    RemovePrimaryLogicServer(int id)
+{
+    gAllPrimaryServersLock.lock();
+    gAllPrimaryServers.erase(id);
+    gAllPrimaryServersLock.unlock();
+}
+
+int ClaimPrimaryLogicServer()
+{
+    int ret = -1;
+    gAllPrimaryServersLock.lock();
+    int randnum = rand() % gAllPrimaryServers.size();
+    int i = 0;
+    BaseNetSession::PTR    logicServer = nullptr;
+    for (auto& v : gAllPrimaryServers)
+    {
+        if (i++ == randnum)
+        {
+            ret = v.first;
+            break;
+        }
+    }
+    gAllPrimaryServersLock.lock();
+
+    return ret;
+}
+
+void    AddSlaveLogicServer(int id, BaseNetSession::PTR p)
+{
+    gAllSlaveServersLock.lock();
+    gAllSlaveServers[id] = p;
+    gAllSlaveServersLock.unlock();
+}
+
+BaseNetSession::PTR FindSlaveLogicServer(int id)
+{
+    BaseNetSession::PTR tmp;
+
+    gAllSlaveServersLock.lock();
+    tmp = gAllSlaveServers[id];
+    gAllSlaveServersLock.unlock();
+
+    return tmp;
+}
+
+void    RemoveSlaveLogicServer(int id)
+{
+    gAllSlaveServersLock.lock();
+    gAllSlaveServers.erase(id);
+    gAllSlaveServersLock.unlock();
+}
 
 LogicServerSession::LogicServerSession()
 {

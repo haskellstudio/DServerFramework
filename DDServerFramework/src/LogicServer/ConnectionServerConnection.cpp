@@ -21,7 +21,7 @@ int gSelfID;
 bool gIsPrimary;
 extern WrapLog::PTR gDailyLogger;
 extern TimerMgr::PTR    gTimerMgr;
-unordered_map<int32_t, ConnectionServerConnection*>     gAllLogicConnectionServerClient;
+unordered_map<int32_t, ConnectionServerConnection::PTR>     gAllLogicConnectionServerClient;
 
 unordered_map<int32_t, std::tuple<string, int>> alreadyConnectingServers;
 std::mutex alreadyConnectingServersLock;
@@ -149,17 +149,6 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
 
         }
         break;
-        case CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT:
-        {
-            int64_t runtimeID = rp.readINT64();
-            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
-            if (p != nullptr)
-            {
-                /*TODO::路由给用户代码*/
-                gDailyLogger->warn("client disconnect, runtimeid:{}", runtimeID);
-            }
-        }
-        break;
         case CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID:
         {
             /*收到所链接的连接服务器的ID*/
@@ -171,7 +160,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             {
                 gDailyLogger->info("登陆链接服务器 {} 成功", mConnectionServerID);
                 assert(gAllLogicConnectionServerClient.find(mConnectionServerID) == gAllLogicConnectionServerClient.end());
-                gAllLogicConnectionServerClient[mConnectionServerID] = this;
+                gAllLogicConnectionServerClient[mConnectionServerID] = shared_from_this();
             }
             else
             {
@@ -186,8 +175,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
 
             gDailyLogger->info("recv init client {} :{}", socketID, runtimeID);
 
-            ClientMirror::PTR p = std::make_shared<ClientMirror>(mConnectionServerID, runtimeID);
-            p->setSocketIDOnConnectionServer(socketID);
+            ClientMirror::PTR p = std::make_shared<ClientMirror>(runtimeID, mConnectionServerID, socketID);
             gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
 
             auto callback = ClientMirror::getClientEnterCallback();
@@ -201,12 +189,12 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
         {
             int64_t runtimeID = rp.readINT64();
             gDailyLogger->info("recv destroy client, runtime id:{}", runtimeID);
-            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            ClientMirror::PTR client = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
             gClientMirrorMgr->DelClientByRuntimeID(runtimeID);
             auto callback = ClientMirror::getClientDisConnectCallback();
             if (callback != nullptr)
             {
-                callback(p);
+                callback(client);
             }
         }
         break;

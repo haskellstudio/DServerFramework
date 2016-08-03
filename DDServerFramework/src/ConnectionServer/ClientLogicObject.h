@@ -19,18 +19,10 @@ public:
     typedef std::weak_ptr<ClientObject> WEAK_PTR;
 
     explicit ClientObject(int64_t id);
-
-    void                resetSocketID(int64_t id);
-    int64_t             getSocketID() const;
-
     ~ClientObject();
 
-    /*通知内部服务器，此客户端网络断开*/
-    void                notifyDisConnect();
-
+    int64_t             getSocketID() const;
     int64_t             getRuntimeID() const;
-
-    void                setClosed();
 
     void                procPacket(PACKET_OP_TYPE op, const char* packerBuffer, PACKET_OP_TYPE packetLen);
 
@@ -38,12 +30,8 @@ public:
     int                 getPrimaryServerID() const;
 
 private:
-    /*TODO::是否保持所在的服务器会话指针，避免每次查找*/
     void                sendPacketToPrimaryServer(Packet& packet);
-
     void                sendPacketToSlaveServer(Packet& packet);
-
-    void                _sendPacketToServer(Packet& packet, std::unordered_map<int32_t, BaseNetSession::PTR>& servers, int32_t serverID);
 
     void                claimRuntimeID();
     void                claimPrimaryServer();
@@ -57,6 +45,9 @@ private:
 
     /*由内部logic server进行设置客户端的slave server，当其存在后，客户端发送的任意消息包都转发给它*/
     int                 mSlaveServerID;         /*  临时接管客户端的logic server id */
+
+    BaseNetSession::WEAK_PTR    mPrimaryServer;
+    BaseNetSession::WEAK_PTR    mSlaveServer;
 };
 
 ClientObject::PTR findClientByRuntimeID(int64_t runtimeID);

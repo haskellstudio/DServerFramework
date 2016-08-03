@@ -4,9 +4,10 @@
 #include "NetSession.h"
 #include "ClientLogicObject.h"
 #include "UsePacketSingleNetSession.h"
+#include "UseWebPacketSingleNetSession.h"
 
 /*  客户端链接会话(客户端网络掉线，此对象就销毁)    */
-class ConnectionClientSession : public UsePacketSingleNetSession
+class ConnectionClientSession : public UseWebPacketSingleNetSession
 {
 public:
     typedef std::shared_ptr<ConnectionClientSession> PTR;

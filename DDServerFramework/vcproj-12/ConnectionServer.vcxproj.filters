@@ -213,6 +213,9 @@
     <ClCompile Include="..\src\Common\NetThreadSession.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Common\UseWebPacketSingleNetSession.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdparty\lua-5.1.4\src\lapi.h">
@@ -399,6 +402,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Common\NetThreadSession.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Common\UseWebPacketSingleNetSession.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

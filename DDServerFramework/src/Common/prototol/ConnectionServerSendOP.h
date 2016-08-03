@@ -5,7 +5,6 @@
 enum CONNECTION_SERVER_SEND_OP
 {
     CONNECTION_SERVER_SEND_PONG,
-    CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_DISCONNECT,   /*  链接服务器通知逻辑服务器某客户端网络离线(需要等待断线重连) */
     //放入user msg 中处理 (包括ping）CONNECTION_SERVER_SEND_LOGICSERVER_CLIENT_RECONNECT,    /*  链接服务器通知逻辑服务器某客户端断线重连进来   */
     CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID,            /*  链接服务器将自身id发送给Logic服务器    */
     CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR,   /*  通知Logic服务器初始化某客户端session  */

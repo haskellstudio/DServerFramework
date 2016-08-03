@@ -132,6 +132,7 @@
     <ClCompile Include="..\src\Common\NetThreadSession.cpp" />
     <ClCompile Include="..\src\Common\UsePacketExtNetSession.cpp" />
     <ClCompile Include="..\src\Common\UsePacketSingleNetSession.cpp" />
+    <ClCompile Include="..\src\Common\UseWebPacketSingleNetSession.cpp" />
     <ClCompile Include="..\src\ConnectionServer\ClientLogicObject.cpp" />
     <ClCompile Include="..\src\ConnectionServer\ClientSession.cpp" />
     <ClCompile Include="..\src\ConnectionServer\LogicServerSession.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\src\Common\prototol\ConnectionServerSendOP.h" />
     <ClInclude Include="..\src\Common\UsePacketExtNetSession.h" />
     <ClInclude Include="..\src\Common\UsePacketSingleNetSession.h" />
+    <ClInclude Include="..\src\Common\UseWebPacketSingleNetSession.h" />
     <ClInclude Include="..\src\ConnectionServer\ClientLogicObject.h" />
     <ClInclude Include="..\src\ConnectionServer\ClientSession.h" />
     <ClInclude Include="..\src\ConnectionServer\LogicServerSession.h" />

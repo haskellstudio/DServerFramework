@@ -1,5 +1,5 @@
 #define VLD_FORCE_ENABLE
-#include "vld.h"
+//#include "vld.h"
 
 #include "app_status.h"
 #include "WrapTCPService.h"
@@ -22,8 +22,8 @@ extern void initCenterServerExt();
 
 int main()
 {
-    VLDEnable();
-    VLDGlobalEnable();
+    //VLDEnable();
+    //VLDGlobalEnable();
 
     bool isIPV6 = false;
     int listenPort;
@@ -138,7 +138,7 @@ int main()
     gLogicTimerMgr = nullptr;
     CenterServerSessionGlobalData::destroy();
 
-    VLDReportLeaks();
+    //VLDReportLeaks();
 
     return 0;
 }

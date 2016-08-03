@@ -41,5 +41,13 @@ private:
     int                 mID;
 };
 
+void    AddPrimaryLogicServer(int id, BaseNetSession::PTR);
+BaseNetSession::PTR FindPrimaryLogicServer(int id);
+void    RemovePrimaryLogicServer(int id);
+int     ClaimPrimaryLogicServer();
+
+void    AddSlaveLogicServer(int id, BaseNetSession::PTR);
+BaseNetSession::PTR FindSlaveLogicServer(int id);
+void    RemoveSlaveLogicServer(int id);
 
 #endif

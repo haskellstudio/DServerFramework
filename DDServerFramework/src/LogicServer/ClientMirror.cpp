@@ -43,9 +43,9 @@ ClientMirrorMgr::CLIENT_MIRROR_MAP& ClientMirrorMgr::getAllClientMirror()
     return mAllClientMirrorOnRuntimeID;
 }
 
-ClientMirror::ClientMirror(int32_t csID, int64_t runtimeID) : mConnectionServerID(csID), mRuntimeID(runtimeID)
+ClientMirror::ClientMirror(int64_t runtimeID, int csID, int64_t socketID) : mRuntimeID(runtimeID), mConnectionServerID(csID), mSocketIDOnConnectionServer(socketID)
 {
-    mSocketIDOnConnectionServer = -1;
+    mConnectionServer = gAllLogicConnectionServerClient[mConnectionServerID];
 }
 
 ClientMirror::~ClientMirror()
@@ -79,11 +79,6 @@ void ClientMirror::sendPacket(const char* buffer, size_t len) const
     sp.writeINT64(mSocketIDOnConnectionServer);
 
     sendToConnectionServer(sp);
-}
-
-void ClientMirror::setSocketIDOnConnectionServer(int64_t socketID)
-{
-    mSocketIDOnConnectionServer = socketID;
 }
 
 int64_t ClientMirror::getRuntimeID() const
@@ -146,7 +141,7 @@ void ClientMirror::procData(const char* buffer, size_t len)
 
 void ClientMirror::sendToConnectionServer(Packet& packet) const
 {
-    ConnectionServerConnection* cs = gAllLogicConnectionServerClient[mConnectionServerID];
+    auto cs = mConnectionServer.lock();
     if (cs != nullptr)
     {
         cs->sendPacket(packet);

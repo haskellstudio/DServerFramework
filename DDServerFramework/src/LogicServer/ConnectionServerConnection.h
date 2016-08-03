@@ -1,6 +1,7 @@
 #ifndef _CONNECTIONSERVER_CONNECTION_H
 #define _CONNECTIONSERVER_CONNECTION_H
 
+#include <memory>
 #include <unordered_map>
 #include <stdint.h>
 
@@ -10,9 +11,12 @@ class WrapServer;
 class Packet;
 
 /*链接到链接服务器*/
-class ConnectionServerConnection : public BaseLogicSession
+class ConnectionServerConnection : public BaseLogicSession, public std::enable_shared_from_this<ConnectionServerConnection>
 {
 public:
+    typedef std::shared_ptr<ConnectionServerConnection> PTR;
+    typedef std::weak_ptr<ConnectionServerConnection> WEAK_PTR;
+
     ConnectionServerConnection(int idInEtcd, int port);
     ~ConnectionServerConnection();
 
@@ -33,7 +37,7 @@ private:
     Timer::WeakPtr  mPingTimer;
 };
 
-extern std::unordered_map<int32_t, ConnectionServerConnection*> gAllLogicConnectionServerClient;
+extern std::unordered_map<int32_t, ConnectionServerConnection::PTR> gAllLogicConnectionServerClient;
 
 extern int gSelfID;
 extern bool gIsPrimary;
