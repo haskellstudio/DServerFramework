@@ -7,12 +7,14 @@ using namespace std;
 #include "WrapLog.h"
 #include "ConnectionServerSendOP.h"
 #include "LogicServerSession.h"
+#include "../../ServerConfig/ServerConfig.pb.h"
 
 #include "ClientLogicObject.h"
 
 extern TimerMgr::PTR                                gTimerMgr;
 extern WrapLog::PTR gDailyLogger;
 extern WrapServer::PTR                              gServer;
+extern ServerConfig::ConnectionServerConfig connectionServerConfig;
 
 unordered_map<int64_t, ClientObject::PTR>   gAllClientObject;   //所有的客户端对象,key为运行时ID
 std::mutex                                  gAllClientObjectLock;
@@ -200,8 +202,6 @@ union CLIENT_RUNTIME_ID
     }humman;
 };
 
-extern int  gSelfID;
-
 void ClientObject::claimRuntimeID()
 {
     if (mRuntimeID == -1)
@@ -212,7 +212,7 @@ void ClientObject::claimRuntimeID()
         incID++;
 
         CLIENT_RUNTIME_ID tmp;
-        tmp.humman.serverID = gSelfID;
+        tmp.humman.serverID = connectionServerConfig.id();
         tmp.humman.incID = incID;
         tmp.humman.time = static_cast<int32_t>(time(nullptr));
 

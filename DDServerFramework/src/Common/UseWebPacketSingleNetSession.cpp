@@ -5,7 +5,7 @@
 
 size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
 {
-    const static const char* SEC_FLAG = "Sec-WebSocket-Key: ";
+    const static char* SEC_FLAG = "Sec-WebSocket-Key: ";
     const static int SEC_LEN = sizeof("Sec-WebSocket-Key: ")-1;
 
     /*  œ»Ω‚ŒˆwebsocketŒ’ ÷    */
@@ -31,7 +31,7 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
 
     const char* parse_str = buffer;
     size_t total_proc_len = 0;
-    PACKET_LEN_TYPE left_len = len;
+    PACKET_LEN_TYPE left_len = static_cast<PACKET_LEN_TYPE>(len);
 
     while (true)
     {

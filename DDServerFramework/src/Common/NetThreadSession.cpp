@@ -39,14 +39,14 @@ void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK&
     gNet2LogicMsgList.Push(tmp);
 }
 
-void syncNet2LogicMsgList(EventLoop& eventLoop)
+void syncNet2LogicMsgList(std::shared_ptr<EventLoop> eventLoop)
 {
     gNet2LogicMsgListLock.lock();
     gNet2LogicMsgList.ForceSyncWrite();
     gNet2LogicMsgListLock.unlock();
     if (gNet2LogicMsgList.SharedListSize() > 0)
     {
-        eventLoop.wakeup();
+        eventLoop->wakeup();
     }
 }
 

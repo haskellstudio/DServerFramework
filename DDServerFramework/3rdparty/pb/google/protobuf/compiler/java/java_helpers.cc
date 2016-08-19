@@ -101,6 +101,20 @@ string FieldName(const FieldDescriptor* field) {
 
 }  // namespace
 
+void PrintGeneratedAnnotation(io::Printer* printer, char delimiter,
+                              const string& annotation_file) {
+  if (annotation_file.empty()) {
+    return;
+  }
+  string ptemplate =
+      "@javax.annotation.Generated(value=\"protoc\", comments=\"annotations:";
+  ptemplate.push_back(delimiter);
+  ptemplate.append("annotation_file");
+  ptemplate.push_back(delimiter);
+  ptemplate.append("\")\n");
+  printer->Print(ptemplate.c_str(), "annotation_file", annotation_file);
+}
+
 string UnderscoresToCamelCase(const string& input, bool cap_next_letter) {
   string result;
   // Note:  I distrust ctype.h due to locales.
@@ -306,6 +320,26 @@ JavaType GetJavaType(const FieldDescriptor* field) {
   return JAVATYPE_INT;
 }
 
+const char* PrimitiveTypeName(JavaType type) {
+  switch (type) {
+    case JAVATYPE_INT    : return "int";
+    case JAVATYPE_LONG   : return "long";
+    case JAVATYPE_FLOAT  : return "float";
+    case JAVATYPE_DOUBLE : return "double";
+    case JAVATYPE_BOOLEAN: return "boolean";
+    case JAVATYPE_STRING : return "java.lang.String";
+    case JAVATYPE_BYTES  : return "com.google.protobuf.ByteString";
+    case JAVATYPE_ENUM   : return NULL;
+    case JAVATYPE_MESSAGE: return NULL;
+
+    // No default because we want the compiler to complain if any new
+    // JavaTypes are added.
+  }
+
+  GOOGLE_LOG(FATAL) << "Can't get here.";
+  return NULL;
+}
+
 const char* BoxedPrimitiveTypeName(JavaType type) {
   switch (type) {
     case JAVATYPE_INT    : return "java.lang.Integer";
@@ -461,9 +495,9 @@ bool IsDefaultValueJavaDefault(const FieldDescriptor* field) {
       return field->default_value_float() == 0.0;
     case FieldDescriptor::CPPTYPE_BOOL:
       return field->default_value_bool() == false;
-
-    case FieldDescriptor::CPPTYPE_STRING:
     case FieldDescriptor::CPPTYPE_ENUM:
+      return field->default_value_enum()->number() == 0;
+    case FieldDescriptor::CPPTYPE_STRING:
     case FieldDescriptor::CPPTYPE_MESSAGE:
       return false;
 
@@ -473,6 +507,11 @@ bool IsDefaultValueJavaDefault(const FieldDescriptor* field) {
 
   GOOGLE_LOG(FATAL) << "Can't get here.";
   return false;
+}
+
+bool IsByteStringWithCustomDefaultValue(const FieldDescriptor* field) {
+  return GetJavaType(field) == JAVATYPE_BYTES &&
+         field->default_value_string() != "";
 }
 
 const char* bit_masks[] = {
@@ -670,8 +709,8 @@ const FieldDescriptor** SortFieldsByNumber(const Descriptor* descriptor) {
   for (int i = 0; i < descriptor->field_count(); i++) {
     fields[i] = descriptor->field(i);
   }
-  sort(fields, fields + descriptor->field_count(),
-       FieldOrderingByNumber());
+  std::sort(fields, fields + descriptor->field_count(),
+            FieldOrderingByNumber());
   return fields;
 }
 

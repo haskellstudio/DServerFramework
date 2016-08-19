@@ -34,6 +34,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{5d279a42-99b7-4f31-8fca-ef21393ba976}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{ea7ab80a-c7e0-45c5-b419-644c938304e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\ltm.c">
@@ -215,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Common\UseWebPacketSingleNetSession.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ServerConfig\ServerConfig.pb.cc">
+      <Filter>config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +412,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Common\UseWebPacketSingleNetSession.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ServerConfig\ServerConfig.pb.h">
+      <Filter>config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ enum AIR_CENTERSERVER_SESSION_SUB_RECV_OP
     AIR_CENTERSERVER_SESSION_SUB_RECV_TEST,
 };
 
-static void onClientRequestCreateRoom(CenterServerSession&, ReadPacket& rp)
+static void onClientRequestCreateRoom(CenterServerSession::PTR&, ReadPacket& rp)
 {
     
 }

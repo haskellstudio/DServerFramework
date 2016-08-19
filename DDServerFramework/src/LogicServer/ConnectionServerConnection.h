@@ -17,7 +17,7 @@ public:
     typedef std::shared_ptr<ConnectionServerConnection> PTR;
     typedef std::weak_ptr<ConnectionServerConnection> WEAK_PTR;
 
-    ConnectionServerConnection(int idInEtcd, int port);
+    ConnectionServerConnection(int idInEtcd, int port, std::string password);
     ~ConnectionServerConnection();
 
     void            sendPacket(Packet&);
@@ -34,14 +34,12 @@ private:
     int             mPort;
     int             mIDInEtcd;
     int32_t         mConnectionServerID;
+    std::string     mPassword;
     Timer::WeakPtr  mPingTimer;
 };
 
 extern std::unordered_map<int32_t, ConnectionServerConnection::PTR> gAllLogicConnectionServerClient;
 
-extern int gSelfID;
-extern bool gIsPrimary;
-
-void    tryCompareConnect(std::unordered_map<int32_t, std::tuple<std::string, int>>& servers);
+void    tryCompareConnect(std::unordered_map<int32_t, std::tuple<std::string, int, std::string>>& servers);
 
 #endif

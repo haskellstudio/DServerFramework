@@ -12,13 +12,12 @@ using namespace std;
 #include "WrapLog.h"
 
 #include "UsePacketExtNetSession.h"
-#include "ConnectionServerPassword.h"
+#include "../../ServerConfig/ServerConfig.pb.h"
 #include "ConnectionServerConnection.h"
 
+extern ServerConfig::LogicServerConfig logicServerConfig;
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
 extern WrapServer::PTR   gServer;
-int gSelfID;
-bool gIsPrimary;
 extern WrapLog::PTR gDailyLogger;
 extern TimerMgr::PTR    gTimerMgr;
 unordered_map<int32_t, ConnectionServerConnection::PTR>     gAllLogicConnectionServerClient;
@@ -49,7 +48,7 @@ void addConnectingServer(int32_t id, string& ip, int port)
     alreadyConnectingServersLock.unlock();
 }
 
-void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int>>& servers)
+void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int, string>>& servers)
 {
     alreadyConnectingServersLock.lock();
     for (auto& v : servers)
@@ -59,14 +58,15 @@ void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int>>& servers)
             int idInEtcd = v.first;
             string ip = std::get<0>(v.second);
             int port = std::get<1>(v.second);
+            string password = std::get<2>(v.second);
 
-            thread([ip, port, idInEtcd](){
+            thread([ip, port, idInEtcd, password](){
                 gDailyLogger->info("ready connect connection server id:{}, addr :{}:{}", idInEtcd, ip, port);
                 sock fd = ox_socket_connect(false, ip.c_str(), port);
                 if (fd != SOCKET_ERROR)
                 {
                     gDailyLogger->info("connect success {}:{}", ip, port);
-                    WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port)), 10000, 32 * 1024 * 1024);
+                    WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port, password)), 10000, 32 * 1024 * 1024);
                 }
                 else
                 {
@@ -78,12 +78,13 @@ void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int>>& servers)
     alreadyConnectingServersLock.unlock();
 }
 
-ConnectionServerConnection::ConnectionServerConnection(int idInEtcd, int port) : BaseLogicSession()
+ConnectionServerConnection::ConnectionServerConnection(int idInEtcd, int port, std::string password) : BaseLogicSession()
 {
     mIsSuccess = false;
     mPort = port;
     mIDInEtcd = idInEtcd;
     mConnectionServerID = -1;
+    mPassword = password;
 }
 
 ConnectionServerConnection::~ConnectionServerConnection()
@@ -104,9 +105,9 @@ void ConnectionServerConnection::onEnter()
         gDailyLogger->warn("connect connection server success ");
         /*  发送自己的ID给连接服务器 */
         TinyPacket packet(CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN);
-        packet.writeBinary(ConnectionServerPassword::getInstance().getPassword());
-        packet.writeINT32(gSelfID);
-        packet.writeBool(gIsPrimary);
+        packet.writeBinary(mPassword);
+        packet.writeINT32(logicServerConfig.id());
+        packet.writeBool(logicServerConfig.isprimary());
 
         sendPacket(packet);
 

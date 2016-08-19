@@ -22,7 +22,9 @@ public:
 
     CenterServerSession();
 
-    typedef std::function<void(CenterServerSession&, ReadPacket& rp)>   USER_MSG_HANDLE;
+    typedef std::function<void(CenterServerSession::PTR&, ReadPacket& rp)>   USER_MSG_HANDLE;
+
+    int             getID() const;
 
     void            sendPacket(Packet&);
 

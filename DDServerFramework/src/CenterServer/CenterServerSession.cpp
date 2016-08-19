@@ -6,7 +6,8 @@ using namespace std;
 #include "CenterServerRecvOP.h"
 #include "CenterServerSendOP.h"
 #include "WrapLog.h"
-#include "CenterServerPassword.h"
+#include "../../ServerConfig/ServerConfig.pb.h"
+
 #include "CenterServerSession.h"
 
 unordered_map<int, CenterServerSession::PTR> CenterServerSessionGlobalData::sAllLogicServer;
@@ -14,6 +15,7 @@ std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>> CenterServerSessionGlobalDat
 CenterServerSession::PTR CenterServerSessionGlobalData::sCenterServerSessionRpcFromer;
 
 extern WrapLog::PTR gDailyLogger;
+extern ServerConfig::CenterServerConfig centerServerConfig;
 
 std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE>   CenterServerSessionGlobalData::sUserMsgHandles;
 
@@ -86,6 +88,11 @@ void CenterServerSession::onMsg(const char* data, size_t len)
     }
 }
 
+int CenterServerSession::getID() const
+{
+    return mID;
+}
+
 void    CenterServerSession::sendPacket(Packet& packet)
 {
     send(packet.getData(), packet.getLen());
@@ -125,7 +132,7 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
         string password = rp.readBinary();
         int32_t id = rp.readINT32();
 
-        if (password == CenterServerPassword::getInstance().getPassword())
+        if (password == centerServerConfig.logicserverloginpassword())
         {
             if (CenterServerSessionGlobalData::findLogicServer(id) == nullptr)
             {
@@ -174,7 +181,7 @@ void CenterServerSession::onUserMsg(ReadPacket& rp)
         auto handle = CenterServerSessionGlobalData::findUserMsgHandle(subOP);
         if (handle != nullptr)
         {
-            handle(*this, subRP);
+            handle(shared_from_this(), subRP);
         }
         else
         {

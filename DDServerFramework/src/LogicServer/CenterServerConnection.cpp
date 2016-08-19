@@ -9,17 +9,15 @@ using namespace std;
 #include "ConnectionServerRecvOP.h"
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"
-#include "CenterServerPassword.h"
+#include "../../ServerConfig/ServerConfig.pb.h"
 #include "CenterServerConnection.h"
 
+extern ServerConfig::CenterServerConfig centerServerConfig;
+extern ServerConfig::LogicServerConfig logicServerConfig;
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
 extern TimerMgr::PTR   gTimerMgr;
-extern int gSelfID;
 extern WrapServer::PTR   gServer;
 extern WrapLog::PTR  gDailyLogger;
-string gCenterServerIP;
-int gCenterServerPort;
-bool gCenterServerIPIsIPV6;
 
 CenterServerConnection* gLogicCenterServerClient = nullptr;
 dodo::rpc<dodo::MsgpackProtocol>    gCenterServerConnectioinRpc;
@@ -37,7 +35,8 @@ CenterServerConnection::~CenterServerConnection()
         mPingTimer.lock()->Cancel();
     }
 
-    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, gCenterServerIPIsIPV6, gCenterServerIP, gCenterServerPort);
+    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
+        centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
 }
 
 void CenterServerConnection::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle)
@@ -51,8 +50,8 @@ void CenterServerConnection::onEnter()
     gDailyLogger->warn("connect to center server success!");
 
     TinyPacket sp(CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN);
-    sp.writeBinary(CenterServerPassword::getInstance().getPassword());
-    sp.writeINT32(gSelfID);
+    sp.writeBinary(centerServerConfig.logicserverloginpassword());
+    sp.writeINT32(logicServerConfig.id());
 
     sendPacket(sp);
 

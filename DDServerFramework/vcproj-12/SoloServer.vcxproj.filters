@@ -34,6 +34,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{56c66ed7-1661-4a8e-ac33-c4c9bebd4452}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{c565ac72-b15a-446e-985a-2f7fd3794e89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdparty\lua-5.1.4\src\ltm.c">
@@ -215,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Common\NetThreadSession.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ServerConfig\ServerConfig.pb.cc">
+      <Filter>config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -403,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Common\NetThreadSession.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ServerConfig\ServerConfig.pb.h">
+      <Filter>config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

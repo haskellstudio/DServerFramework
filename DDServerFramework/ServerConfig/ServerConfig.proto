@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package ServerConfig;
+
+message CenterServerConfig
+{
+	bool enableIPV6 = 1;
+	string bindIP = 2;
+	int32  listenPort = 3;
+	string logicServerLoginPassword = 4;
+}
+
+message EtcdAddr
+{
+	string ip = 1;
+	int32 port = 2;
+}
+
+message ConnectionServerConfig
+{
+    bool enableIPV6 = 1;
+	string bindIP = 2;
+	int32  portForClient = 3;
+	int32 portForLogicServer = 4;
+	int32 id = 5;
+	repeated EtcdAddr etcdservers = 6;
+	string logicServerLoginPassword = 7;
+}
+
+message  LogicServerConfig
+{
+	int32 id = 1;
+	bool isPrimary = 2;
+	repeated EtcdAddr etcdservers = 3;
+}

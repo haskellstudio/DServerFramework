@@ -2,6 +2,7 @@
 #define _NETTHREAD_SESSION_H
 
 #include <string>
+#include <memory>
 
 #include "msgqueue.h"
 #include "LogicNetSession.h"
@@ -77,7 +78,7 @@ protected:
 
 void pushDataMsg2LogicMsgList(BaseLogicSession::PTR, const char* data, size_t len);
 void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK& callback);
-void syncNet2LogicMsgList(EventLoop& eventLoop);
+void syncNet2LogicMsgList(std::shared_ptr<EventLoop> eventLoop);
 
 void procNet2LogicMsgList();    /*单线程,非线程安全*/
 

@@ -7,7 +7,7 @@
 #include "UseWebPacketSingleNetSession.h"
 
 /*  客户端链接会话(客户端网络掉线，此对象就销毁)    */
-class ConnectionClientSession : public UseWebPacketSingleNetSession
+class ConnectionClientSession : public UsePacketSingleNetSession
 {
 public:
     typedef std::shared_ptr<ConnectionClientSession> PTR;

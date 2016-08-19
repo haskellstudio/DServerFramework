@@ -1,0 +1,6 @@
+{
+    "enableIPV6":false,
+    "bindIP":"127.0.0.1",
+    "listenPort":6000,
+    "logicServerLoginPassword":"hello"
+}

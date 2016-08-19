@@ -8,13 +8,13 @@ using namespace std;
 #include "WrapLog.h"
 #include "packet.h"
 #include "ClientLogicObject.h"
-#include "ConnectionServerPassword.h"
+#include "../../ServerConfig/ServerConfig.pb.h"
 
 #include "LogicServerSession.h"
 
-extern int                                              gSelfID;
 extern WrapServer::PTR                                  gServer;
 extern WrapLog::PTR gDailyLogger;
+extern ServerConfig::ConnectionServerConfig connectionServerConfig;
 
 unordered_map<int, BaseNetSession::PTR>          gAllPrimaryServers;
 unordered_map<int, BaseNetSession::PTR>          gAllSlaveServers;
@@ -51,18 +51,21 @@ int ClaimPrimaryLogicServer()
 {
     int ret = -1;
     gAllPrimaryServersLock.lock();
-    int randnum = rand() % gAllPrimaryServers.size();
-    int i = 0;
-    BaseNetSession::PTR    logicServer = nullptr;
-    for (auto& v : gAllPrimaryServers)
+    if (!gAllPrimaryServers.empty())
     {
-        if (i++ == randnum)
+        int randnum = rand() % gAllPrimaryServers.size();
+        int i = 0;
+        BaseNetSession::PTR    logicServer = nullptr;
+        for (auto& v : gAllPrimaryServers)
         {
-            ret = v.first;
-            break;
+            if (i++ == randnum)
+            {
+                ret = v.first;
+                break;
+            }
         }
     }
-    gAllPrimaryServersLock.lock();
+    gAllPrimaryServersLock.unlock();
 
     return ret;
 }
@@ -126,13 +129,13 @@ void LogicServerSession::onClose()
 
 bool LogicServerSession::checkPassword(const string& password)
 {
-    return password == ConnectionServerPassword::getInstance().getPassword();
+    return password == connectionServerConfig.logicserverloginpassword();
 }
 
 void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const string& reason)
 {
     TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID);
-    sp.writeINT32(gSelfID);
+    sp.writeINT32(connectionServerConfig.id());
     sp.writeBool(isSuccess);
     sp.writeBinary(reason);
     sendPacket(sp.getData(), sp.getLen());
@@ -239,7 +242,7 @@ void LogicServerSession::onPacket2ClientBySocketInfo(ReadPacket& rp)
             int32_t csID = rp.readINT32();
             int64_t clientSocketID = rp.readINT64();
 
-            if (csID == gSelfID)
+            if (csID == connectionServerConfig.id())
             {
                 if (IsPrintPacketSendedLog)
                 {

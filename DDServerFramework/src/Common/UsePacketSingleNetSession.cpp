@@ -4,7 +4,7 @@ size_t UsePacketSingleNetSession::onMsg(const char* buffer, size_t len)
 {
     const char* parse_str = buffer;
     size_t total_proc_len = 0;
-    PACKET_LEN_TYPE left_len = len;
+    PACKET_LEN_TYPE left_len = static_cast<PACKET_LEN_TYPE>(len);
 
     while (true)
     {
