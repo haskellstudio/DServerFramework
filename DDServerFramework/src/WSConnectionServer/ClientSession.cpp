@@ -3,11 +3,12 @@
 #include "packet.h"
 #include "WrapLog.h"
 #include "ClientSessionMgr.h"
-#include "ConnectionServerSendOP.h"
+
 #include "WebSocketFormat.h"
 #include "LogicServerSessionMgr.h"
 
 #include "../../ServerConfig/ServerConfig.pb.h"
+#include "./proto/LogicServerWithConnectionServer.pb.h"
 
 #include "ClientSession.h"
 
@@ -59,16 +60,6 @@ void ConnectionClientSession::claimRuntimeID()
 
         mRuntimeID = tmp.id;
         ClientSessionMgr::AddClientByRuntimeID(std::static_pointer_cast<ConnectionClientSession>(shared_from_this()), mRuntimeID);
-
-        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR);
-        packet.writeINT64(getSocketID());
-        packet.writeINT64(mRuntimeID);
-
-        mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
-        if (mPrimaryServer != nullptr)
-        {
-            mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
-        }
     }
 }
 
@@ -97,6 +88,34 @@ int ConnectionClientSession::getPrimaryServerID() const
 int64_t ConnectionClientSession::getRuntimeID() const
 {
     return mRuntimeID;
+}
+
+void ConnectionClientSession::sendPBBinary(int32_t cmd, const char* data, size_t len)
+{
+    auto tmp = std::make_shared<std::string>(data, len);
+
+    getEventLoop()->pushAsyncProc([=](){
+
+        char b[8 * 1024];
+        Packet packet(b, sizeof(b), true);
+        packet.writeINT8('{');
+        packet.writeINT32(tmp->size() + 14);
+        packet.writeINT32(cmd);
+        packet.writeINT32(mSendSerialID);
+        packet.writeBuffer(tmp->c_str(), tmp->size());
+        packet.writeINT8('}');
+
+        std::string frame;
+        if (WebSocketFormat::wsFrameBuild(std::string(packet.getData(), packet.getPos()), frame))
+        {
+            sendPacket(frame.c_str(), frame.size());
+            mSendSerialID++;
+        }
+        else
+        {
+            gDailyLogger->error("wsFrameBuild failed of client runtime id :{}", mRuntimeID);
+        }
+    });
 }
 
 void ConnectionClientSession::setSlaveServerID(int id)
@@ -129,19 +148,29 @@ void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PA
         mSlaveServer = nullptr;
     }
 
-    if (mPrimaryServerID != -1)
-    {
-        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT);
-        packet.writeINT64(mRuntimeID);
-        packet.writeBinary(body, bodyLen);
+    internalAgreement::UpstreamACK upstream;
+    upstream.set_clientid(mRuntimeID);
+    upstream.set_msgid(op);
+    upstream.set_data(body, bodyLen);
 
+    const int UPSTREAM_ACK_OP = 2210821449;
+
+    if (op == 24)   /*  特定消息固定转发到玩家所属主逻辑服务器(TODO::常量和OP枚举定义) */
+    {
+        if (mPrimaryServer != nullptr)
+        {
+            mPrimaryServer->sendPB(UPSTREAM_ACK_OP, upstream);
+        }
+    }
+    else
+    {
         if (mSlaveServer != nullptr)
         {
-            mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
+            mSlaveServer->sendPB(UPSTREAM_ACK_OP, upstream);
         }
         else if (mPrimaryServer != nullptr)
         {
-            mSlaveServer->sendPacket(packet.getData(), packet.getLen());
+            mPrimaryServer->sendPB(UPSTREAM_ACK_OP, upstream);
         }
     }
 }
@@ -158,17 +187,18 @@ void ConnectionClientSession::onClose()
     {
         ClientSessionMgr::EraseClientByRuntimeID(mRuntimeID);
 
-        TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT);
-        sp.writeINT64(mRuntimeID);
-        sp.getLen();
+        internalAgreement::CloseClientACK closeAck;
+        closeAck.set_clientid(mRuntimeID);
+
+        const int CLOSE_CLIENT_ACK_OP = 1513370829;
 
         if (mPrimaryServer != nullptr)
         {
-            mPrimaryServer->sendPacket(sp.getData(), sp.getLen());
+            mPrimaryServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
         }
         if (mSlaveServer != nullptr)
         {
-            mSlaveServer->sendPacket(sp.getData(), sp.getLen());
+            mSlaveServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
         }
 
         mRuntimeID = -1;

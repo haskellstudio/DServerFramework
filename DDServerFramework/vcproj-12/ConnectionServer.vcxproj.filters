@@ -135,9 +135,6 @@
     <ClCompile Include="..\src\ConnectionServer\LogicServerSession.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ConnectionServer\ClientLogicObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ConnectionServer\ClientSession.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -216,11 +213,14 @@
     <ClCompile Include="..\src\Common\NetThreadSession.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Common\UseWebPacketSingleNetSession.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\ServerConfig\ServerConfig.pb.cc">
       <Filter>config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConnectionServer\LogicServerSessionMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConnectionServer\ClientSessionMgr.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -410,11 +410,14 @@
     <ClInclude Include="..\src\Common\NetThreadSession.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Common\UseWebPacketSingleNetSession.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\ServerConfig\ServerConfig.pb.h">
       <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConnectionServer\LogicServerSessionMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConnectionServer\ClientSessionMgr.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

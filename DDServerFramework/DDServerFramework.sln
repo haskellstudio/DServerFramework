@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogicServer", "vcproj-12\So
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimulatePlayer", "vcproj-12\SimulatePlayer.vcxproj", "{3D88B002-CE28-4A39-837C-AC95B8AACCFE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WSConnectionServer", "vcproj-12\WSConnectionServer.vcxproj", "{E1C0A031-2D17-4F49-9744-E67835149CEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -51,6 +53,14 @@ Global
 		{3D88B002-CE28-4A39-837C-AC95B8AACCFE}.Release|Win32.Build.0 = Release|Win32
 		{3D88B002-CE28-4A39-837C-AC95B8AACCFE}.Release|x64.ActiveCfg = Release|x64
 		{3D88B002-CE28-4A39-837C-AC95B8AACCFE}.Release|x64.Build.0 = Release|x64
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Debug|Win32.Build.0 = Debug|Win32
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Debug|x64.ActiveCfg = Debug|x64
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Debug|x64.Build.0 = Debug|x64
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Release|Win32.ActiveCfg = Release|Win32
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Release|Win32.Build.0 = Release|Win32
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Release|x64.ActiveCfg = Release|x64
+		{E1C0A031-2D17-4F49-9744-E67835149CEB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

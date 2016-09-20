@@ -7,93 +7,17 @@ using namespace std;
 #include "ClientSession.h"
 #include "WrapLog.h"
 #include "packet.h"
-#include "ClientLogicObject.h"
+
 #include "../../ServerConfig/ServerConfig.pb.h"
+
+#include "ClientSessionMgr.h"
+#include "LogicServerSessionMgr.h"
 
 #include "LogicServerSession.h"
 
-extern WrapServer::PTR                                  gServer;
-extern WrapLog::PTR gDailyLogger;
+extern WrapServer::PTR                      gServer;
+extern WrapLog::PTR                         gDailyLogger;
 extern ServerConfig::ConnectionServerConfig connectionServerConfig;
-
-unordered_map<int, BaseNetSession::PTR>          gAllPrimaryServers;
-unordered_map<int, BaseNetSession::PTR>          gAllSlaveServers;
-
-std::mutex                                              gAllPrimaryServersLock;
-std::mutex                                              gAllSlaveServersLock;
-
-void    AddPrimaryLogicServer(int id, BaseNetSession::PTR p)
-{
-    gAllPrimaryServersLock.lock();
-    gAllPrimaryServers[id] = p;
-    gAllPrimaryServersLock.unlock();
-}
-
-BaseNetSession::PTR FindPrimaryLogicServer(int id)
-{
-    BaseNetSession::PTR tmp;
-
-    gAllPrimaryServersLock.lock();
-    tmp = gAllPrimaryServers[id];
-    gAllPrimaryServersLock.unlock();
-
-    return tmp;
-}
-
-void    RemovePrimaryLogicServer(int id)
-{
-    gAllPrimaryServersLock.lock();
-    gAllPrimaryServers.erase(id);
-    gAllPrimaryServersLock.unlock();
-}
-
-int ClaimPrimaryLogicServer()
-{
-    int ret = -1;
-    gAllPrimaryServersLock.lock();
-    if (!gAllPrimaryServers.empty())
-    {
-        int randnum = rand() % gAllPrimaryServers.size();
-        int i = 0;
-        BaseNetSession::PTR    logicServer = nullptr;
-        for (auto& v : gAllPrimaryServers)
-        {
-            if (i++ == randnum)
-            {
-                ret = v.first;
-                break;
-            }
-        }
-    }
-    gAllPrimaryServersLock.unlock();
-
-    return ret;
-}
-
-void    AddSlaveLogicServer(int id, BaseNetSession::PTR p)
-{
-    gAllSlaveServersLock.lock();
-    gAllSlaveServers[id] = p;
-    gAllSlaveServersLock.unlock();
-}
-
-BaseNetSession::PTR FindSlaveLogicServer(int id)
-{
-    BaseNetSession::PTR tmp;
-
-    gAllSlaveServersLock.lock();
-    tmp = gAllSlaveServers[id];
-    gAllSlaveServersLock.unlock();
-
-    return tmp;
-}
-
-void    RemoveSlaveLogicServer(int id)
-{
-    gAllSlaveServersLock.lock();
-    gAllSlaveServers.erase(id);
-    gAllSlaveServersLock.unlock();
-}
 
 LogicServerSession::LogicServerSession()
 {
@@ -114,12 +38,12 @@ void LogicServerSession::onClose()
     {
         if (mIsPrimary)
         {
-            kickClientOfPrimary(mID);
-            gAllPrimaryServers.erase(mID);
+            ClientSessionMgr::KickClientOfPrimary(mID);
+            LogicServerSessionMgr::RemovePrimaryLogicServer(mID);
         }
         else
         {
-            gAllSlaveServers.erase(mID);
+            LogicServerSessionMgr::RemoveSlaveLogicServer(mID);
         }
 
         mIsPrimary = false;
@@ -127,12 +51,12 @@ void LogicServerSession::onClose()
     }
 }
 
-bool LogicServerSession::checkPassword(const string& password)
+bool LogicServerSession::checkPassword(const std::string& password)
 {
     return password == connectionServerConfig.logicserverloginpassword();
 }
 
-void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const string& reason)
+void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const std::string& reason)
 {
     TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID);
     sp.writeINT32(connectionServerConfig.id());
@@ -148,64 +72,81 @@ void LogicServerSession::procPacket(PACKET_OP_TYPE op, const char* body, PACKET_
     ReadPacket rp(body, bodyLen);
     switch (op)
     {
-        case CONNECTION_SERVER_RECV_PING:
-        {
-            onPing(rp);
-        }
-        break;
-        case CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN:
-        {
-            onLogicServerLogin(rp);
-        }
-        break;
-        case CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO:
-        {
-            onPacket2ClientBySocketInfo(rp);
-        }
-        break;
-        case CONNECTION_SERVER_RECV_PACKET2CLIENT_BYRUNTIMEID:
-        {
-            onPacket2ClientByRuntimeID(rp);
-        }
-        break;
-        case CONNECTION_SERVER_RECV_IS_SETCLIENT_SLAVEID:
-        {
-            onSlaveServerIsSetClient(rp);
-        }
-        break;
-        case CONNECTION_SERVER_RECV_KICKCLIENT_BYRUNTIMEID:
-        {
-            onKickClientByRuntimeID(rp);
-        }
-        break;
-        default:
-        {
-            assert(false);
-        }
-        break;
+    case CONNECTION_SERVER_RECV_PING:
+    {
+        onPing(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_LOGICSERVER_LOGIN:
+    {
+        onLogicServerLogin(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_PACKET2CLIENT_BYSOCKINFO:
+    {
+        onPacket2ClientBySocketInfo(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_PACKET2CLIENT_BYRUNTIMEID:
+    {
+        onPacket2ClientByRuntimeID(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_IS_SETCLIENT_SLAVEID:
+    {
+        onSlaveServerIsSetClient(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_KICKCLIENT_BYRUNTIMEID:
+    {
+        onKickClientByRuntimeID(rp);
+    }
+    break;
+    default:
+    {
+        assert(false);
+    }
+    break;
     }
 }
 
 void LogicServerSession::onLogicServerLogin(ReadPacket& rp)
 {
     std::string password = rp.readBinary();
-    int id  = rp.readINT32();
+    int id = rp.readINT32();
     bool isPrimary = rp.readBool();
 
-    gDailyLogger->info("收到逻辑服务器登陆, ID:{},密码:{}", id, password);
+    gDailyLogger->info("收到逻辑服务器登陆, ID:{},密码:{}", id, "");
 
     bool loginResult = false;
     string reason;
 
     if (checkPassword(password))
     {
-        unordered_map<int, BaseNetSession::PTR>* servers = isPrimary ? &gAllPrimaryServers : &gAllSlaveServers;
-        if (servers->find(id) == servers->end())
+        bool isSuccess = false;
+
+        if (isPrimary)
+        {
+            if (LogicServerSessionMgr::FindPrimaryLogicServer(id) == nullptr)
+            {
+                LogicServerSessionMgr::AddPrimaryLogicServer(id, std::static_pointer_cast<LogicServerSession>(shared_from_this()));
+                isSuccess = true;
+            }
+        }
+        else
+        {
+            if (LogicServerSessionMgr::FindSlaveLogicServer(id) == nullptr)
+            {
+                LogicServerSessionMgr::AddSlaveLogicServer(id, std::static_pointer_cast<LogicServerSession>(shared_from_this()));
+                isSuccess = true;
+            }
+        }
+
+        if (isSuccess)
         {
             mIsPrimary = isPrimary;
             loginResult = true;
             mID = id;
-            (*servers)[mID] = shared_from_this();
         }
         else
         {
@@ -277,7 +218,7 @@ void LogicServerSession::onPacket2ClientByRuntimeID(ReadPacket& rp)
         for (int i = 0; i < destNum; ++i)
         {
             int64_t runtimeID = rp.readINT64();
-            ClientObject::PTR client = findClientByRuntimeID(runtimeID);
+            auto client = ClientSessionMgr::FindClientByRuntimeID(runtimeID);
             if (client != nullptr)
             {
                 int64_t socketID = client->getSocketID();  /*如果客户端刚好处于断线重连状态，则可能socketID 为-1*/
@@ -303,7 +244,7 @@ void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
 {
     int64_t runtimeID = rp.readINT64();
     bool isSet = rp.readBool();
-    ClientObject::PTR p = findClientByRuntimeID(runtimeID);
+    auto p = ClientSessionMgr::FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
         p->setSlaveServerID(isSet ? mID : -1);
@@ -313,7 +254,7 @@ void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
 void LogicServerSession::onKickClientByRuntimeID(ReadPacket& rp)
 {
     int64_t runtimeID = rp.readINT64();
-    kickClientByRuntimeID(runtimeID);
+    ClientSessionMgr::KickClientByRuntimeID(runtimeID);
 }
 
 void LogicServerSession::onPing(ReadPacket& rp)

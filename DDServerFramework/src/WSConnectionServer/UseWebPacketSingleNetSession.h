@@ -10,17 +10,14 @@
 class UseWebPacketSingleNetSession : public BaseNetSession, public std::enable_shared_from_this<UseWebPacketSingleNetSession>
 {
 public:
-    UseWebPacketSingleNetSession()
-    {
-        mConnected = false;
-    }
+    UseWebPacketSingleNetSession();
 
 private:
     virtual size_t  onMsg(const char* buffer, size_t len) final;
     virtual void    procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen) = 0;
 
 private:
-    bool        mConnected;
+    bool            mShakehanded;   /*  是否已经握手  */
 };
 
 #endif
