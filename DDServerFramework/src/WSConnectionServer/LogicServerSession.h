@@ -6,7 +6,7 @@
 #include "NetSession.h"
 #include "UseCellnetSingleNetSession.h"
 
-class ReadPacket;
+class BasePacketReader;
 
 /*  逻辑服务器链接 */
 class LogicServerSession : public UseCellnetPacketSingleNetSession
@@ -32,17 +32,17 @@ private:
     virtual     void    onEnter() override;
     virtual     void    onClose() override;
 
-    void                procPacket(uint32_t op, const char* body, PACKET_LEN_TYPE bodyLen);
+    void                procPacket(uint32_t op, const char* body, uint16_t bodyLen);
 
 private:
     /*  内部服务器登陆此链接服务器   */
-    void                onLogicServerLogin(ReadPacket& rp);
+    void                onLogicServerLogin(BasePacketReader& rp);
     /*  内部服务器请求转发消息给客户端(以RuntimeID标识) */
-    void                onPacket2ClientByRuntimeID(ReadPacket& rp);
+    void                onPacket2ClientByRuntimeID(BasePacketReader& rp);
 
-    void                onSlaveServerIsSetClient(ReadPacket& rp);
+    void                onSlaveServerIsSetClient(BasePacketReader& rp);
     /*  强制踢出某RuntimeID所标识的客户端   */
-    void                onKickClientByRuntimeID(ReadPacket& rp);
+    void                onKickClientByRuntimeID(BasePacketReader& rp);
 
 private:
     bool                checkPassword(const std::string& password);

@@ -53,7 +53,7 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                 int frameSize = 0;
                 if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize))
                 {
-                    ReadPacket rp(payload.c_str(), payload.size());
+                    BasePacketReader rp(payload.c_str(), payload.size());
                     rp.readINT8();
                     auto packetLen = rp.readUINT32();
                     if (packetLen >= WEB_PACKET_HEAD_LEN)

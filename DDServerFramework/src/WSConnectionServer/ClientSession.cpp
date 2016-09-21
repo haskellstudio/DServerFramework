@@ -97,11 +97,11 @@ void ConnectionClientSession::sendPBBinary(int32_t cmd, const char* data, size_t
     getEventLoop()->pushAsyncProc([=](){
 
         char b[8 * 1024];
-        Packet packet(b, sizeof(b), true);
+        BasePacketWriter packet(b, sizeof(b), true);
         packet.writeINT8('{');
-        packet.writeINT32(tmp->size() + 14);
-        packet.writeINT32(cmd);
-        packet.writeINT32(mSendSerialID);
+        packet.writeUINT32(tmp->size() + 14);
+        packet.writeUINT32(cmd);
+        packet.writeUINT32(mSendSerialID);
         packet.writeBuffer(tmp->c_str(), tmp->size());
         packet.writeINT8('}');
 
@@ -124,7 +124,7 @@ void ConnectionClientSession::setSlaveServerID(int id)
     mSlaveServerID = id;
 }
 
-void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen)
+void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t bodyLen)
 {
     if (mRuntimeID == -1)
     {

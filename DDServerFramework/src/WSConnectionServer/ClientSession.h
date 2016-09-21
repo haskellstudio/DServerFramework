@@ -24,7 +24,7 @@ public:
 private:
     virtual void        onEnter() override;
     virtual void        onClose() override;
-    virtual void        procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen);
+    virtual void        procPacket(uint32_t op, const char* body, uint32_t bodyLen);
 
     void                claimPrimaryServer();
     void                claimRuntimeID();

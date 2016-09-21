@@ -42,10 +42,10 @@ void LogicServerSession::sendPBData(uint32_t cmd, const char* data, size_t len)
     getEventLoop()->pushAsyncProc([=](){
         /*  ÐòÁÐ»¯cellnet packet   */
         char b[8 * 1024];
-        Packet packet(b, sizeof(b), true);
-        packet.writeUINT32(cmd, false);
-        packet.writeUINT16(mSendSerialID, false);
-        packet.writeUINT16(tmp->size() + 8, false);
+        BasePacketWriter packet(b, sizeof(b), false, true);
+        packet.writeUINT32(cmd);
+        packet.writeUINT16(mSendSerialID);
+        packet.writeUINT16(tmp->size() + 8);
         packet.writeBuffer(tmp->c_str(), tmp->size());
 
         sendPacket(packet.getData(), packet.getPos());
@@ -94,11 +94,11 @@ void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const std::s
     sendPB(966232901, loginResult);
 }
 
-void LogicServerSession::procPacket(uint32_t op, const char* body, PACKET_LEN_TYPE bodyLen)
+void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t bodyLen)
 {
     gDailyLogger->debug("recv logic server packet, op:{}, bodylen:{}", op, bodyLen);
 
-    ReadPacket rp(body, bodyLen);
+    BasePacketReader rp(body, bodyLen, false);
     switch (static_cast<CELLNET_OP>(op))
     {
     case CELLNET_OP::LOGICSERVER_LOGIN:
@@ -127,9 +127,11 @@ void LogicServerSession::procPacket(uint32_t op, const char* body, PACKET_LEN_TY
         }
         break;
     }
+
+    rp.skipAll();
 }
 
-void LogicServerSession::onLogicServerLogin(ReadPacket& rp)
+void LogicServerSession::onLogicServerLogin(BasePacketReader& rp)
 {
     internalAgreement::LogicServerLogin loginMsg;
     if (loginMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
@@ -182,7 +184,7 @@ void LogicServerSession::onLogicServerLogin(ReadPacket& rp)
 
 const static bool IsPrintPacketSendedLog = true;
 
-void LogicServerSession::onPacket2ClientByRuntimeID(ReadPacket& rp)
+void LogicServerSession::onPacket2ClientByRuntimeID(BasePacketReader& rp)
 {
     internalAgreement::DownstreamACK downstream;
     if (downstream.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
@@ -198,7 +200,7 @@ void LogicServerSession::onPacket2ClientByRuntimeID(ReadPacket& rp)
     }
 }
 
-void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
+void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
 {
     internalAgreement::LogicServerSetRoleSlave setslaveMsg;
     if (setslaveMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
@@ -211,7 +213,7 @@ void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
     }
 }
 
-void LogicServerSession::onKickClientByRuntimeID(ReadPacket& rp)
+void LogicServerSession::onKickClientByRuntimeID(BasePacketReader& rp)
 {
     internalAgreement::LogicServerKickPlayer kickMsg;
     if (kickMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))

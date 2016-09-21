@@ -14,7 +14,7 @@ public:
 
 private:
     virtual size_t  onMsg(const char* buffer, size_t len) final;
-    virtual void    procPacket(uint32_t op, const char* body, PACKET_LEN_TYPE bodyLen) = 0;
+    virtual void    procPacket(uint32_t op, const char* body, uint16_t bodyLen) = 0;
 
 private:
     uint16_t        mRecvSerialID;

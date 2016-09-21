@@ -13,10 +13,12 @@ size_t UsePacketExtNetSession::onMsg(const char* buffer, size_t len)
         bool flag = false;
         if (left_len >= PACKET_HEAD_LEN)
         {
-            PACKET_LEN_TYPE packet_len = socketendian::networkToHost32(*(PACKET_LEN_TYPE*)parse_str);
+            ReadPacket rp(parse_str, left_len);
+
+            PACKET_LEN_TYPE packet_len = rp.readPacketLen();
             if (left_len >= packet_len && packet_len >= PACKET_HEAD_LEN)
             {
-                PACKET_OP_TYPE op = socketendian::networkToHost16(*(PACKET_OP_TYPE*)(parse_str + sizeof(PACKET_LEN_TYPE)));
+                PACKET_OP_TYPE op = rp.readOP();
                 pushDataMsg2LogicMsgList(mLogicSession, parse_str, packet_len);
                 total_proc_len += packet_len;
                 parse_str += packet_len;
