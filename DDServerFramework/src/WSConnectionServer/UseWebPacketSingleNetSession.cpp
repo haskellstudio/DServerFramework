@@ -49,24 +49,28 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
             if (left_len >= WEB_PACKET_HEAD_LEN)
             {
                 std::string payload;
-                uint8_t opcode;
+                auto opcode = WebSocketFormat::WebSocketFrameType::ERROR_FRAME;
                 int frameSize = 0;
                 if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize))
                 {
-                    BasePacketReader rp(payload.c_str(), payload.size());
-                    rp.readINT8();
-                    auto packetLen = rp.readUINT32();
-                    if (packetLen >= WEB_PACKET_HEAD_LEN)
+                    if (opcode == WebSocketFormat::WebSocketFrameType::TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::BINARY_FRAME)
                     {
-                        auto cmd = rp.readINT32();
-                        rp.readINT32(); /*  serial id   */
-                        const char* body = payload.c_str() + rp.getPos();
-                        rp.addPos(packetLen - WEB_PACKET_HEAD_LEN);
+                        /*  只有text和binary帧,才解析数据    */
+                        BasePacketReader rp(payload.c_str(), payload.size());
                         rp.readINT8();
+                        auto packetLen = rp.readUINT32();
+                        if (packetLen >= WEB_PACKET_HEAD_LEN)
+                        {
+                            auto cmd = rp.readINT32();
+                            rp.readINT32(); /*  serial id   */
+                            const char* body = payload.c_str() + rp.getPos();
+                            rp.addPos(packetLen - WEB_PACKET_HEAD_LEN);
+                            rp.readINT8();
 
-                        procPacket(cmd, body, packetLen - WEB_PACKET_HEAD_LEN);
+                            procPacket(cmd, body, packetLen - WEB_PACKET_HEAD_LEN);
+                        }
                     }
-
+                    
                     total_proc_len += frameSize;
                     parse_str += frameSize;
                     left_len -= frameSize;

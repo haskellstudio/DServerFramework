@@ -89,14 +89,14 @@ void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const std::s
 {
     internalAgreement::LogicServerLoginReply loginResult;
     loginResult.set_issuccess(isSuccess);
-    loginResult.set_id(mID);
+    loginResult.set_id(connectionServerConfig.id());
 
     sendPB(966232901, loginResult);
 }
 
 void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t bodyLen)
 {
-    gDailyLogger->debug("recv logic server packet, op:{}, bodylen:{}", op, bodyLen);
+    gDailyLogger->debug("recv logic server[{},{}] packet, op:{}, bodylen:{}", mID, mIsPrimary, op, bodyLen);
 
     BasePacketReader rp(body, bodyLen, false);
     switch (static_cast<CELLNET_OP>(op))
@@ -136,7 +136,7 @@ void LogicServerSession::onLogicServerLogin(BasePacketReader& rp)
     internalAgreement::LogicServerLogin loginMsg;
     if (loginMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
     {
-        gDailyLogger->info("ÊÕµ½Âß¼­·þÎñÆ÷µÇÂ½, ID:{},ÃÜÂë:{}", loginMsg.id(), "");
+        gDailyLogger->info("ÊÕµ½Âß¼­·þÎñÆ÷µÇÂ½, ID:{}, is primary:{}", loginMsg.id(), loginMsg.isprimary());
 
         bool loginResult = false;
         string reason;
@@ -177,6 +177,8 @@ void LogicServerSession::onLogicServerLogin(BasePacketReader& rp)
         {
             reason = "ÃÜÂë´íÎó";
         }
+
+        gDailyLogger->info("login result :{}", loginResult);
 
         sendLogicServerLoginResult(loginResult, reason);
     }
