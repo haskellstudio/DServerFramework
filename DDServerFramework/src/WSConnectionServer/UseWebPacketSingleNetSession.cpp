@@ -51,9 +51,10 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                 std::string payload;
                 auto opcode = WebSocketFormat::WebSocketFrameType::ERROR_FRAME;
                 int frameSize = 0;
-                if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize))
+                bool isFin = false;
+                if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize, isFin))
                 {
-                    if (opcode == WebSocketFormat::WebSocketFrameType::TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::BINARY_FRAME)
+                    if (isFin && (opcode == WebSocketFormat::WebSocketFrameType::TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::BINARY_FRAME))
                     {
                         if (!mCacheFrame.empty())
                         {
@@ -78,9 +79,19 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                             procPacket(cmd, body, packetLen - WEB_PACKET_HEAD_LEN);
                         }
                     }
-                    else if (opcode == WebSocketFormat::WebSocketFrameType::INCOMPLETE_TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::INCOMPLETE_BINARY_FRAME)
+                    else if (opcode == WebSocketFormat::WebSocketFrameType::CONTINUATION_FRAME)
                     {
                         mCacheFrame += payload;
+                    }
+                    else if (opcode == WebSocketFormat::WebSocketFrameType::PING_FRAME)
+                    {
+                    }
+                    else if (opcode == WebSocketFormat::WebSocketFrameType::PONG_FRAME)
+                    {
+                    }
+                    else
+                    {
+                        assert(false);
                     }
 
                     total_proc_len += frameSize;
