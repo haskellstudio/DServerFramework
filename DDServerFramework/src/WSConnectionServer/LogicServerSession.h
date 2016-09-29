@@ -21,10 +21,18 @@ public:
     template<typename T>
     void                sendPB(uint32_t cmd, const T& t)
     {
-        char buff[8 * 1024];
-        if (t.SerializeToArray((void*)buff, t.ByteSize()))
+        char buff[16 * 1024];
+        if (t.SerializePartialToArray((void*)buff, sizeof(buff)))
         {
             sendPBData(cmd, buff, t.ByteSize());
+        }
+        else
+        {
+            auto str = t.SerializePartialAsString();
+            if (!str.empty())
+            {
+                sendPBData(cmd, str.c_str(), str.size());
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 #ifndef _USE_WEB_PACKET_SINGLE_EXENETSESSION_H
 #define _USE_WEB_PACKET_SINGLE_EXENETSESSION_H
 
+#include <string>
 #include <memory>
 #include "packet.h"
 #include "NetSession.h"
@@ -17,6 +18,7 @@ private:
     virtual void    procPacket(uint32_t op, const char* body, uint32_t bodyLen) = 0;
 
 private:
+    std::string     mCacheFrame;
     bool            mShakehanded;   /*  是否已经握手  */
 };
 

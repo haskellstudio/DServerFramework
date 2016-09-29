@@ -22,15 +22,14 @@ size_t UseCellnetPacketSingleNetSession::onMsg(const char* buffer, size_t len)
 
             auto cmdID = bp.readUINT32();
             auto seralID = bp.readUINT16();
-            
-            assert(mRecvSerialID++ == seralID);
-
             auto packet_len = bp.readUINT16();
             
             assert(bp.getPos() == CELLNET_PACKET_HEAD_LEN);
 
             if (left_len >= packet_len && packet_len >= CELLNET_PACKET_HEAD_LEN)
             {
+                assert(mRecvSerialID++ == seralID);
+
                 procPacket(cmdID, bp.getBuffer() + bp.getPos(), packet_len - bp.getPos());
 
                 total_proc_len += packet_len;

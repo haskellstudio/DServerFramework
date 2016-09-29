@@ -55,11 +55,19 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                 {
                     if (opcode == WebSocketFormat::WebSocketFrameType::TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::BINARY_FRAME)
                     {
+                        if (!mCacheFrame.empty())
+                        {
+                            payload.insert(0, mCacheFrame.c_str(), mCacheFrame.size());
+                            mCacheFrame.clear();
+                        }
+
                         /*  只有text和binary帧,才解析数据    */
                         BasePacketReader rp(payload.c_str(), payload.size());
                         rp.readINT8();
                         auto packetLen = rp.readUINT32();
-                        if (packetLen >= WEB_PACKET_HEAD_LEN)
+                        
+                        assert(packetLen >= WEB_PACKET_HEAD_LEN && packetLen == payload.size());
+                        if (packetLen >= WEB_PACKET_HEAD_LEN && packetLen == payload.size())
                         {
                             auto cmd = rp.readINT32();
                             rp.readINT32(); /*  serial id   */
@@ -70,7 +78,11 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                             procPacket(cmd, body, packetLen - WEB_PACKET_HEAD_LEN);
                         }
                     }
-                    
+                    else if (opcode == WebSocketFormat::WebSocketFrameType::INCOMPLETE_TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::INCOMPLETE_BINARY_FRAME)
+                    {
+                        mCacheFrame += payload;
+                    }
+
                     total_proc_len += frameSize;
                     parse_str += frameSize;
                     left_len -= frameSize;
