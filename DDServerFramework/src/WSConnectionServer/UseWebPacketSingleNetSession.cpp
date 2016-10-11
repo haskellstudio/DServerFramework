@@ -50,7 +50,7 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
             {
                 std::string payload;
                 auto opcode = WebSocketFormat::WebSocketFrameType::ERROR_FRAME;
-                int frameSize = 0;
+                size_t frameSize = 0;
                 bool isFin = false;
                 if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize, isFin))
                 {

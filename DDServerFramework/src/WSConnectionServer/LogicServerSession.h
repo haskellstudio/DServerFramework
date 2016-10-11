@@ -21,7 +21,7 @@ public:
     template<typename T>
     void                sendPB(uint32_t cmd, const T& t)
     {
-        char buff[16 * 1024];
+        char buff[8 * 1024];
         if (t.SerializePartialToArray((void*)buff, sizeof(buff)))
         {
             sendPBData(cmd, buff, t.ByteSize());

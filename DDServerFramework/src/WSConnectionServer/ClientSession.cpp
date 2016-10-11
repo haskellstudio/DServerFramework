@@ -15,7 +15,7 @@
 extern ServerConfig::ConnectionServerConfig     connectionServerConfig;
 extern WrapLog::PTR                             gDailyLogger;
 extern WrapServer::PTR                          gServer;
-static std::atomic_int32_t incRuntimeID = ATOMIC_VAR_INIT(0);
+static std::atomic<int32_t> incRuntimeID = ATOMIC_VAR_INIT(0);
 
 ConnectionClientSession::ConnectionClientSession()
 {

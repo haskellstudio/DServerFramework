@@ -38,7 +38,10 @@ public:
 public:
     WrapLog()
     {
+#ifdef _WIN32
+
         _handle = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
         mCurrentColor = CONSOLE_INTENSE;
 
         setColor(CONSOLE_GREEN);
@@ -162,6 +165,7 @@ private:
 private:
     void                            setColor(ConsoleAttribute ca)
     {
+#ifdef _WIN32
         if (ca != mCurrentColor)
         {
             WORD word(colorToWORD(ca));
@@ -169,7 +173,9 @@ private:
 
             mCurrentColor = ca;
         }
+#endif
     }
+#ifdef _WIN32
     WORD                            colorToWORD(ConsoleAttribute ca)
     {
         CONSOLE_SCREEN_BUFFER_INFO screen_infos;
@@ -182,36 +188,37 @@ private:
 
         switch (ca)
         {
-            case CONSOLE_BLACK:
-                word = 0;
-                break;
-            case CONSOLE_WHITE:
-                word = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-                break;
-            case CONSOLE_RED:
-                word = FOREGROUND_RED;
-                break;
-            case CONSOLE_GREEN:
-                word = FOREGROUND_GREEN;
-                break;
-            case CONSOLE_BLUE:
-                word = FOREGROUND_BLUE;
-                break;
-            case CONSOLE_YELLOW:
-                word = FOREGROUND_RED | FOREGROUND_GREEN;
-                break;
-            case CONSOLE_MAGENTA:
-                word = FOREGROUND_RED | FOREGROUND_BLUE;
-                break;
-            case CONSOLE_CYAN:
-                word = FOREGROUND_GREEN | FOREGROUND_BLUE;
-                break;
+        case CONSOLE_BLACK:
+            word = 0;
+            break;
+        case CONSOLE_WHITE:
+            word = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+            break;
+        case CONSOLE_RED:
+            word = FOREGROUND_RED;
+            break;
+        case CONSOLE_GREEN:
+            word = FOREGROUND_GREEN;
+            break;
+        case CONSOLE_BLUE:
+            word = FOREGROUND_BLUE;
+            break;
+        case CONSOLE_YELLOW:
+            word = FOREGROUND_RED | FOREGROUND_GREEN;
+            break;
+        case CONSOLE_MAGENTA:
+            word = FOREGROUND_RED | FOREGROUND_BLUE;
+            break;
+        case CONSOLE_CYAN:
+            word = FOREGROUND_GREEN | FOREGROUND_BLUE;
+            break;
         }
 
         word |= flag_instensity;
 
         return word;
     }
+#endif
 
     bool    shouldLog(spdlog::level::level_enum num) const
     {
@@ -252,7 +259,10 @@ private:
     std::shared_ptr<spdlog::logger> mDiskLogger;
     spdlog::level::level_enum       mLevel;
 
+#ifdef _WIN32
     HANDLE                          _handle;
+#endif
+
     ConsoleAttribute                mCurrentColor;
     std::mutex                      mQuequLock;
     std::thread                     mLogThread;

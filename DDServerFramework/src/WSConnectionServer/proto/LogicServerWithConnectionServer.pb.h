@@ -663,11 +663,11 @@ class LogicServerSetRoleSlave : public ::google::protobuf::Message /* @@protoc_i
   ::google::protobuf::int64 roleruntimeid() const;
   void set_roleruntimeid(::google::protobuf::int64 value);
 
-  // optional bool isSet = 2;
-  void clear_isset();
-  static const int kIsSetFieldNumber = 2;
-  bool isset() const;
-  void set_isset(bool value);
+  // optional bool willSet = 2;
+  void clear_willset();
+  static const int kWillSetFieldNumber = 2;
+  bool willset() const;
+  void set_willset(bool value);
 
   // @@protoc_insertion_point(class_scope:internalAgreement.LogicServerSetRoleSlave)
  private:
@@ -675,7 +675,7 @@ class LogicServerSetRoleSlave : public ::google::protobuf::Message /* @@protoc_i
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool _is_default_instance_;
   ::google::protobuf::int64 roleruntimeid_;
-  bool isset_;
+  bool willset_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_LogicServerWithConnectionServer_2eproto();
   friend void protobuf_AssignDesc_LogicServerWithConnectionServer_2eproto();
@@ -974,18 +974,18 @@ inline void LogicServerSetRoleSlave::set_roleruntimeid(::google::protobuf::int64
   // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.RoleRuntimeID)
 }
 
-// optional bool isSet = 2;
-inline void LogicServerSetRoleSlave::clear_isset() {
-  isset_ = false;
+// optional bool willSet = 2;
+inline void LogicServerSetRoleSlave::clear_willset() {
+  willset_ = false;
 }
-inline bool LogicServerSetRoleSlave::isset() const {
-  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRoleSlave.isSet)
-  return isset_;
+inline bool LogicServerSetRoleSlave::willset() const {
+  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRoleSlave.willSet)
+  return willset_;
 }
-inline void LogicServerSetRoleSlave::set_isset(bool value) {
+inline void LogicServerSetRoleSlave::set_willset(bool value) {
   
-  isset_ = value;
-  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.isSet)
+  willset_ = value;
+  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.willSet)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS

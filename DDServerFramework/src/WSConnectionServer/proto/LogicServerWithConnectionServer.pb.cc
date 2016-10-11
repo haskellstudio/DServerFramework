@@ -152,7 +152,7 @@ void protobuf_AssignDesc_LogicServerWithConnectionServer_2eproto() {
   LogicServerSetRoleSlave_descriptor_ = file->message_type(6);
   static const int LogicServerSetRoleSlave_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRoleSlave, roleruntimeid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRoleSlave, isset_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRoleSlave, willset_),
   };
   LogicServerSetRoleSlave_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -230,9 +230,9 @@ void protobuf_AddDesc_LogicServerWithConnectionServer_2eproto() {
     "\022\n\n\002id\030\001 \001(\005\022\021\n\tisPrimary\030\002 \001(\010\"6\n\025Logic"
     "ServerLoginReply\022\021\n\tisSuccess\030\001 \001(\010\022\n\n\002i"
     "d\030\002 \001(\005\".\n\025LogicServerKickPlayer\022\025\n\rRole"
-    "RuntimeID\030\001 \001(\003\"\?\n\027LogicServerSetRoleSla"
-    "ve\022\025\n\rRoleRuntimeID\030\001 \001(\003\022\r\n\005isSet\030\002 \001(\010"
-    "b\006proto3", 448);
+    "RuntimeID\030\001 \001(\003\"A\n\027LogicServerSetRoleSla"
+    "ve\022\025\n\rRoleRuntimeID\030\001 \001(\003\022\017\n\007willSet\030\002 \001"
+    "(\010b\006proto3", 450);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "LogicServerWithConnectionServer.proto", &protobuf_RegisterTypes);
   UpstreamACK::default_instance_ = new UpstreamACK();
@@ -2170,7 +2170,7 @@ void LogicServerKickPlayer::clear_roleruntimeid() {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int LogicServerSetRoleSlave::kRoleRuntimeIDFieldNumber;
-const int LogicServerSetRoleSlave::kIsSetFieldNumber;
+const int LogicServerSetRoleSlave::kWillSetFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 LogicServerSetRoleSlave::LogicServerSetRoleSlave()
@@ -2195,7 +2195,7 @@ void LogicServerSetRoleSlave::SharedCtor() {
     _is_default_instance_ = false;
   _cached_size_ = 0;
   roleruntimeid_ = GOOGLE_LONGLONG(0);
-  isset_ = false;
+  willset_ = false;
 }
 
 LogicServerSetRoleSlave::~LogicServerSetRoleSlave() {
@@ -2251,7 +2251,7 @@ void LogicServerSetRoleSlave::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-  ZR_(roleruntimeid_, isset_);
+  ZR_(roleruntimeid_, willset_);
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -2278,17 +2278,17 @@ bool LogicServerSetRoleSlave::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_isSet;
+        if (input->ExpectTag(16)) goto parse_willSet;
         break;
       }
 
-      // optional bool isSet = 2;
+      // optional bool willSet = 2;
       case 2: {
         if (tag == 16) {
-         parse_isSet:
+         parse_willSet:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &isset_)));
+                 input, &willset_)));
 
         } else {
           goto handle_unusual;
@@ -2326,9 +2326,9 @@ void LogicServerSetRoleSlave::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->roleruntimeid(), output);
   }
 
-  // optional bool isSet = 2;
-  if (this->isset() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->isset(), output);
+  // optional bool willSet = 2;
+  if (this->willset() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->willset(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:internalAgreement.LogicServerSetRoleSlave)
@@ -2342,9 +2342,9 @@ void LogicServerSetRoleSlave::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->roleruntimeid(), target);
   }
 
-  // optional bool isSet = 2;
-  if (this->isset() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->isset(), target);
+  // optional bool willSet = 2;
+  if (this->willset() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->willset(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:internalAgreement.LogicServerSetRoleSlave)
@@ -2362,8 +2362,8 @@ int LogicServerSetRoleSlave::ByteSize() const {
         this->roleruntimeid());
   }
 
-  // optional bool isSet = 2;
-  if (this->isset() != 0) {
+  // optional bool willSet = 2;
+  if (this->willset() != 0) {
     total_size += 1 + 1;
   }
 
@@ -2398,8 +2398,8 @@ void LogicServerSetRoleSlave::MergeFrom(const LogicServerSetRoleSlave& from) {
   if (from.roleruntimeid() != 0) {
     set_roleruntimeid(from.roleruntimeid());
   }
-  if (from.isset() != 0) {
-    set_isset(from.isset());
+  if (from.willset() != 0) {
+    set_willset(from.willset());
   }
 }
 
@@ -2428,7 +2428,7 @@ void LogicServerSetRoleSlave::Swap(LogicServerSetRoleSlave* other) {
 }
 void LogicServerSetRoleSlave::InternalSwap(LogicServerSetRoleSlave* other) {
   std::swap(roleruntimeid_, other->roleruntimeid_);
-  std::swap(isset_, other->isset_);
+  std::swap(willset_, other->willset_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -2458,18 +2458,18 @@ void LogicServerSetRoleSlave::clear_roleruntimeid() {
   // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.RoleRuntimeID)
 }
 
-// optional bool isSet = 2;
-void LogicServerSetRoleSlave::clear_isset() {
-  isset_ = false;
+// optional bool willSet = 2;
+void LogicServerSetRoleSlave::clear_willset() {
+  willset_ = false;
 }
- bool LogicServerSetRoleSlave::isset() const {
-  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRoleSlave.isSet)
-  return isset_;
+ bool LogicServerSetRoleSlave::willset() const {
+  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRoleSlave.willSet)
+  return willset_;
 }
- void LogicServerSetRoleSlave::set_isset(bool value) {
+ void LogicServerSetRoleSlave::set_willset(bool value) {
   
-  isset_ = value;
-  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.isSet)
+  willset_ = value;
+  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.willSet)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

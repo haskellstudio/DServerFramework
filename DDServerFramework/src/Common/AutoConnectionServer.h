@@ -29,6 +29,9 @@ struct MyFuck<T, void>
 };
 
 template<typename T, typename TT>
+void    startConnectThread(WrapLog::PTR log, WrapServer::PTR server, bool isIPV6, std::string ip, int port);
+
+template<typename T, typename TT>
 void    autoConnectServer(WrapLog::PTR log, WrapServer::PTR server, bool isIPV6, std::string ip, int port)
 {
     log->warn("start connect {}-{} : {} : {}", typeid(T).name(), typeid(TT).name(), ip, port);

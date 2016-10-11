@@ -34,6 +34,10 @@ public:
     {
     }
 
+    Net2LogicMsg(const Net2LogicMsg& right) : mSession(right.mSession), mMsgType(right.mMsgType), mPacket(right.mPacket), mSendCompleteCallback(right.mSendCompleteCallback)
+    {
+    }
+
     Net2LogicMsg& operator =(Net2LogicMsg&& outher)
     {
         if (this != &outher)

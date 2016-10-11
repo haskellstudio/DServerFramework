@@ -210,7 +210,7 @@ void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
         ConnectionClientSession::PTR p = ClientSessionMgr::FindClientByRuntimeID(setslaveMsg.roleruntimeid());
         if (p != nullptr)
         {
-            p->setSlaveServerID(setslaveMsg.isset() ? mID : -1);
+            p->setSlaveServerID(setslaveMsg.willset() ? mID : -1);
         }
     }
 }

@@ -12,7 +12,6 @@ using namespace std;
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"
 #include "etcdclient.h"
-#include "WrapJsonValue.h"
 #include "app_status.h"
 #include "ClientSession.h"
 #include "LogicServerSession.h"
