@@ -3,11 +3,13 @@
 
 #include <unordered_map>
 #include <memory>
+#include <string>
 #include <stdint.h>
 
 #include "LogicNetSession.h"
 #include "memberrpc.h"
 #include "packet.h"
+#include "CenterServerSendOP.h"
 
 class WrapServer;
 class Packet;
@@ -53,7 +55,7 @@ public:
     {
         if (info.getRequestID() != -1)
         {
-            string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc().reply(info.getRequestID(), args...);
+            string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc()->reply(info.getRequestID(), args...);
             sendv(CENTERSERVER_SEND_OP_RPC, rpcstr);
 
             info.setRequestID(-1);
@@ -106,11 +108,65 @@ public:
 
     static  void                        registerUserMsgHandle(PACKET_OP_TYPE op, CenterServerSession::USER_MSG_HANDLE handle);
     static  CenterServerSession::USER_MSG_HANDLE    findUserMsgHandle(PACKET_OP_TYPE op);
+
+    template<typename F>
+    static void        def(const char* funname, F func)
+    {
+        regFunctor(funname, func);
+    }
+
+private:
+    template<typename RET>
+    class FuckYou
+    {
+    public:
+        template<typename FUNC, typename RET, typename ...Args>
+        static void _insertLambdahelp(std::string name, FUNC func)
+        {
+            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::RpcRequestInfo info){
+                auto r = func(args...);
+                sCenterServerSessionRpcFromer->reply(info, r);
+            });
+        }
+    };
+
+    template<>
+    class FuckYou<void>
+    {
+    public:
+        template<typename FUNC, typename RET, typename ...Args>
+        static void _insertLambdahelp(std::string name, FUNC func)
+        {
+            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::RpcRequestInfo info){
+                func(args...);
+            });
+        }
+    };
+
+    template<typename RET, typename ...Args>
+    static void regFunctor(const char* funname, RET (*func)(Args...))
+    {
+        FuckYou<RET>::_insertLambdahelp<decltype(func), RET, Args...>(funname, func);
+    }
+
+    template<typename LAMBDA>
+    static void regFunctor(const char* funname, LAMBDA lambdaObj)
+    {
+        _insertLambda(funname, lambdaObj, &LAMBDA::operator());
+    }
+
+    template<typename LAMBDA_OBJ_TYPE, typename RET, typename ...Args>
+    static void _insertLambda(std::string name, LAMBDA_OBJ_TYPE obj, RET(LAMBDA_OBJ_TYPE::*func)(Args...) const)
+    {
+        FuckYou<RET>::_insertLambdahelp<LAMBDA_OBJ_TYPE, RET, Args...>(name, obj);
+    }
 private:
     static  std::unordered_map<int, CenterServerSession::PTR>    sAllLogicServer;
     static  std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>  sCenterServerSessionRpc;
     static  CenterServerSession::PTR                             sCenterServerSessionRpcFromer;
     static std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE> sUserMsgHandles;
 };
+
+typedef CenterServerSessionGlobalData CenterServerRPCMgr;
 
 #endif
