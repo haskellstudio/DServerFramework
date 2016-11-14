@@ -144,9 +144,16 @@ private:
     };
 
     template<typename RET, typename ...Args>
-    static void regFunctor(const char* funname, RET (*func)(Args...))
+    static void regFunctor(const char* funname, RET(*func)(Args...))
     {
-        FuckYou<RET>::_insertLambdahelp<decltype(func), RET, Args...>(funname, func);
+        std::function<RET(Args...)> tmpf = func;
+        regFunctor(funname, tmpf);
+    }
+
+    template<typename FUNTYPE>
+    static void regFunctor(const char* funname, std::function<FUNTYPE> func)
+    {
+        _insertLambda<std::function<FUNTYPE>, std::function<FUNTYPE>::result_type>(funname, func, &std::function<FUNTYPE>::operator());
     }
 
     template<typename LAMBDA>

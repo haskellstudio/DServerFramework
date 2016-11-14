@@ -219,6 +219,11 @@
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibTypes.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\TCPService.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\drpc.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\jsonrpc.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\memberrpc.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\msgpackrpc.h" />
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\rpccommon.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.h" />

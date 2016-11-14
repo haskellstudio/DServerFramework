@@ -365,5 +365,20 @@
     <ClInclude Include="..\ServerConfig\ServerConfig.pb.h">
       <Filter>config</Filter>
     </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\drpc.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\jsonrpc.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\memberrpc.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\msgpackrpc.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\accumulation-dev\src\rpc\rpccommon.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

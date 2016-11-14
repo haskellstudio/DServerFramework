@@ -45,7 +45,7 @@ void LogicServerSession::sendPBData(uint32_t cmd, const char* data, size_t len)
         BasePacketWriter packet(b, sizeof(b), false, true);
         packet.writeUINT32(cmd);
         packet.writeUINT16(mSendSerialID);
-        packet.writeUINT16(tmp->size() + 8);
+        packet.writeUINT16(static_cast<uint16_t>(tmp->size() + 8));
         packet.writeBuffer(tmp->c_str(), tmp->size());
 
         sendPacket(packet.getData(), packet.getPos());
@@ -134,7 +134,7 @@ void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t body
 void LogicServerSession::onLogicServerLogin(BasePacketReader& rp)
 {
     internalAgreement::LogicServerLogin loginMsg;
-    if (loginMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
+    if (loginMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
         gDailyLogger->info("收到逻辑服务器登陆, ID:{}, is primary:{}", loginMsg.id(), loginMsg.isprimary());
 
@@ -189,7 +189,7 @@ const static bool IsPrintPacketSendedLog = true;
 void LogicServerSession::onPacket2ClientByRuntimeID(BasePacketReader& rp)
 {
     internalAgreement::DownstreamACK downstream;
-    if (downstream.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
+    if (downstream.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
         for (auto& v : downstream.clientid())
         {
@@ -205,7 +205,7 @@ void LogicServerSession::onPacket2ClientByRuntimeID(BasePacketReader& rp)
 void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
 {
     internalAgreement::LogicServerSetRoleSlave setslaveMsg;
-    if (setslaveMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
+    if (setslaveMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
         ConnectionClientSession::PTR p = ClientSessionMgr::FindClientByRuntimeID(setslaveMsg.roleruntimeid());
         if (p != nullptr)
@@ -218,7 +218,7 @@ void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
 void LogicServerSession::onKickClientByRuntimeID(BasePacketReader& rp)
 {
     internalAgreement::LogicServerKickPlayer kickMsg;
-    if (kickMsg.ParseFromArray(rp.getBuffer(), rp.getMaxPos()))
+    if (kickMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
         ClientSessionMgr::KickClientByRuntimeID(kickMsg.roleruntimeid());
     }

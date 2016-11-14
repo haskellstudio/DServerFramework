@@ -55,7 +55,7 @@ void procNet2LogicMsgList()
     gNet2LogicMsgList.SyncRead(0);
 
     Net2LogicMsg msg;
-    while (gNet2LogicMsgList.PopFront(&msg))
+    while (gNet2LogicMsgList.PopFront(msg))
     {
         switch (msg.mMsgType)
         {

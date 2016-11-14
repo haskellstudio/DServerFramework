@@ -78,7 +78,7 @@ public:
                     const int maxConsole = 100;
                     try
                     {
-                        while (mLogQueue.PopFront(&tmp))
+                        while (mLogQueue.PopFront(tmp))
                         {
                             //È«²¿Ð´Ó²ÅÌ
                             outputDisk(tmp);

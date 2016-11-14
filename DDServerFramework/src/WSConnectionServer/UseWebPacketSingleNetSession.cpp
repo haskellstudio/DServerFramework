@@ -73,10 +73,10 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                             auto cmd = rp.readINT32();
                             rp.readINT32(); /*  serial id   */
                             const char* body = payload.c_str() + rp.getPos();
-                            rp.addPos(packetLen - WEB_PACKET_HEAD_LEN);
+                            rp.addPos(static_cast<int>(packetLen) - static_cast<int>(WEB_PACKET_HEAD_LEN));
                             rp.readINT8();
 
-                            procPacket(cmd, body, packetLen - WEB_PACKET_HEAD_LEN);
+                            procPacket(cmd, body, packetLen - static_cast<uint32_t>(WEB_PACKET_HEAD_LEN));
                         }
                     }
                     else if (opcode == WebSocketFormat::WebSocketFrameType::CONTINUATION_FRAME)
@@ -96,7 +96,7 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
 
                     total_proc_len += frameSize;
                     parse_str += frameSize;
-                    left_len -= frameSize;
+                    left_len -= static_cast<PACKET_LEN_TYPE>(frameSize);
 
                     flag = true;
                 }
