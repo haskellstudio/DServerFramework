@@ -9,16 +9,16 @@ using namespace std;
 #include "socketlibfunction.h"
 #include "platform.h"
 #include "packet.h"
-#include "timer.h"
-#include "msgpackrpc.h"
-#include "drpc.h"
+#include "Timer.h"
+#include "MsgpackRpc.h"
+#include "RpcService.h"
 #include "WrapTCPService.h"
 #include "UsePacketSingleNetSession.h"
 #include "../test/ClientExtOP.h"
 
 WrapServer::PTR                         gTCPService;
-TimerMgr::PTR                           gTimerMgr;
-dodo::rpc<dodo::MsgpackProtocol>        gRPC;
+dodo::TimerMgr::PTR                     gTimerMgr;
+dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>   gRPC;
 
 class SimulateClient : public UsePacketSingleNetSession
 {
@@ -29,7 +29,7 @@ public:
     {
         if (mSendTimer.lock())
         {
-            mSendTimer.lock()->Cancel();
+            mSendTimer.lock()->cancel();
         }
     }
 
@@ -109,15 +109,15 @@ private:
         }
     }
 
-    Timer::WeakPtr  mSendTimer;
+    dodo::Timer::WeakPtr  mSendTimer;
 };
 
 int main()
 {
-    gTimerMgr = std::make_shared<TimerMgr>();
+    gTimerMgr = std::make_shared<dodo::TimerMgr>();
     gTCPService = std::make_shared<WrapServer>();
     gTCPService->startWorkThread(1, [](EventLoop&){
-        gTimerMgr->Schedule();
+        gTimerMgr->schedule();
     });
 
     /*Ä£Äâ¿Í»§¶Ë*/

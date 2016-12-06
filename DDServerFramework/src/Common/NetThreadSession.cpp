@@ -1,6 +1,6 @@
 #include "NetThreadSession.h"
 
-MsgQueue<Net2LogicMsg>  gNet2LogicMsgList;
+dodo::MsgQueue<Net2LogicMsg>  gNet2LogicMsgList;
 std::mutex              gNet2LogicMsgListLock;
 
 void ExtNetSession::pushDataMsgToLogicThread(const char* data, size_t len)
@@ -13,14 +13,14 @@ void ExtNetSession::onEnter()
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
     mLogicSession->setSession(getServer(), getSocketID(), getIP());
     Net2LogicMsg tmp(mLogicSession, Net2LogicMsgTypeEnter);
-    gNet2LogicMsgList.Push(tmp);
+    gNet2LogicMsgList.push(tmp);
 }
 
 void ExtNetSession::onClose()
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
     Net2LogicMsg tmp(mLogicSession, Net2LogicMsgTypeClose);
-    gNet2LogicMsgList.Push(tmp);
+    gNet2LogicMsgList.push(tmp);
 }
 
 void pushDataMsg2LogicMsgList(BaseLogicSession::PTR session, const char* data, size_t len)
@@ -28,7 +28,7 @@ void pushDataMsg2LogicMsgList(BaseLogicSession::PTR session, const char* data, s
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
     Net2LogicMsg tmp(session, Net2LogicMsgTypeData);
     tmp.setData(data, len);
-    gNet2LogicMsgList.Push(tmp);
+    gNet2LogicMsgList.push(tmp);
 }
 
 void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK& callback)
@@ -36,15 +36,15 @@ void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK&
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
     Net2LogicMsg tmp(nullptr, Net2LogicMsgTypeCompleteCallback);
     tmp.mSendCompleteCallback = callback;
-    gNet2LogicMsgList.Push(tmp);
+    gNet2LogicMsgList.push(tmp);
 }
 
 void syncNet2LogicMsgList(std::shared_ptr<EventLoop> eventLoop)
 {
     gNet2LogicMsgListLock.lock();
-    gNet2LogicMsgList.ForceSyncWrite();
+    gNet2LogicMsgList.forceSyncWrite();
     gNet2LogicMsgListLock.unlock();
-    if (gNet2LogicMsgList.SharedListSize() > 0)
+    if (gNet2LogicMsgList.sharedListSize() > 0)
     {
         eventLoop->wakeup();
     }
@@ -52,10 +52,10 @@ void syncNet2LogicMsgList(std::shared_ptr<EventLoop> eventLoop)
 
 void procNet2LogicMsgList()
 {
-    gNet2LogicMsgList.SyncRead(0);
+    gNet2LogicMsgList.syncRead(0);
 
     Net2LogicMsg msg;
-    while (gNet2LogicMsgList.PopFront(msg))
+    while (gNet2LogicMsgList.popFront(msg))
     {
         switch (msg.mMsgType)
         {

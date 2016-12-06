@@ -6,6 +6,8 @@
 
 #define USE_DELAY_SEND
 
+using namespace dodo::net;
+
 class BaseLogicSession
 {
 public:

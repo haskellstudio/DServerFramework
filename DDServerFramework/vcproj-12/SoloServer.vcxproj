@@ -107,7 +107,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BrowseInformation>true</BrowseInformation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -150,7 +150,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -172,9 +172,6 @@
     <ClCompile Include="..\3rdparty\accumulation-dev\src\net\SocketLibFunction.c" />
     <ClCompile Include="..\3rdparty\accumulation-dev\src\net\TCPService.cpp" />
     <ClCompile Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.cpp" />
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.cpp" />
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.cpp" />
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.cpp" />
     <ClCompile Include="..\3rdparty\accumulation-dev\src\timer\timer.cpp" />
     <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\app_status.c" />
     <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\base64.cpp" />
@@ -240,9 +237,6 @@
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\SocketLibTypes.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\TCPService.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.h" />
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.h" />
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.h" />
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\timer\timer.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\app_status.h" />
     <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\base64.h" />

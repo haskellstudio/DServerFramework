@@ -11,7 +11,7 @@ using namespace std;
 #include "CenterServerSession.h"
 
 unordered_map<int, CenterServerSession::PTR> CenterServerSessionGlobalData::sAllLogicServer;
-std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>> CenterServerSessionGlobalData::sCenterServerSessionRpc;
+std::shared_ptr<dodo::rpc::RpcService < dodo::rpc::MsgpackProtocol>> CenterServerSessionGlobalData::sCenterServerSessionRpc;
 CenterServerSession::PTR CenterServerSessionGlobalData::sCenterServerSessionRpcFromer;
 
 extern WrapLog::PTR gDailyLogger;
@@ -192,7 +192,7 @@ void CenterServerSession::onUserMsg(ReadPacket& rp)
 
 void CenterServerSessionGlobalData::init()
 {
-    sCenterServerSessionRpc = std::make_shared<dodo::rpc < dodo::MsgpackProtocol>>();
+    sCenterServerSessionRpc = std::make_shared<dodo::rpc::RpcService < dodo::rpc::MsgpackProtocol>>();
 }
 
 void CenterServerSessionGlobalData::destroy()
@@ -234,7 +234,7 @@ void CenterServerSessionGlobalData::setRpcFrommer(CenterServerSession::PTR frome
     sCenterServerSessionRpcFromer = fromer;
 }
 
-std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>& CenterServerSessionGlobalData::getCenterServerSessionRpc()
+std::shared_ptr<dodo::rpc::RpcService < dodo::rpc::MsgpackProtocol>>& CenterServerSessionGlobalData::getCenterServerSessionRpc()
 {
     return sCenterServerSessionRpc;
 }

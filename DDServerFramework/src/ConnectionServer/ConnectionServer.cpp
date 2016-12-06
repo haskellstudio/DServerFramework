@@ -7,7 +7,7 @@
 using namespace std;
 
 #include "WrapTCPService.h"
-#include "timer.h"
+#include "Timer.h"
 #include "ox_file.h"
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"

@@ -7,7 +7,6 @@
 
 #include "LogicNetSession.h"
 
-class WrapServer;
 class Packet;
 
 /*链接到链接服务器*/
@@ -35,7 +34,7 @@ private:
     int             mIDInEtcd;
     int32_t         mConnectionServerID;
     std::string     mPassword;
-    Timer::WeakPtr  mPingTimer;
+    dodo::Timer::WeakPtr  mPingTimer;
 };
 
 extern std::unordered_map<int32_t, ConnectionServerConnection::PTR> gAllLogicConnectionServerClient;

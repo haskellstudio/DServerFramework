@@ -25,9 +25,6 @@
     <Filter Include="http">
       <UniqueIdentifier>{327dd07b-a378-4842-bc99-8748359b2607}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ssdb">
-      <UniqueIdentifier>{048959d6-093a-4d1a-bbc5-29e53725d8b0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{913e9b8d-f6ae-4d0d-82fb-1fb1b8d3469a}</UniqueIdentifier>
     </Filter>
@@ -185,15 +182,6 @@
     </ClCompile>
     <ClCompile Include="..\3rdparty\accumulation-dev\src\net\http\HttpServer.cpp">
       <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.cpp">
-      <Filter>ssdb</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.cpp">
-      <Filter>ssdb</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.cpp">
-      <Filter>ssdb</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\ox_file.cpp">
       <Filter>utils</Filter>
@@ -373,15 +361,6 @@
     </ClInclude>
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\http\WebSocketFormat.h">
       <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.h">
-      <Filter>ssdb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.h">
-      <Filter>ssdb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.h">
-      <Filter>ssdb</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\buffer.h">
       <Filter>utils</Filter>

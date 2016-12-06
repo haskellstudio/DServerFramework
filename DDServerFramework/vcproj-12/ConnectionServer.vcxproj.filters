@@ -22,9 +22,6 @@
     <Filter Include="net">
       <UniqueIdentifier>{7142ab19-690d-4595-9e18-0fa3476fdd59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ssdb">
-      <UniqueIdentifier>{4206ce11-94d8-42a1-a04f-27831cd889d5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{5d49d447-3047-4152-976f-2c4a1bf3d0e3}</UniqueIdentifier>
     </Filter>
@@ -170,15 +167,6 @@
     </ClCompile>
     <ClCompile Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.cpp">
       <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.cpp">
-      <Filter>ssdb</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.cpp">
-      <Filter>ssdb</Filter>
-    </ClCompile>
-    <ClCompile Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.cpp">
-      <Filter>ssdb</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdparty\accumulation-dev\src\utils\ox_file.cpp">
       <Filter>utils</Filter>
@@ -358,15 +346,6 @@
     </ClInclude>
     <ClInclude Include="..\3rdparty\accumulation-dev\src\net\WrapTCPService.h">
       <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBMultiClient.h">
-      <Filter>ssdb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\SSDBProtocol.h">
-      <Filter>ssdb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdparty\accumulation-dev\src\ssdb\RedisSSDBCovert.h">
-      <Filter>ssdb</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdparty\accumulation-dev\src\utils\buffer.h">
       <Filter>utils</Filter>

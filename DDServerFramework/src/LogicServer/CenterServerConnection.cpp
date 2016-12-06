@@ -15,12 +15,12 @@ using namespace std;
 extern ServerConfig::CenterServerConfig centerServerConfig;
 extern ServerConfig::LogicServerConfig logicServerConfig;
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
-extern TimerMgr::PTR   gTimerMgr;
-extern WrapServer::PTR   gServer;
+extern dodo::TimerMgr::PTR   gTimerMgr;
+extern dodo::net::WrapServer::PTR   gServer;
 extern WrapLog::PTR  gDailyLogger;
 
 CenterServerConnection* gLogicCenterServerClient = nullptr;
-dodo::rpc<dodo::MsgpackProtocol>    gCenterServerConnectioinRpc;
+dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>    gCenterServerConnectioinRpc;
 std::unordered_map<PACKET_OP_TYPE, CenterServerConnection::USER_MSG_HANDLE>  CenterServerConnection::sUserMsgHandlers;
 
 CenterServerConnection::CenterServerConnection() : BaseLogicSession()
@@ -32,10 +32,10 @@ CenterServerConnection::~CenterServerConnection()
 {
     if (mPingTimer.lock())
     {
-        mPingTimer.lock()->Cancel();
+        mPingTimer.lock()->cancel();
     }
 
-    gTimerMgr->AddTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
+    gTimerMgr->addTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
         centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
 }
 
@@ -66,7 +66,7 @@ void CenterServerConnection::ping()
 
     sendPacket(p);
 
-    mPingTimer = gTimerMgr->AddTimer(5000, [this](){
+    mPingTimer = gTimerMgr->addTimer(5000, [this](){
         ping();
     });
 }

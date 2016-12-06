@@ -13,7 +13,7 @@ static int add(int a, int b)
     return a + b;
 }
 
-static void addNoneRet(int a, int b, dodo::RpcRequestInfo reqInfo)
+static void addNoneRet(int a, int b, dodo::rpc::RpcRequestInfo reqInfo)
 {
     // 添加dodo::RpcRequestInfo reqInfo形参(不影响调用者调用)
     // 这里本身不返回数据(函数返回类型为void),但RPC本身是具有返回值语义的
@@ -48,7 +48,7 @@ void initCenterServerExt()
     CenterServerRPCMgr::def("addNoneRet", addNoneRet);
 
     /*处理来自内部服务器的rpc请求,请求者为:gCenterServerSessionRpcFromer*/
-    CenterServerSessionGlobalData::getCenterServerSessionRpc()->def("testrpc", [](const std::string& a, int b, dodo::RpcRequestInfo info){
+    CenterServerSessionGlobalData::getCenterServerSessionRpc()->def("testrpc", [](const std::string& a, int b, dodo::rpc::RpcRequestInfo info){
         gDailyLogger->info("rpc handle: {} : {}", a, b);
     });
 

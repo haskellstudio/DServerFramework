@@ -6,15 +6,15 @@ using namespace std;
 #include "WrapTCPService.h"
 #include "ox_file.h"
 #include "WrapLog.h"
-#include "timer.h"
+#include "Timer.h"
 #include "AutoConnectionServer.h"
 #include "CenterServerSession.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
 #include "google/protobuf/util/json_util.h"
 
 WrapLog::PTR            gDailyLogger;
-WrapServer::PTR         gServer;
-TimerMgr::PTR           gLogicTimerMgr;
+dodo::net::WrapServer::PTR         gServer;
+dodo::TimerMgr::PTR           gLogicTimerMgr;
 ServerConfig::CenterServerConfig centerServerConfig;
 
 /*  主线程,其他扩展模块可以引用它,譬如集成外部数据库时,可以在数据库线程向此主线程投递异步回调  */
@@ -35,9 +35,9 @@ int main()
         exit(-1);
     }
 
-    gLogicTimerMgr = std::make_shared<TimerMgr>();
+    gLogicTimerMgr = std::make_shared<dodo::TimerMgr>();
     gDailyLogger = std::make_shared<WrapLog>();
-    gServer = std::make_shared<WrapServer>();
+    gServer = std::make_shared<dodo::net::WrapServer>();
     CenterServerSessionGlobalData::init();
 
     spdlog::set_level(spdlog::level::info);
@@ -77,9 +77,9 @@ int main()
                 }
             }
 
-            mainLoop->loop(gLogicTimerMgr->IsEmpty() ? 1 : gLogicTimerMgr->NearEndMs());
+            mainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : gLogicTimerMgr->nearEndMs());
 
-            gLogicTimerMgr->Schedule();
+            gLogicTimerMgr->schedule();
 
             procNet2LogicMsgList();
         }

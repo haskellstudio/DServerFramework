@@ -11,7 +11,6 @@
 #include "packet.h"
 #include "CenterServerSendOP.h"
 
-class WrapServer;
 class Packet;
 class ReadPacket;
 
@@ -51,7 +50,7 @@ public:
     void            sendPacket2Client(int64_t runtimeID, Packet& realPacket);
 
     template<typename... Args>
-    void            reply(dodo::RpcRequestInfo& info, const Args&... args)
+    void            reply(dodo::rpc::RpcRequestInfo& info, const Args&... args)
     {
         if (info.getRequestID() != -1)
         {
@@ -104,7 +103,7 @@ public:
     static  CenterServerSession::PTR&   getRpcFromer();
     static  void                        setRpcFrommer(CenterServerSession::PTR);
 
-    static  std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>&    getCenterServerSessionRpc();
+    static  std::shared_ptr<dodo::rpc::RpcService < dodo::rpc::MsgpackProtocol>>&    getCenterServerSessionRpc();
 
     static  void                        registerUserMsgHandle(PACKET_OP_TYPE op, CenterServerSession::USER_MSG_HANDLE handle);
     static  CenterServerSession::USER_MSG_HANDLE    findUserMsgHandle(PACKET_OP_TYPE op);
@@ -123,7 +122,7 @@ private:
         template<typename FUNC, typename RET, typename ...Args>
         static void _insertLambdahelp(std::string name, FUNC func)
         {
-            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::RpcRequestInfo info){
+            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::rpc::RpcRequestInfo info){
                 auto r = func(args...);
                 sCenterServerSessionRpcFromer->reply(info, r);
             });
@@ -137,7 +136,7 @@ private:
         template<typename FUNC, typename RET, typename ...Args>
         static void _insertLambdahelp(std::string name, FUNC func)
         {
-            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::RpcRequestInfo info){
+            sCenterServerSessionRpc->def(name.c_str(), [func](const Args&... args, dodo::rpc::RpcRequestInfo info){
                 func(args...);
             });
         }
@@ -169,7 +168,7 @@ private:
     }
 private:
     static  std::unordered_map<int, CenterServerSession::PTR>    sAllLogicServer;
-    static  std::shared_ptr<dodo::rpc < dodo::MsgpackProtocol>>  sCenterServerSessionRpc;
+    static  std::shared_ptr<dodo::rpc::RpcService < dodo::rpc::MsgpackProtocol>>  sCenterServerSessionRpc;
     static  CenterServerSession::PTR                             sCenterServerSessionRpcFromer;
     static std::unordered_map<PACKET_OP_TYPE, CenterServerSession::USER_MSG_HANDLE> sUserMsgHandles;
 };

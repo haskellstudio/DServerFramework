@@ -4,7 +4,7 @@
 using namespace std;
 
 #include "WrapTCPService.h"
-#include "timer.h"
+#include "Timer.h"
 #include "ox_file.h"
 #include "WrapLog.h"
 #include "etcdclient.h"
@@ -25,7 +25,7 @@ ServerConfig::CenterServerConfig centerServerConfig;
 ServerConfig::LogicServerConfig logicServerConfig;
 
 WrapLog::PTR                                gDailyLogger;
-TimerMgr::PTR                               gTimerMgr;
+dodo::TimerMgr::PTR                         gTimerMgr;
 WrapServer::PTR                             gServer;
 shared_ptr<EventLoop> mainLoop;
 
@@ -59,7 +59,7 @@ int main()
 
     gDailyLogger = std::make_shared<WrapLog>();
     gServer = std::make_shared<WrapServer>();
-    gTimerMgr = std::make_shared<TimerMgr>();
+    gTimerMgr = std::make_shared<dodo::TimerMgr>();
     gClientMirrorMgr = std::make_shared<ClientMirrorMgr>();
     
     ox_dir_create("logs");
@@ -144,9 +144,9 @@ int main()
             }
         }
 
-        mainLoop->loop(gTimerMgr->IsEmpty() ? 1 : gTimerMgr->NearEndMs());
+        mainLoop->loop(gTimerMgr->isEmpty() ? 1 : gTimerMgr->nearEndMs());
 
-        gTimerMgr->Schedule();
+        gTimerMgr->schedule();
 
         procNet2LogicMsgList();
     }

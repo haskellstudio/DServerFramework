@@ -5,12 +5,11 @@
 #include <functional>
 
 #include "LogicNetSession.h"
-#include "msgpackrpc.h"
-#include "drpc.h"
+#include "MsgpackRpc.h"
+#include "RpcService.h"
 #include "packet.h"
 #include "CenterServerRecvOP.h"
 
-class WrapServer;
 class Packet;
 class ReadPacket;
 
@@ -51,7 +50,7 @@ public:
     }
 
     template<typename... Args>
-    void            reply(dodo::RpcRequestInfo& info, const Args&... args)
+    void            reply(dodo::rpc::RpcRequestInfo& info, const Args&... args)
     {
         if (info.getRequestID() != -1)
         {
@@ -83,13 +82,13 @@ private:
 
 private:
     int32_t         mSelfID;
-    Timer::WeakPtr  mPingTimer;
+    dodo::Timer::WeakPtr  mPingTimer;
 
 private:
     static std::unordered_map<PACKET_OP_TYPE, USER_MSG_HANDLE>  sUserMsgHandlers;
 };
 
 extern CenterServerConnection*              gLogicCenterServerClient;
-extern dodo::rpc<dodo::MsgpackProtocol>     gCenterServerConnectioinRpc;
+extern dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>     gCenterServerConnectioinRpc;
 
 #endif

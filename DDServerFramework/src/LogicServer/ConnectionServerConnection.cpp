@@ -8,7 +8,7 @@ using namespace std;
 
 #include "CenterServerConnection.h"
 #include "ClientMirror.h"
-#include "timer.h"
+#include "Timer.h"
 #include "WrapLog.h"
 
 #include "UsePacketExtNetSession.h"
@@ -19,7 +19,7 @@ extern ServerConfig::LogicServerConfig logicServerConfig;
 extern ClientMirrorMgr::PTR   gClientMirrorMgr;
 extern WrapServer::PTR   gServer;
 extern WrapLog::PTR gDailyLogger;
-extern TimerMgr::PTR    gTimerMgr;
+extern dodo::TimerMgr::PTR    gTimerMgr;
 unordered_map<int32_t, ConnectionServerConnection::PTR>     gAllLogicConnectionServerClient;
 
 unordered_map<int32_t, std::tuple<string, int>> alreadyConnectingServers;
@@ -91,7 +91,7 @@ ConnectionServerConnection::~ConnectionServerConnection()
 {
     if (mPingTimer.lock())
     {
-        mPingTimer.lock()->Cancel();
+        mPingTimer.lock()->cancel();
     }
 }
 
@@ -121,7 +121,7 @@ void ConnectionServerConnection::ping()
 
     sendPacket(p);
 
-    mPingTimer = gTimerMgr->AddTimer(5000, [this](){
+    mPingTimer = gTimerMgr->addTimer(5000, [this](){
         ping();
     });
 }

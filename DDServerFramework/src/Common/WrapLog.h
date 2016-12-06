@@ -6,7 +6,7 @@
 #include <thread>
 #include <memory>
 
-#include "msgqueue.h"
+#include "MsgQueue.h"
 #include "spdlog/spdlog.h"
 
 /*TODO::console和硬盘日志分开--因为console必须使用异步且可丢弃*/
@@ -74,16 +74,16 @@ public:
                 while (!mIsClose)
                 {
                     ThreadLog tmp;
-                    mLogQueue.SyncRead(5);
+                    mLogQueue.syncRead(5);
                     const int maxConsole = 100;
                     try
                     {
-                        while (mLogQueue.PopFront(tmp))
+                        while (mLogQueue.popFront(tmp))
                         {
                             //全部写硬盘
                             outputDisk(tmp);
 
-                            if (mLogQueue.ReadListSize() < maxConsole)
+                            if (mLogQueue.readListSize() < maxConsole)
                             {
                                 //只有最近的maxConsole行日志写屏幕
                                 outputConcole(tmp);
@@ -134,16 +134,16 @@ private:
             try
             {
                 std::string&& str = fmt::format(fmt, std::forward<const Args&>(args)...);
-                mLogQueue.Push({ type, std::make_shared<std::string>(std::move(str)) });
-                mLogQueue.ForceSyncWrite();
+                mLogQueue.push({ type, std::make_shared<std::string>(std::move(str)) });
+                mLogQueue.forceSyncWrite();
             }
             catch(const fmt::FormatError& e)
             {
                 std::string tmp = fmt;
                 tmp.append(" format error:");
                 tmp.append(e.what());
-                mLogQueue.Push({ spdlog::level::err, std::make_shared<std::string>(tmp) });
-                mLogQueue.ForceSyncWrite();
+                mLogQueue.push({ spdlog::level::err, std::make_shared<std::string>(tmp) });
+                mLogQueue.forceSyncWrite();
             }
         }
     }
@@ -253,7 +253,7 @@ private:
         mDiskLogger->force_log(log.type, log.msg->c_str());
     }
 private:
-    MsgQueue<ThreadLog>             mLogQueue;
+    dodo::MsgQueue<ThreadLog>       mLogQueue;
 
     std::shared_ptr<spdlog::logger> mConsoleLogger; /*TODO::可以改为异步,不会阻塞硬盘日志的写入*/
     std::shared_ptr<spdlog::logger> mDiskLogger;

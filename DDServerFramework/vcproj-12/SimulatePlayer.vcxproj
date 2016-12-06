@@ -197,7 +197,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\net\http;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -229,7 +229,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\accumulation-dev\src\ssdb;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdparty\accumulation-dev\src\net;..\3rdparty\accumulation-dev\src\rpc;..\3rdparty\accumulation-dev\src\timer;..\3rdparty\accumulation-dev\src\utils;..\3rdparty\lua-5.1.4\src;..\3rdparty\lua_tinker\;..\src\Common;..\src\Common\prototol;..\3rdparty\msgpack-c\include;..\3rdparty\spdlog\include;..\3rdparty\rapidjson\include;..\..\;..\3rdparty\pb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

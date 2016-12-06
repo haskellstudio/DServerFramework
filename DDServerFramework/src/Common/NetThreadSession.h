@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "msgqueue.h"
+#include "MsgQueue.h"
 #include "LogicNetSession.h"
 #include "NetSession.h"
 #include "EventLoop.h"
