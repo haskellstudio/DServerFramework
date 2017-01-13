@@ -42,7 +42,7 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
     ConnectionClientSession::PTR p = FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
-        int64_t socketID = p->getSocketID();
+        auto socketID = p->getSocketID();
         if (socketID != -1)
         {
             gServer->getService()->disConnect(socketID);

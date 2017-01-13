@@ -18,6 +18,8 @@ private:
     virtual void    procPacket(uint32_t op, const char* body, uint32_t bodyLen) = 0;
 
 private:
+
+    std::string     mParsePayload;
     std::string     mCacheFrame;
     bool            mShakehanded;   /*  是否已经握手  */
 };

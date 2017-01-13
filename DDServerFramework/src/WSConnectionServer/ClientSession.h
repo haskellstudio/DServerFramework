@@ -1,6 +1,8 @@
 #ifndef _CLIENT_SESSION_H
 #define _CLIENT_SESSION_H
 
+#include <atomic>
+
 #include "NetSession.h"
 #include "UsePacketSingleNetSession.h"
 #include "UseWebPacketSingleNetSession.h"
@@ -34,8 +36,8 @@ private:
     int                 mPrimaryServerID;
     int                 mSlaveServerID;
 
-    int32_t             mRecvSerialID;
-    int32_t             mSendSerialID;
+    int32_t                 mRecvSerialID;
+    std::atomic<int32_t>    mSendSerialID;
 
     LogicServerSession::PTR mPrimaryServer;
     LogicServerSession::PTR mSlaveServer;

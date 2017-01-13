@@ -48,31 +48,33 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
             bool flag = false;
             if (left_len >= WEB_PACKET_HEAD_LEN)
             {
-                std::string payload;
+                mParsePayload.clear();
+
                 auto opcode = WebSocketFormat::WebSocketFrameType::ERROR_FRAME;
                 size_t frameSize = 0;
                 bool isFin = false;
-                if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, payload, opcode, frameSize, isFin))
+                if (WebSocketFormat::wsFrameExtractBuffer(parse_str, left_len, mParsePayload, opcode, frameSize, isFin))
                 {
                     if (isFin && (opcode == WebSocketFormat::WebSocketFrameType::TEXT_FRAME || opcode == WebSocketFormat::WebSocketFrameType::BINARY_FRAME))
                     {
                         if (!mCacheFrame.empty())
                         {
-                            payload.insert(0, mCacheFrame.c_str(), mCacheFrame.size());
+                            mCacheFrame += mParsePayload;
+                            mParsePayload = std::move(mCacheFrame);
                             mCacheFrame.clear();
                         }
 
                         /*  只有text和binary帧,才解析数据    */
-                        BasePacketReader rp(payload.c_str(), payload.size());
+                        BasePacketReader rp(mParsePayload.c_str(), mParsePayload.size());
                         rp.readINT8();
                         auto packetLen = rp.readUINT32();
                         
-                        assert(packetLen >= WEB_PACKET_HEAD_LEN && packetLen == payload.size());
-                        if (packetLen >= WEB_PACKET_HEAD_LEN && packetLen == payload.size())
+                        assert(packetLen >= WEB_PACKET_HEAD_LEN && packetLen == mParsePayload.size());
+                        if (packetLen >= WEB_PACKET_HEAD_LEN && packetLen == mParsePayload.size())
                         {
                             auto cmd = rp.readINT32();
                             rp.readINT32(); /*  serial id   */
-                            const char* body = payload.c_str() + rp.getPos();
+                            const char* body = mParsePayload.c_str() + rp.getPos();
                             rp.addPos(static_cast<int>(packetLen) - static_cast<int>(WEB_PACKET_HEAD_LEN));
                             rp.readINT8();
 
@@ -81,7 +83,7 @@ size_t UseWebPacketSingleNetSession::onMsg(const char* buffer, size_t len)
                     }
                     else if (opcode == WebSocketFormat::WebSocketFrameType::CONTINUATION_FRAME)
                     {
-                        mCacheFrame += payload;
+                        mCacheFrame += mParsePayload;
                     }
                     else if (opcode == WebSocketFormat::WebSocketFrameType::PING_FRAME)
                     {

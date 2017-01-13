@@ -75,7 +75,7 @@ void ConnectionClientSession::claimPrimaryServer()
         }
         else
         {
-            gDailyLogger->error("分配主逻辑服务器失败");
+            //gDailyLogger->error("分配主逻辑服务器失败");
         }
     }
 }
@@ -92,30 +92,20 @@ int64_t ConnectionClientSession::getRuntimeID() const
 
 void ConnectionClientSession::sendPBBinary(int32_t cmd, const char* data, size_t len)
 {
-    auto tmp = std::make_shared<std::string>(data, len);
-
-    getEventLoop()->pushAsyncProc([=](){
-
-        char b[8 * 1024];
-        BasePacketWriter packet(b, sizeof(b), true);
-        packet.writeINT8('{');
-        packet.writeUINT32(tmp->size() + 14);
-        packet.writeUINT32(cmd);
-        packet.writeUINT32(mSendSerialID);
-        packet.writeBuffer(tmp->c_str(), tmp->size());
-        packet.writeINT8('}');
-
-        std::string frame;
-        if (WebSocketFormat::wsFrameBuild(std::string(packet.getData(), packet.getPos()), frame))
-        {
-            sendPacket(frame.c_str(), frame.size());
-            mSendSerialID++;
-        }
-        else
-        {
-            gDailyLogger->error("wsFrameBuild failed of client runtime id :{}", mRuntimeID);
-        }
-    });
+    char b[8 * 1024];
+    BasePacketWriter packet(b, sizeof(b), true);
+    packet.writeINT8('{');
+    packet.writeUINT32(len + 14);
+    packet.writeUINT32(cmd);
+    packet.writeUINT32(mSendSerialID++);
+    packet.writeBuffer(data, len);
+    packet.writeINT8('}');
+    
+    auto frame = std::make_shared<std::string>();
+    if (WebSocketFormat::wsFrameBuild(packet.getData(), packet.getPos(), *frame, WebSocketFormat::WebSocketFrameType::TEXT_FRAME))
+    {
+        sendPacket(frame);
+    }
 }
 
 void ConnectionClientSession::setSlaveServerID(int id)
@@ -148,6 +138,13 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
         mSlaveServer = nullptr;
     }
 
+    gDailyLogger->debug("{} is op", op);
+    if (op == 10000)
+    {
+        sendPBBinary(10000, "", 0);
+        return;
+    }
+
     internalAgreement::UpstreamACK upstream;
     upstream.set_clientid(mRuntimeID);
     upstream.set_msgid(op);
@@ -155,7 +152,7 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
 
     const int UPSTREAM_ACK_OP = 2210821449;
 
-    if (op == 24)   /*  特定消息固定转发到玩家所属主逻辑服务器(TODO::常量和OP枚举定义) */
+    if (op == 24 || op == 74 || op == 75 || op == 52)   /*  特定消息固定转发到玩家所属主逻辑服务器(TODO::常量和OP枚举定义) */
     {
         if (mPrimaryServer != nullptr)
         {

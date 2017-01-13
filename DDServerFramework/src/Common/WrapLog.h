@@ -19,6 +19,26 @@ public:
     {
         spdlog::level::level_enum type;
         std::shared_ptr<std::string> msg;
+        ThreadLog()
+        {}
+        ThreadLog(spdlog::level::level_enum aType, const std::shared_ptr<std::string>& aMsg) : type(aType), msg(aMsg)
+        {
+        }
+        ThreadLog(spdlog::level::level_enum aType, std::shared_ptr<std::string>&& aMsg) : type(aType), msg(std::move(aMsg))
+        {
+        }
+
+        ThreadLog(const ThreadLog& right) : type(right.type), msg(right.msg)
+        {}
+        ThreadLog(ThreadLog&& right) : type(right.type), msg(std::move(right.msg))
+        {}
+
+        struct ThreadLog& operator =(struct ThreadLog&& right)
+        {
+            type = right.type;
+            msg = std::move(right.msg);
+            return *this;
+        }
     };
 
     enum ConsoleAttribute
@@ -68,12 +88,12 @@ public:
         if (!mLogThread.joinable())
         {
             mConsoleLogger = spdlog::stdout_logger_st("console");
-            mDiskLogger = spdlog::daily_logger_st("file_logger", fileName, 0, 0, true);
+            mDiskLogger = spdlog::daily_logger_st("file_logger", fileName, 0, 0, false);
 
             mLogThread = std::thread([this](){
+                ThreadLog tmp;
                 while (!mIsClose)
                 {
-                    ThreadLog tmp;
                     mLogQueue.syncRead(5);
                     const int maxConsole = 100;
                     try
@@ -82,7 +102,6 @@ public:
                         {
                             //全部写硬盘
                             outputDisk(tmp);
-
                             if (mLogQueue.readListSize() < maxConsole)
                             {
                                 //只有最近的maxConsole行日志写屏幕
@@ -95,6 +114,7 @@ public:
                         _error(ex.what());
                     }
 
+                    mDiskLogger->flush();
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));    //也即每一秒最多写10*100=400行屏幕日志
                 }
             });
@@ -127,23 +147,25 @@ public:
 private:
     template <typename... Args> void    pushLog(spdlog::level::level_enum type, const char* fmt, const Args&... args)
     {
-        std::lock_guard<std::mutex> lck(mQuequLock);
-
         if (shouldLog(type))
         {
             try
             {
                 std::string&& str = fmt::format(fmt, std::forward<const Args&>(args)...);
-                mLogQueue.push({ type, std::make_shared<std::string>(std::move(str)) });
+                mQuequLock.lock();
+                mLogQueue.push(ThreadLog(type, std::make_shared<std::string>(std::move(str))));
                 mLogQueue.forceSyncWrite();
+                mQuequLock.unlock();
             }
-            catch(const fmt::FormatError& e)
+            catch (const fmt::FormatError& e)
             {
                 std::string tmp = fmt;
                 tmp.append(" format error:");
                 tmp.append(e.what());
-                mLogQueue.push({ spdlog::level::err, std::make_shared<std::string>(tmp) });
+                mQuequLock.lock();
+                mLogQueue.push(ThreadLog(spdlog::level::err, std::make_shared<std::string>(tmp)));
                 mLogQueue.forceSyncWrite();
+                mQuequLock.unlock();
             }
         }
     }

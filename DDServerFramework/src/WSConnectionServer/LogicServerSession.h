@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <string>
+#include <atomic>
+
 #include "NetSession.h"
 #include "UseCellnetSingleNetSession.h"
 
@@ -17,6 +19,7 @@ public:
     LogicServerSession();
 
     void                sendPBData(uint32_t cmd, const char* data, size_t len);
+    void                sendPBData(uint32_t cmd, const std::string& data);
 
     template<typename T>
     void                sendPB(uint32_t cmd, const T& t)
@@ -60,7 +63,7 @@ private:
     bool                mIsPrimary;
     int                 mID;
 
-    uint16_t            mSendSerialID;
+    std::atomic<uint16_t>    mSendSerialID;
 };
 
 #endif

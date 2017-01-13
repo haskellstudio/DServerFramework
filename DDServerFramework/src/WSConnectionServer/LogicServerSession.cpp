@@ -37,21 +37,19 @@ LogicServerSession::LogicServerSession()
 
 void LogicServerSession::sendPBData(uint32_t cmd, const char* data, size_t len)
 {
-    auto tmp = std::make_shared<std::string>(data, len);
+    char b[8 * 1024];
+    BasePacketWriter packet(b, sizeof(b), false, true);
+    packet.writeUINT32(cmd);
+    packet.writeUINT16(mSendSerialID++);
+    packet.writeUINT16(static_cast<uint16_t>(len + 8));
+    packet.writeBuffer(data, len);
 
-    getEventLoop()->pushAsyncProc([=](){
-        /*  –Ú¡–ªØcellnet packet   */
-        char b[8 * 1024];
-        BasePacketWriter packet(b, sizeof(b), false, true);
-        packet.writeUINT32(cmd);
-        packet.writeUINT16(mSendSerialID);
-        packet.writeUINT16(static_cast<uint16_t>(tmp->size() + 8));
-        packet.writeBuffer(tmp->c_str(), tmp->size());
+    sendPacket(packet.getData(), packet.getPos());
+}
 
-        sendPacket(packet.getData(), packet.getPos());
-
-        mSendSerialID++;
-    });
+void LogicServerSession::sendPBData(uint32_t cmd, const std::string& data)
+{
+    sendPBData(cmd, data.c_str(), data.size());
 }
 
 void LogicServerSession::onEnter()

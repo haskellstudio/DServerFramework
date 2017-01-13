@@ -23,7 +23,7 @@ source = ClientSession.cpp\
 		../../3rdparty/accumulation-dev/src/utils/systemlib.c\
         ../../3rdparty/accumulation-dev/src/utils/SHA1.cpp\
         ../../3rdparty/accumulation-dev/src/utils/base64.cpp\
-		../../3rdparty/accumulation-dev/src/timer/timer.cpp\
+		../../3rdparty/accumulation-dev/src/timer/Timer.cpp\
         ../../3rdparty/accumulation-dev/src/net/http/http_parser.c\
         ../../3rdparty/accumulation-dev/src/net/http/HttpServer.cpp\
         ../../3rdparty/accumulation-dev/src/net/http/HttpParser.cpp\
@@ -35,4 +35,4 @@ server:
     -I../../3rdparty/accumulation-dev/src/utils\
     -I../../3rdparty/accumulation-dev/src/timer\
     -I../../3rdparty/accumulation-dev/src/net/http\
-    $(source)  -O3 -std=c++11 -lpthread -lrt -lprotobuf -o wsconnectionserver
+    $(source)  -D_GLIBCXX_USE_CXX11_ABI=0 -O3 -std=c++11 -lpthread -lrt -lprotobuf -o wsconnectionserver
