@@ -26,6 +26,8 @@ ConnectionClientSession::ConnectionClientSession()
     mRecvSerialID = 0;
     mSendSerialID = 0;
 
+    mKicked = false;
+
     gDailyLogger->info("ConnectionClientSession : {}, {}", getSocketID(), getIP());
 }
 
@@ -51,11 +53,9 @@ void ConnectionClientSession::claimRuntimeID()
     {
         static_assert(sizeof(union CLIENT_RUNTIME_ID) == sizeof(((CLIENT_RUNTIME_ID*)nullptr)->id), "");
 
-        auto tmpRuntimeID = std::atomic_fetch_add(&incRuntimeID, 1) + 1;
-
         CLIENT_RUNTIME_ID tmp;
         tmp.humman.serverID = connectionServerConfig.id();
-        tmp.humman.incID = tmpRuntimeID;
+        tmp.humman.incID = std::atomic_fetch_add(&incRuntimeID, 1);
         tmp.humman.time = static_cast<int32_t>(time(nullptr));
 
         mRuntimeID = tmp.id;
@@ -80,6 +80,12 @@ void ConnectionClientSession::claimPrimaryServer()
     }
 }
 
+void ConnectionClientSession::setPrimaryServer(int id)
+{
+    mPrimaryServerID = id;
+    mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
+}
+
 int ConnectionClientSession::getPrimaryServerID() const
 {
     return mPrimaryServerID;
@@ -88,6 +94,30 @@ int ConnectionClientSession::getPrimaryServerID() const
 int64_t ConnectionClientSession::getRuntimeID() const
 {
     return mRuntimeID;
+}
+
+void ConnectionClientSession::setKicked()
+{
+    mKicked = true;
+}
+
+void ConnectionClientSession::notifyServerPlayerExist()
+{
+    internalAgreement::CloseClientACK closeAck;
+    closeAck.set_clientid(mRuntimeID);
+
+    const int CLOSE_CLIENT_ACK_OP = 1513370829;
+
+    if (mPrimaryServer != nullptr)
+    {
+        mPrimaryServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+    }
+    if (mSlaveServer != nullptr)
+    {
+        mSlaveServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+    }
+
+    mRuntimeID = -1;
 }
 
 void ConnectionClientSession::sendPBBinary(int32_t cmd, const char* data, size_t len)
@@ -116,9 +146,32 @@ void ConnectionClientSession::setSlaveServerID(int id)
 
 void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t bodyLen)
 {
-    if (mRuntimeID == -1)
+    const int UPSTREAM_ACK_OP = 2210821449;
+
+    gDailyLogger->info("recv op {} from id:{}", op, mRuntimeID);
+
+    internalAgreement::UpstreamACK upstream;
+    upstream.set_clientid(mRuntimeID);
+    upstream.set_msgid(op);
+    upstream.set_data(body, bodyLen);
+
+    if (op == 10000)
     {
-        claimRuntimeID();
+        sendPBBinary(10000, "", 0);
+        return;
+    }
+    else if (op == 91)
+    {
+        if (mRecvSerialID == 1)
+        {
+            auto allPrimaryServer = LogicServerSessionMgr::GetAllPrimaryLogicServer();
+            for (auto& server : allPrimaryServer)
+            {
+                server.second->sendPB(UPSTREAM_ACK_OP, upstream);
+            }
+        }
+
+        return;
     }
 
     if (mPrimaryServerID == -1)
@@ -137,20 +190,6 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
     {
         mSlaveServer = nullptr;
     }
-
-    gDailyLogger->debug("{} is op", op);
-    if (op == 10000)
-    {
-        sendPBBinary(10000, "", 0);
-        return;
-    }
-
-    internalAgreement::UpstreamACK upstream;
-    upstream.set_clientid(mRuntimeID);
-    upstream.set_msgid(op);
-    upstream.set_data(body, bodyLen);
-
-    const int UPSTREAM_ACK_OP = 2210821449;
 
     if (op == 24 || op == 74 || op == 75 || op == 52)   /*  特定消息固定转发到玩家所属主逻辑服务器(TODO::常量和OP枚举定义) */
     {
@@ -174,30 +213,21 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
 
 void ConnectionClientSession::onEnter()
 {
-    gDailyLogger->warn("client enter, ip:{}, socket id :{}", getIP(), getSocketID());
+    gDailyLogger->info("client enter, ip:{}, socket id :{}", getIP(), getSocketID());
+    claimRuntimeID();
+    gDailyLogger->info("claim id:{}, ip:{}", mRuntimeID, getIP());
 }
 
 void ConnectionClientSession::onClose()
 {
-    gDailyLogger->warn("client close, ip:{}, socket id :{}, runtime id:{}", getIP(), getSocketID(), getRuntimeID());
+    gDailyLogger->info("client close, ip:{}, socket id :{}, runtime id:{}", getIP(), getSocketID(), getRuntimeID());
     if (mRuntimeID != -1)
     {
         ClientSessionMgr::EraseClientByRuntimeID(mRuntimeID);
 
-        internalAgreement::CloseClientACK closeAck;
-        closeAck.set_clientid(mRuntimeID);
-
-        const int CLOSE_CLIENT_ACK_OP = 1513370829;
-
-        if (mPrimaryServer != nullptr)
-        {
-            mPrimaryServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
-        }
-        if (mSlaveServer != nullptr)
-        {
-            mSlaveServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
-        }
-
-        mRuntimeID = -1;
+        auto sharedThis = std::static_pointer_cast<ConnectionClientSession>(shared_from_this());
+        getEventLoop()->getTimerMgr()->addTimer(mKicked ? 0 : (2 * 60 * 1000), [=](){
+            sharedThis->notifyServerPlayerExist();
+        });
     }
 }

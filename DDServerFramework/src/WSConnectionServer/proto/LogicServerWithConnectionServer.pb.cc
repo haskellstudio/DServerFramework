@@ -42,6 +42,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* LogicServerSetRoleSlave_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   LogicServerSetRoleSlave_reflection_ = NULL;
+const ::google::protobuf::Descriptor* LogicServerSetRolePrimary_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  LogicServerSetRolePrimary_reflection_ = NULL;
 
 }  // namespace
 
@@ -165,6 +168,21 @@ void protobuf_AssignDesc_LogicServerWithConnectionServer_2eproto() {
       sizeof(LogicServerSetRoleSlave),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRoleSlave, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRoleSlave, _is_default_instance_));
+  LogicServerSetRolePrimary_descriptor_ = file->message_type(7);
+  static const int LogicServerSetRolePrimary_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRolePrimary, roleruntimeid_),
+  };
+  LogicServerSetRolePrimary_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      LogicServerSetRolePrimary_descriptor_,
+      LogicServerSetRolePrimary::default_instance_,
+      LogicServerSetRolePrimary_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(LogicServerSetRolePrimary),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRolePrimary, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerSetRolePrimary, _is_default_instance_));
 }
 
 namespace {
@@ -192,6 +210,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
       LogicServerKickPlayer_descriptor_, &LogicServerKickPlayer::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       LogicServerSetRoleSlave_descriptor_, &LogicServerSetRoleSlave::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      LogicServerSetRolePrimary_descriptor_, &LogicServerSetRolePrimary::default_instance());
 }
 
 }  // namespace
@@ -211,6 +231,8 @@ void protobuf_ShutdownFile_LogicServerWithConnectionServer_2eproto() {
   delete LogicServerKickPlayer_reflection_;
   delete LogicServerSetRoleSlave::default_instance_;
   delete LogicServerSetRoleSlave_reflection_;
+  delete LogicServerSetRolePrimary::default_instance_;
+  delete LogicServerSetRolePrimary_reflection_;
 }
 
 void protobuf_AddDesc_LogicServerWithConnectionServer_2eproto() GOOGLE_ATTRIBUTE_COLD;
@@ -232,7 +254,8 @@ void protobuf_AddDesc_LogicServerWithConnectionServer_2eproto() {
     "d\030\002 \001(\005\".\n\025LogicServerKickPlayer\022\025\n\rRole"
     "RuntimeID\030\001 \001(\003\"A\n\027LogicServerSetRoleSla"
     "ve\022\025\n\rRoleRuntimeID\030\001 \001(\003\022\017\n\007willSet\030\002 \001"
-    "(\010b\006proto3", 450);
+    "(\010\"2\n\031LogicServerSetRolePrimary\022\025\n\rRoleR"
+    "untimeID\030\001 \001(\003b\006proto3", 502);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "LogicServerWithConnectionServer.proto", &protobuf_RegisterTypes);
   UpstreamACK::default_instance_ = new UpstreamACK();
@@ -242,6 +265,7 @@ void protobuf_AddDesc_LogicServerWithConnectionServer_2eproto() {
   LogicServerLoginReply::default_instance_ = new LogicServerLoginReply();
   LogicServerKickPlayer::default_instance_ = new LogicServerKickPlayer();
   LogicServerSetRoleSlave::default_instance_ = new LogicServerSetRoleSlave();
+  LogicServerSetRolePrimary::default_instance_ = new LogicServerSetRolePrimary();
   UpstreamACK::default_instance_->InitAsDefaultInstance();
   CloseClientACK::default_instance_->InitAsDefaultInstance();
   DownstreamACK::default_instance_->InitAsDefaultInstance();
@@ -249,6 +273,7 @@ void protobuf_AddDesc_LogicServerWithConnectionServer_2eproto() {
   LogicServerLoginReply::default_instance_->InitAsDefaultInstance();
   LogicServerKickPlayer::default_instance_->InitAsDefaultInstance();
   LogicServerSetRoleSlave::default_instance_->InitAsDefaultInstance();
+  LogicServerSetRolePrimary::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_LogicServerWithConnectionServer_2eproto);
 }
 
@@ -2470,6 +2495,244 @@ void LogicServerSetRoleSlave::clear_willset() {
   
   willset_ = value;
   // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.willSet)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int LogicServerSetRolePrimary::kRoleRuntimeIDFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+LogicServerSetRolePrimary::LogicServerSetRolePrimary()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:internalAgreement.LogicServerSetRolePrimary)
+}
+
+void LogicServerSetRolePrimary::InitAsDefaultInstance() {
+  _is_default_instance_ = true;
+}
+
+LogicServerSetRolePrimary::LogicServerSetRolePrimary(const LogicServerSetRolePrimary& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:internalAgreement.LogicServerSetRolePrimary)
+}
+
+void LogicServerSetRolePrimary::SharedCtor() {
+    _is_default_instance_ = false;
+  _cached_size_ = 0;
+  roleruntimeid_ = GOOGLE_LONGLONG(0);
+}
+
+LogicServerSetRolePrimary::~LogicServerSetRolePrimary() {
+  // @@protoc_insertion_point(destructor:internalAgreement.LogicServerSetRolePrimary)
+  SharedDtor();
+}
+
+void LogicServerSetRolePrimary::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void LogicServerSetRolePrimary::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* LogicServerSetRolePrimary::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return LogicServerSetRolePrimary_descriptor_;
+}
+
+const LogicServerSetRolePrimary& LogicServerSetRolePrimary::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_LogicServerWithConnectionServer_2eproto();
+  return *default_instance_;
+}
+
+LogicServerSetRolePrimary* LogicServerSetRolePrimary::default_instance_ = NULL;
+
+LogicServerSetRolePrimary* LogicServerSetRolePrimary::New(::google::protobuf::Arena* arena) const {
+  LogicServerSetRolePrimary* n = new LogicServerSetRolePrimary;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void LogicServerSetRolePrimary::Clear() {
+// @@protoc_insertion_point(message_clear_start:internalAgreement.LogicServerSetRolePrimary)
+  roleruntimeid_ = GOOGLE_LONGLONG(0);
+}
+
+bool LogicServerSetRolePrimary::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:internalAgreement.LogicServerSetRolePrimary)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int64 RoleRuntimeID = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &roleruntimeid_)));
+
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:internalAgreement.LogicServerSetRolePrimary)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:internalAgreement.LogicServerSetRolePrimary)
+  return false;
+#undef DO_
+}
+
+void LogicServerSetRolePrimary::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:internalAgreement.LogicServerSetRolePrimary)
+  // optional int64 RoleRuntimeID = 1;
+  if (this->roleruntimeid() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->roleruntimeid(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:internalAgreement.LogicServerSetRolePrimary)
+}
+
+::google::protobuf::uint8* LogicServerSetRolePrimary::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:internalAgreement.LogicServerSetRolePrimary)
+  // optional int64 RoleRuntimeID = 1;
+  if (this->roleruntimeid() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->roleruntimeid(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:internalAgreement.LogicServerSetRolePrimary)
+  return target;
+}
+
+int LogicServerSetRolePrimary::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:internalAgreement.LogicServerSetRolePrimary)
+  int total_size = 0;
+
+  // optional int64 RoleRuntimeID = 1;
+  if (this->roleruntimeid() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->roleruntimeid());
+  }
+
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void LogicServerSetRolePrimary::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:internalAgreement.LogicServerSetRolePrimary)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  const LogicServerSetRolePrimary* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const LogicServerSetRolePrimary>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:internalAgreement.LogicServerSetRolePrimary)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:internalAgreement.LogicServerSetRolePrimary)
+    MergeFrom(*source);
+  }
+}
+
+void LogicServerSetRolePrimary::MergeFrom(const LogicServerSetRolePrimary& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:internalAgreement.LogicServerSetRolePrimary)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  if (from.roleruntimeid() != 0) {
+    set_roleruntimeid(from.roleruntimeid());
+  }
+}
+
+void LogicServerSetRolePrimary::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:internalAgreement.LogicServerSetRolePrimary)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void LogicServerSetRolePrimary::CopyFrom(const LogicServerSetRolePrimary& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:internalAgreement.LogicServerSetRolePrimary)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool LogicServerSetRolePrimary::IsInitialized() const {
+
+  return true;
+}
+
+void LogicServerSetRolePrimary::Swap(LogicServerSetRolePrimary* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void LogicServerSetRolePrimary::InternalSwap(LogicServerSetRolePrimary* other) {
+  std::swap(roleruntimeid_, other->roleruntimeid_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata LogicServerSetRolePrimary::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = LogicServerSetRolePrimary_descriptor_;
+  metadata.reflection = LogicServerSetRolePrimary_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// LogicServerSetRolePrimary
+
+// optional int64 RoleRuntimeID = 1;
+void LogicServerSetRolePrimary::clear_roleruntimeid() {
+  roleruntimeid_ = GOOGLE_LONGLONG(0);
+}
+ ::google::protobuf::int64 LogicServerSetRolePrimary::roleruntimeid() const {
+  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRolePrimary.RoleRuntimeID)
+  return roleruntimeid_;
+}
+ void LogicServerSetRolePrimary::set_roleruntimeid(::google::protobuf::int64 value) {
+  
+  roleruntimeid_ = value;
+  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRolePrimary.RoleRuntimeID)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

@@ -46,7 +46,7 @@ static void startServer()
     /*开启对内逻辑服务器端口*/
     gListenLogic = std::make_shared<ListenThread>();
     gListenLogic->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), nullptr, nullptr, [&](sock fd){
-        WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 10000, 32 * 1024 * 1024);
+        WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 90*1000, 32 * 1024 * 1024);
     });
 }
 

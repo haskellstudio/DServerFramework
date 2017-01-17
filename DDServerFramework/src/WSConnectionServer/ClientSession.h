@@ -17,9 +17,14 @@ public:
     ConnectionClientSession();
     ~ConnectionClientSession();
 
+    void                setPrimaryServer(int id);
     void                setSlaveServerID(int id);
     int                 getPrimaryServerID() const;
     int64_t             getRuntimeID() const;
+
+    void                setKicked();
+
+    void                notifyServerPlayerExist();
 
     void                sendPBBinary(int32_t cmd, const char* data, size_t len);
 
@@ -41,6 +46,8 @@ private:
 
     LogicServerSession::PTR mPrimaryServer;
     LogicServerSession::PTR mSlaveServer;
+
+    bool                    mKicked;
 };
 
 #endif

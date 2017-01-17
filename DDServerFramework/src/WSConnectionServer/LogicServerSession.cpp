@@ -26,6 +26,7 @@ enum class CELLNET_OP:uint32_t
     LOGICSERVER_DOWNSTREAM = 1648565662,
     LOGICSERVER_KICK_PLAYER = 2806502720,
     LOGICSERVER_SET_PLAYER_SLAVE = 1999458104,
+    LOGICSERVER_SET_PLAYER_PRIMARY = 2933402823,
 };
 
 LogicServerSession::LogicServerSession()
@@ -100,30 +101,35 @@ void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t body
     switch (static_cast<CELLNET_OP>(op))
     {
     case CELLNET_OP::LOGICSERVER_LOGIN:
-        {
-            onLogicServerLogin(rp);
-        }
-        break;
+    {
+        onLogicServerLogin(rp);
+    }
+    break;
     case CELLNET_OP::LOGICSERVER_DOWNSTREAM:
-        {
-            onPacket2ClientByRuntimeID(rp);
-        }
-        break;
+    {
+        onPacket2ClientByRuntimeID(rp);
+    }
+    break;
     case CELLNET_OP::LOGICSERVER_KICK_PLAYER:
-        {
-            onKickClientByRuntimeID(rp);
-        }
-        break;
+    {
+        onKickClientByRuntimeID(rp);
+    }
+    break;
     case CELLNET_OP::LOGICSERVER_SET_PLAYER_SLAVE:
-        {
-            onSlaveServerIsSetClient(rp);
-        }
-        break;
-        default:
-        {
-            assert(false);
-        }
-        break;
+    {
+        onIsSetPlayerSlaveServer(rp);
+    }
+    break;
+    case CELLNET_OP::LOGICSERVER_SET_PLAYER_PRIMARY:
+    {
+
+    }
+    break;
+    default:
+    {
+        assert(false);
+    }
+    break;
     }
 
     rp.skipAll();
@@ -200,7 +206,7 @@ void LogicServerSession::onPacket2ClientByRuntimeID(BasePacketReader& rp)
     }
 }
 
-void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
+void LogicServerSession::onIsSetPlayerSlaveServer(BasePacketReader& rp)
 {
     internalAgreement::LogicServerSetRoleSlave setslaveMsg;
     if (setslaveMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
@@ -209,6 +215,19 @@ void LogicServerSession::onSlaveServerIsSetClient(BasePacketReader& rp)
         if (p != nullptr)
         {
             p->setSlaveServerID(setslaveMsg.willset() ? mID : -1);
+        }
+    }
+}
+
+void LogicServerSession::onSetPlayerPrimaryServer(BasePacketReader& rp)
+{
+    internalAgreement::LogicServerSetRolePrimary setPrimaryMsg;
+    if (setPrimaryMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
+    {
+        ConnectionClientSession::PTR p = ClientSessionMgr::FindClientByRuntimeID(setPrimaryMsg.roleruntimeid());
+        if (p != nullptr)
+        {
+            p->setPrimaryServer(mID);
         }
     }
 }

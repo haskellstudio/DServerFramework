@@ -1,7 +1,7 @@
 {
     "enableIPV6":false,
-    "bindIP":"127.0.0.1",
-    "portForClient":29071,
+    "bindIP":"0.0.0.0",
+    "portForClient":8001,
     "portForLogicServer":5777,
     "id":1,
     "etcdservers":[

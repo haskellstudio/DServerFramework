@@ -41,6 +41,7 @@ class DownstreamACK;
 class LogicServerKickPlayer;
 class LogicServerLogin;
 class LogicServerLoginReply;
+class LogicServerSetRolePrimary;
 class LogicServerSetRoleSlave;
 class UpstreamACK;
 
@@ -684,6 +685,88 @@ class LogicServerSetRoleSlave : public ::google::protobuf::Message /* @@protoc_i
   void InitAsDefaultInstance();
   static LogicServerSetRoleSlave* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class LogicServerSetRolePrimary : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:internalAgreement.LogicServerSetRolePrimary) */ {
+ public:
+  LogicServerSetRolePrimary();
+  virtual ~LogicServerSetRolePrimary();
+
+  LogicServerSetRolePrimary(const LogicServerSetRolePrimary& from);
+
+  inline LogicServerSetRolePrimary& operator=(const LogicServerSetRolePrimary& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LogicServerSetRolePrimary& default_instance();
+
+  void Swap(LogicServerSetRolePrimary* other);
+
+  // implements Message ----------------------------------------------
+
+  inline LogicServerSetRolePrimary* New() const { return New(NULL); }
+
+  LogicServerSetRolePrimary* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const LogicServerSetRolePrimary& from);
+  void MergeFrom(const LogicServerSetRolePrimary& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(LogicServerSetRolePrimary* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional int64 RoleRuntimeID = 1;
+  void clear_roleruntimeid();
+  static const int kRoleRuntimeIDFieldNumber = 1;
+  ::google::protobuf::int64 roleruntimeid() const;
+  void set_roleruntimeid(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:internalAgreement.LogicServerSetRolePrimary)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool _is_default_instance_;
+  ::google::protobuf::int64 roleruntimeid_;
+  mutable int _cached_size_;
+  friend void  protobuf_AddDesc_LogicServerWithConnectionServer_2eproto();
+  friend void protobuf_AssignDesc_LogicServerWithConnectionServer_2eproto();
+  friend void protobuf_ShutdownFile_LogicServerWithConnectionServer_2eproto();
+
+  void InitAsDefaultInstance();
+  static LogicServerSetRolePrimary* default_instance_;
+};
 // ===================================================================
 
 
@@ -988,7 +1071,27 @@ inline void LogicServerSetRoleSlave::set_willset(bool value) {
   // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRoleSlave.willSet)
 }
 
+// -------------------------------------------------------------------
+
+// LogicServerSetRolePrimary
+
+// optional int64 RoleRuntimeID = 1;
+inline void LogicServerSetRolePrimary::clear_roleruntimeid() {
+  roleruntimeid_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LogicServerSetRolePrimary::roleruntimeid() const {
+  // @@protoc_insertion_point(field_get:internalAgreement.LogicServerSetRolePrimary.RoleRuntimeID)
+  return roleruntimeid_;
+}
+inline void LogicServerSetRolePrimary::set_roleruntimeid(::google::protobuf::int64 value) {
+  
+  roleruntimeid_ = value;
+  // @@protoc_insertion_point(field_set:internalAgreement.LogicServerSetRolePrimary.RoleRuntimeID)
+}
+
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

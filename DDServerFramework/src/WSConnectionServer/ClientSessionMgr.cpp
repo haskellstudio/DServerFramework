@@ -42,6 +42,7 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
     ConnectionClientSession::PTR p = FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
+        p->setKicked();
         auto socketID = p->getSocketID();
         if (socketID != -1)
         {

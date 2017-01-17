@@ -26,6 +26,17 @@ LogicServerSession::PTR LogicServerSessionMgr::FindPrimaryLogicServer(int id)
     return tmp;
 }
 
+std::unordered_map<int, LogicServerSession::PTR> LogicServerSessionMgr::GetAllPrimaryLogicServer()
+{
+    std::unordered_map<int, LogicServerSession::PTR> tmp;
+
+    gAllPrimaryServersLock.lock();
+    tmp = gAllPrimaryServers;
+    gAllPrimaryServersLock.unlock();
+
+    return tmp;
+}
+
 void LogicServerSessionMgr::RemovePrimaryLogicServer(int id)
 {
     gAllPrimaryServersLock.lock();

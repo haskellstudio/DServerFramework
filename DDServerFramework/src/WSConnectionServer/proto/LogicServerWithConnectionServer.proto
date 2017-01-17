@@ -51,3 +51,8 @@ message LogicServerSetRoleSlave
     int64 RoleRuntimeID = 1;
     bool willSet = 2;
 }
+
+message LogicServerSetRolePrimary
+{
+    int64 RoleRuntimeID = 1;
+}

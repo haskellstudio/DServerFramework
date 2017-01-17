@@ -50,11 +50,9 @@ void ConnectionClientSession::claimRuntimeID()
     {
         static_assert(sizeof(union CLIENT_RUNTIME_ID) == sizeof(((CLIENT_RUNTIME_ID*)nullptr)->id), "");
 
-        auto tmpRuntimeID = std::atomic_fetch_add(&incRuntimeID, 1) + 1;
-
         CLIENT_RUNTIME_ID tmp;
         tmp.humman.serverID = connectionServerConfig.id();
-        tmp.humman.incID = tmpRuntimeID;
+        tmp.humman.incID = std::atomic_fetch_add(&incRuntimeID, 1);
         tmp.humman.time = static_cast<int32_t>(time(nullptr));
 
         mRuntimeID = tmp.id;

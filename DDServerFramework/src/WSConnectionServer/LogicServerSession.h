@@ -51,7 +51,8 @@ private:
     /*  内部服务器请求转发消息给客户端(以RuntimeID标识) */
     void                onPacket2ClientByRuntimeID(BasePacketReader& rp);
 
-    void                onSlaveServerIsSetClient(BasePacketReader& rp);
+    void                onIsSetPlayerSlaveServer(BasePacketReader& rp);
+    void                onSetPlayerPrimaryServer(BasePacketReader& rp);
     /*  强制踢出某RuntimeID所标识的客户端   */
     void                onKickClientByRuntimeID(BasePacketReader& rp);
 
