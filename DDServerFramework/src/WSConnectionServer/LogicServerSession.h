@@ -18,23 +18,25 @@ public:
 
     LogicServerSession();
 
-    void                sendPBData(uint32_t cmd, const char* data, size_t len);
-    void                sendPBData(uint32_t cmd, const std::string& data);
-
     template<typename T>
-    void                sendPB(uint32_t cmd, const T& t)
+    void                sendPB(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const T& t)
     {
-        char buff[8 * 1024];
-        if (t.SerializePartialToArray((void*)buff, sizeof(buff)))
+        if (getEventLoop()->isInLoopThread())
         {
-            sendPBData(cmd, buff, t.ByteSize());
+            char buff[8 * 1024];
+            if (t.SerializePartialToArray((void*)buff, sizeof(buff)))
+            {
+                sendPBData(cmd, buff, t.ByteSize());
+            }
         }
         else
         {
             auto str = t.SerializePartialAsString();
             if (!str.empty())
             {
-                sendPBData(cmd, str.c_str(), str.size());
+                auto smartStr = std::make_shared<std::string>();
+                *smartStr = std::move(str);
+                sendPBData(cmd, smartStr);
             }
         }
     }
@@ -43,7 +45,7 @@ private:
     virtual     void    onEnter() override;
     virtual     void    onClose() override;
 
-    void                procPacket(uint32_t op, const char* body, uint16_t bodyLen);
+    void                procPacket(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE op, const char* body, uint16_t bodyLen);
 
 private:
     /*  内部服务器登陆此链接服务器   */
@@ -60,6 +62,11 @@ private:
     bool                checkPassword(const std::string& password);
     void                sendLogicServerLoginResult(bool isSuccess, const std::string& reason);
 
+    void                sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const char* data, size_t len);
+    void                sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, std::shared_ptr<std::string>&);
+    void                sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, std::shared_ptr<std::string>&&);
+
+    void                helpSendPacketInLoop(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const char* data, size_t len);
 private:
     bool                mIsPrimary;
     int                 mID;

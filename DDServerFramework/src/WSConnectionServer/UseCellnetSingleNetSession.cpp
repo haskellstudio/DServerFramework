@@ -30,7 +30,7 @@ size_t UseCellnetPacketSingleNetSession::onMsg(const char* buffer, size_t len)
             {
                 assert(mRecvSerialID++ == seralID);
 
-                procPacket(cmdID, bp.getBuffer() + bp.getPos(), packet_len - static_cast<uint16_t>(bp.getPos()));
+                procPacket(static_cast<CELLNET_OP_TYPE>(cmdID), bp.getBuffer() + bp.getPos(), packet_len - static_cast<uint16_t>(bp.getPos()));
 
                 total_proc_len += packet_len;
                 parse_str += packet_len;

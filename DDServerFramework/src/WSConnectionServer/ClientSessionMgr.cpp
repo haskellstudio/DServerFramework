@@ -48,6 +48,7 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
         {
             gServer->getService()->disConnect(socketID);
         }
+        p->notifyServerPlayerExist();
     }
 }
 

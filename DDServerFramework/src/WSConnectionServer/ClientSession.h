@@ -27,6 +27,8 @@ public:
     void                notifyServerPlayerExist();
 
     void                sendPBBinary(int32_t cmd, const char* data, size_t len);
+    void                sendPBBinary(int32_t cmd, std::shared_ptr<std::string>& data);
+    void                sendPBBinary(int32_t cmd, std::shared_ptr<std::string>&& data);
 
 private:
     virtual void        onEnter() override;
@@ -36,6 +38,7 @@ private:
     void                claimPrimaryServer();
     void                claimRuntimeID();
 
+    void                helpSendPacket(uint32_t op, const char* data, size_t len);
 private:
     int64_t             mRuntimeID;
     int                 mPrimaryServerID;

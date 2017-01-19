@@ -20,7 +20,7 @@ extern WrapServer::PTR                      gServer;
 extern WrapLog::PTR                         gDailyLogger;
 extern ServerConfig::ConnectionServerConfig connectionServerConfig;
 
-enum class CELLNET_OP:uint32_t
+enum class CELLNET_OP :UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE
 {
     LOGICSERVER_LOGIN = 3280140517,
     LOGICSERVER_DOWNSTREAM = 1648565662,
@@ -36,21 +36,53 @@ LogicServerSession::LogicServerSession()
     mSendSerialID = 1;
 }
 
-void LogicServerSession::sendPBData(uint32_t cmd, const char* data, size_t len)
+void LogicServerSession::sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const char* data, size_t len)
 {
+    if (getEventLoop()->isInLoopThread())
+    {
+        helpSendPacketInLoop(cmd, data, len);
+    }
+    else
+    {
+        sendPBData(cmd, std::make_shared<string>(data, len));
+    }
+}
+
+void LogicServerSession::sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, std::shared_ptr<string>&& data)
+{
+    sendPBData(cmd, data);
+}
+
+void LogicServerSession::sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, std::shared_ptr<string>& data)
+{
+    if (getEventLoop()->isInLoopThread())
+    {
+        helpSendPacketInLoop(cmd, data->c_str(), data->size());
+    }
+    else
+    {
+        getEventLoop()->pushAsyncProc([=](){
+            helpSendPacketInLoop(cmd, data->c_str(), data->size());
+        });
+    }
+}
+
+void LogicServerSession::helpSendPacketInLoop(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const char* data, size_t len)
+{
+    assert(getEventLoop()->isInLoopThread());
+
+    auto ser = std::atomic_fetch_add(&mSendSerialID, static_cast<uint16_t>(1));
+
     char b[8 * 1024];
     BasePacketWriter packet(b, sizeof(b), false, true);
     packet.writeUINT32(cmd);
-    packet.writeUINT16(mSendSerialID++);
+    packet.writeUINT16(ser);
     packet.writeUINT16(static_cast<uint16_t>(len + 8));
     packet.writeBuffer(data, len);
 
     sendPacket(packet.getData(), packet.getPos());
-}
 
-void LogicServerSession::sendPBData(uint32_t cmd, const std::string& data)
-{
-    sendPBData(cmd, data.c_str(), data.size());
+    gDailyLogger->debug("send logic server {}, cmd:{}, ser:{}", mID, cmd, ser);
 }
 
 void LogicServerSession::onEnter()
@@ -93,7 +125,7 @@ void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const std::s
     sendPB(966232901, loginResult);
 }
 
-void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t bodyLen)
+void LogicServerSession::procPacket(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE op, const char* body, uint16_t bodyLen)
 {
     gDailyLogger->debug("recv logic server[{},{}] packet, op:{}, bodylen:{}", mID, mIsPrimary, op, bodyLen);
 
@@ -122,7 +154,7 @@ void LogicServerSession::procPacket(uint32_t op, const char* body, uint16_t body
     break;
     case CELLNET_OP::LOGICSERVER_SET_PLAYER_PRIMARY:
     {
-
+        onSetPlayerPrimaryServer(rp);
     }
     break;
     default:
@@ -195,12 +227,26 @@ void LogicServerSession::onPacket2ClientByRuntimeID(BasePacketReader& rp)
     internalAgreement::DownstreamACK downstream;
     if (downstream.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
+        std::shared_ptr<std::string> smartStr;
+
         for (auto& v : downstream.clientid())
         {
             ConnectionClientSession::PTR client = ClientSessionMgr::FindClientByRuntimeID(v);
             if (client != nullptr)
             {
-                client->sendPBBinary(downstream.msgid(), downstream.data().c_str(), downstream.data().size());
+                /*  如果处于同一线程则直接发送,避免分配内存(用于跨线程通信时安全的绑定数据)    */
+                if (client->getEventLoop()->isInLoopThread())
+                {
+                    client->sendPBBinary(downstream.msgid(), downstream.data().c_str(), downstream.data().size());
+                }
+                else
+                {
+                    if (smartStr == nullptr)
+                    {
+                        smartStr = std::make_shared<std::string>(downstream.data().c_str(), downstream.data().size());
+                    }
+                    client->sendPBBinary(downstream.msgid(), smartStr);
+                }
             }
         }
     }
@@ -237,6 +283,7 @@ void LogicServerSession::onKickClientByRuntimeID(BasePacketReader& rp)
     internalAgreement::LogicServerKickPlayer kickMsg;
     if (kickMsg.ParseFromArray(rp.getBuffer(), static_cast<int>(rp.getMaxPos())))
     {
+        gDailyLogger->info("recv kick player, runtimeid:{}", kickMsg.roleruntimeid());
         ClientSessionMgr::KickClientByRuntimeID(kickMsg.roleruntimeid());
     }
 }

@@ -12,9 +12,11 @@ class UseCellnetPacketSingleNetSession : public BaseNetSession, public std::enab
 public:
     UseCellnetPacketSingleNetSession();
 
+    typedef uint32_t CELLNET_OP_TYPE;
+
 private:
     virtual size_t  onMsg(const char* buffer, size_t len) final;
-    virtual void    procPacket(uint32_t op, const char* body, uint16_t bodyLen) = 0;
+    virtual void    procPacket(CELLNET_OP_TYPE op, const char* body, uint16_t bodyLen) = 0;
 
 private:
     uint16_t        mRecvSerialID;
