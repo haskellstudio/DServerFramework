@@ -68,7 +68,6 @@ int main()
 
     gDailyLogger = std::make_shared<WrapLog>();
     gDailyLogger->setFile("", "logs/ConnectionServer/daily");
-    gDailyLogger->setLevel(spdlog::level::err);
 
     startServer();
 
