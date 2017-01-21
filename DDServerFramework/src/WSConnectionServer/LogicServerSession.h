@@ -18,6 +18,8 @@ public:
 
     LogicServerSession();
 
+    int                 getID() const;
+
     template<typename T>
     void                sendPB(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const T& t)
     {

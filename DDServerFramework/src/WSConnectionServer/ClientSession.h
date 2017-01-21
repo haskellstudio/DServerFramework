@@ -19,6 +19,7 @@ public:
 
     void                setPrimaryServerID(int id);
     void                setSlaveServerID(int id);
+
     int                 getPrimaryServerID() const;
     int64_t             getRuntimeID() const;
 
@@ -34,18 +35,14 @@ private:
     virtual void        procPacket(uint32_t op, const char* body, uint32_t bodyLen);
 
     void                claimPrimaryServer();
-    void                claimRuntimeID();
 
     void                helpSendPacket(uint32_t op, const char* data, size_t len);
 private:
     int64_t             mRuntimeID;
-    int                 mPrimaryServerID;
-    int                 mSlaveServerID;
 
     int32_t                 mRecvSerialID;
     std::atomic<int32_t>    mSendSerialID;
 
-    //TODO::改为原子SharedPtr
     LogicServerSession::PTR mPrimaryServer;
     LogicServerSession::PTR mSlaveServer;
 

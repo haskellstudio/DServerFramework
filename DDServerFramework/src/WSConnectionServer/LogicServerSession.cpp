@@ -36,6 +36,11 @@ LogicServerSession::LogicServerSession()
     mSendSerialID = 1;
 }
 
+int LogicServerSession::getID() const
+{
+    return mID;
+}
+
 void LogicServerSession::sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE cmd, const char* data, size_t len)
 {
     if (getEventLoop()->isInLoopThread())
@@ -61,8 +66,9 @@ void LogicServerSession::sendPBData(UseCellnetPacketSingleNetSession::CELLNET_OP
     }
     else
     {
+        auto sharedThis = std::static_pointer_cast<LogicServerSession>(shared_from_this());
         getEventLoop()->pushAsyncProc([=](){
-            helpSendPacketInLoop(cmd, data->c_str(), data->size());
+            sharedThis->helpSendPacketInLoop(cmd, data->c_str(), data->size());
         });
     }
 }
@@ -287,4 +293,3 @@ void LogicServerSession::onKickClientByRuntimeID(BasePacketReader& rp)
         ClientSessionMgr::KickClientByRuntimeID(kickMsg.roleruntimeid());
     }
 }
-
