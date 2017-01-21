@@ -273,7 +273,7 @@ void LogicServerSession::onSetPlayerPrimaryServer(BasePacketReader& rp)
         ConnectionClientSession::PTR p = ClientSessionMgr::FindClientByRuntimeID(setPrimaryMsg.roleruntimeid());
         if (p != nullptr)
         {
-            p->setPrimaryServer(mID);
+            p->setPrimaryServerID(mID);
         }
     }
 }

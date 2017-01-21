@@ -17,12 +17,10 @@ public:
     ConnectionClientSession();
     ~ConnectionClientSession();
 
-    void                setPrimaryServer(int id);
+    void                setPrimaryServerID(int id);
     void                setSlaveServerID(int id);
     int                 getPrimaryServerID() const;
     int64_t             getRuntimeID() const;
-
-    void                setKicked();
 
     void                notifyServerPlayerExist();
 
@@ -47,10 +45,11 @@ private:
     int32_t                 mRecvSerialID;
     std::atomic<int32_t>    mSendSerialID;
 
+    //TODO::改为原子SharedPtr
     LogicServerSession::PTR mPrimaryServer;
     LogicServerSession::PTR mSlaveServer;
 
-    bool                    mKicked;
+    bool                    mReconnecting;
 };
 
 #endif

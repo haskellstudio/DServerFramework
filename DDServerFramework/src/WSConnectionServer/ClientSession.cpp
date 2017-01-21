@@ -25,10 +25,9 @@ ConnectionClientSession::ConnectionClientSession()
     mSlaveServerID = -1;
 
     mRecvSerialID = 0;
-
     mSendSerialID = 0;
 
-    mKicked = false;
+    mReconnecting = false;
 
     gDailyLogger->info("ConnectionClientSession : {}, {}", getSocketID(), getIP());
 }
@@ -82,10 +81,9 @@ void ConnectionClientSession::claimPrimaryServer()
     }
 }
 
-void ConnectionClientSession::setPrimaryServer(int id)
+void ConnectionClientSession::setPrimaryServerID(int id)
 {
     mPrimaryServerID = id;
-    mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
 }
 
 int ConnectionClientSession::getPrimaryServerID() const
@@ -98,30 +96,55 @@ int64_t ConnectionClientSession::getRuntimeID() const
     return mRuntimeID;
 }
 
-void ConnectionClientSession::setKicked()
-{
-    mKicked = true;
-}
-
 void ConnectionClientSession::notifyServerPlayerExist()
 {
-    gDailyLogger->info("notify client {} exist game", mRuntimeID);
+    gDailyLogger->info("ready notify client {} exist game", mRuntimeID);
 
     internalAgreement::CloseClientACK closeAck;
     closeAck.set_clientid(mRuntimeID);
 
     const int CLOSE_CLIENT_ACK_OP = 1513370829;
 
-    if (mPrimaryServer != nullptr)
+    // 如果没有找到所属服务器对象,但玩家正在重连中,那么需要向所有服务器发送断开(避免后台重连成功)
+    //向所有服务器通知踢人(避免某链接重连成功的途中-逻辑服务器还没有反馈给链接服务器,然后此链接在网关上断开,然后以后的踢人就再也找到此链接，最终无法踢掉链接所对应的逻辑对象)
+
+    auto server = mPrimaryServer;
+    if (server == nullptr && mPrimaryServerID != -1)
     {
-        mPrimaryServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+        server = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
     }
-    if (mSlaveServer != nullptr)
+    if (server != nullptr)
     {
-        mSlaveServer->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+        gDailyLogger->info("really notify client {} exist primary server", mRuntimeID);
+        server->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+    }
+    else if (mReconnecting)
+    {
+        auto PrimaryServers = LogicServerSessionMgr::GetAllPrimaryLogicServer();
+        for (auto& v : PrimaryServers)
+        {
+            v.second->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+        }
     }
 
-    mRuntimeID = -1;
+    server = mSlaveServer;
+    if (server == nullptr && mSlaveServerID != -1)
+    {
+        server = LogicServerSessionMgr::FindSlaveLogicServer(mSlaveServerID);
+    }
+    if (server != nullptr)
+    {
+        gDailyLogger->info("really notify client {} exist salve server", mRuntimeID);
+        server->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+    }
+    else if (mReconnecting)
+    {
+        auto SlaveServers = LogicServerSessionMgr::GetAllSlaveLogicServer();
+        for (auto& v : SlaveServers)
+        {
+            v.second->sendPB(CLOSE_CLIENT_ACK_OP, closeAck);
+        }
+    }
 }
 
 void ConnectionClientSession::sendPBBinary(int32_t cmd, const char* data, size_t len)
@@ -179,16 +202,14 @@ void ConnectionClientSession::setSlaveServerID(int id)
 {
     gDailyLogger->info("set client {} slave server id:{}", mRuntimeID, id);
     mSlaveServerID = id;
-    if (mSlaveServerID == -1)
-    {
-        mSlaveServer = nullptr;
-    }
 }
 
 void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t bodyLen)
 {
     const static int UPSTREAM_ACK_OP = 2210821449;
     const static std::vector<uint32_t> PRIMARY_OPS = { 24, 52, 74, 75 };
+
+    mRecvSerialID++;
 
     if (op == 10000)
     {
@@ -203,8 +224,9 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
     upstream.set_msgid(op);
     upstream.set_data(body, bodyLen);
 
-    if (op == 91)
+    if (op == 91)  
     {
+        /*  重连包必须为第一个消息包    */
         if (mRecvSerialID == 1)
         {
             auto allPrimaryServer = LogicServerSessionMgr::GetAllPrimaryLogicServer();
@@ -214,24 +236,40 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
             }
         }
 
+        mReconnecting = true;
+
         return;
     }
 
     if (mPrimaryServerID == -1)
     {
-        claimPrimaryServer();
+        /*  只有此链接没有请求过重连才主动给他分配主服务器 */
+        if (!mReconnecting)
+        {
+            claimPrimaryServer();
+        }
+    }
+    else
+    {
+        if (mPrimaryServer == nullptr)
+        {
+            assert(mReconnecting);
+            /*  如果主服务器ID被设置有效,且并没有初始化所属主服务器对象,则为重连成功导致,在此初始化其所属主服务器对象 */
+            mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
+            mReconnecting = false;
+        }
     }
 
-    if (mSlaveServerID != -1)
+    if (mSlaveServerID == -1)
+    {
+        mSlaveServer = nullptr;
+    }
+    else
     {
         if (mSlaveServer == nullptr)
         {
             mSlaveServer = LogicServerSessionMgr::FindSlaveLogicServer(mSlaveServerID);
         }
-    }
-    else
-    {
-        mSlaveServer = nullptr;
     }
 
     if (std::find(PRIMARY_OPS.begin(), PRIMARY_OPS.end(), op) != PRIMARY_OPS.end())   /*  特定消息固定转发到玩家所属主逻辑服务器(TODO::常量和OP枚举定义) */
@@ -257,7 +295,7 @@ void ConnectionClientSession::procPacket(uint32_t op, const char* body, uint32_t
         }
         else
         {
-            gDailyLogger->error("no any server");
+            gDailyLogger->error("no any server process this packet cmd:{} of client {}, ip is {}", op, mRuntimeID, getIP());
         }
     }
 }
@@ -270,14 +308,14 @@ void ConnectionClientSession::onEnter()
 
 void ConnectionClientSession::onClose()
 {
-    gDailyLogger->info("client close, ip:{}, socket id :{}, runtime id:{}, mKicked:{}", getIP(), getSocketID(), getRuntimeID(), mKicked);
+    gDailyLogger->info("client close, ip:{}, socket id :{}, runtime id:{}", getIP(), getSocketID(), getRuntimeID());
     if (mRuntimeID != -1)
     {
         auto sharedThis = std::static_pointer_cast<ConnectionClientSession>(shared_from_this());
-        getEventLoop()->getTimerMgr()->addTimer(mKicked ? 0 : (2 * 60 * 1000), [=](){
+        getEventLoop()->getTimerMgr()->addTimer(2 * 60 * 1000, [=](){
             sharedThis->notifyServerPlayerExist();
             ClientSessionMgr::EraseClientByRuntimeID(sharedThis->getRuntimeID());
-            //不在onClose里调用EraseClientByRuntimeID，是因为有可能玩家再次登录时，先触发网络断开再触发kick，那么网络断开里kick标志为false，然后移除了玩家，并且等待2分钟再通知退出（也即走断线重连）
+            //不在onClose里调用EraseClientByRuntimeID，是因为有可能玩家再次登录时，先触发网络断开再触发kick，那么网络断开里移除了玩家，并且等待2分钟再通知退出（也即走断线重连）
             //那么kick逻辑里就无法触发通知玩家离线(则玩家无法短时间内再次登录)(因为找不到玩家对象了)
         });
     }

@@ -45,7 +45,7 @@ private:
     virtual     void    onEnter() override;
     virtual     void    onClose() override;
 
-    void                procPacket(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE op, const char* body, uint16_t bodyLen);
+    void                procPacket(UseCellnetPacketSingleNetSession::CELLNET_OP_TYPE op, const char* body, uint16_t bodyLen) override;
 
 private:
     /*  内部服务器登陆此链接服务器   */

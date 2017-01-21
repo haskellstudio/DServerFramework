@@ -91,3 +91,14 @@ void LogicServerSessionMgr::RemoveSlaveLogicServer(int id)
     gAllSlaveServers.erase(id);
     gAllSlaveServersLock.unlock();
 }
+
+std::unordered_map<int, LogicServerSession::PTR> LogicServerSessionMgr::GetAllSlaveLogicServer()
+{
+    std::unordered_map<int, LogicServerSession::PTR> tmp;
+
+    gAllSlaveServersLock.lock();
+    tmp = gAllSlaveServers;
+    gAllSlaveServersLock.unlock();
+
+    return tmp;
+}

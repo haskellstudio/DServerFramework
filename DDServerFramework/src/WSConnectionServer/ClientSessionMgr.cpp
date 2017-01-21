@@ -42,13 +42,12 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
     ConnectionClientSession::PTR p = FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
-        p->setKicked();
-        auto socketID = p->getSocketID();
-        if (socketID != -1)
-        {
-            gServer->getService()->disConnect(socketID);
-        }
-        p->notifyServerPlayerExist();
+        p->postClose();
+
+        //只要被踢,无条件立即投递发送玩家断开的回调
+        p->getEventLoop()->pushAsyncProc([=](){
+            p->notifyServerPlayerExist();
+        });
     }
 }
 
