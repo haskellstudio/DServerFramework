@@ -1,7 +1,7 @@
 #ifndef _CENTERSERVER_RECV_OP_H
 #define _CENTERSERVER_RECV_OP_H
 
-enum CENTER_SERVER_RECV_OP
+enum class CENTER_SERVER_RECV_OP
 {
     CENTERSERVER_RECV_OP_RPC,                       /*收到内部服务器发送的RPC请求*/
     CENTERSERVER_RECV_OP_PING,

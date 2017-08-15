@@ -4,8 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 #include "WrapTCPService.h"
 #include "Timer.h"
 #include "ox_file.h"
@@ -19,12 +17,7 @@ using namespace std;
 #include "../../ServerConfig/ServerConfig.pb.h"
 #include "google/protobuf/util/json_util.h"
 
-WrapServer::PTR                         gServer;
-ListenThread::PTR                       gListenClient;
-ListenThread::PTR                       gListenLogic;
 WrapLog::PTR                            gDailyLogger;
-
-ServerConfig::ConnectionServerConfig connectionServerConfig;
 
 /*
     链接服务器（在服务器架构中存在N个）：
@@ -32,31 +25,13 @@ ServerConfig::ConnectionServerConfig connectionServerConfig;
     2：负责处理客户端和内部逻辑服务器的链接，转发客户端和内部服务器之间的通信
 */
 
-static void startServer()
-{
-    gServer = std::make_shared<WrapServer>();
-    gServer->startWorkThread(ox_getcpunum(), [](EventLoop&){
-    });
-
-    /*开启对外客户端端口*/
-    gListenClient = std::make_shared<ListenThread>();
-    gListenClient->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforclient(), nullptr, nullptr, [&](sock fd){
-        WrapAddNetSession(gServer, fd, std::make_shared<ConnectionClientSession>(), -1, 32 * 1024);
-    });
-
-    /*开启对内逻辑服务器端口*/
-    gListenLogic = std::make_shared<ListenThread>();
-    gListenLogic->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), nullptr, nullptr, [&](sock fd){
-        WrapAddNetSession(gServer, fd, std::make_shared<LogicServerSession>(), 10000, 32 * 1024 * 1024);
-    });
-}
-
 int main()
 {
-    ifstream  connetionServerConfigFile("ServerConfig/ConnetionServerConfig.json");
+    std::ifstream  connetionServerConfigFile("ServerConfig/ConnetionServerConfig.json");
     std::stringstream buffer;
     buffer << connetionServerConfigFile.rdbuf();
 
+    ServerConfig::ConnectionServerConfig connectionServerConfig;
     google::protobuf::util::Status s = google::protobuf::util::JsonStringToMessage(buffer.str(), &connectionServerConfig);
     if (!s.ok())
     {
@@ -70,10 +45,25 @@ int main()
     gDailyLogger = std::make_shared<WrapLog>();
     gDailyLogger->setFile("", "logs/ConnectionServer/daily");
 
-    startServer();
+    auto service = std::make_shared<WrapTcpService>();
+    
+    service->startWorkThread(ox_getcpunum(), [](EventLoop::PTR) {
+    });
+
+    /*开启对外客户端端口*/
+    auto clientListener = ListenThread::Create();
+    clientListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforclient(), nullptr, nullptr, [=](sock fd) {
+        WrapAddNetSession(service, fd, std::make_shared<ConnectionClientSession>(connectionServerConfig.id()), -1, 32 * 1024);
+    });
+
+    /*开启对内逻辑服务器端口*/
+    auto logicServerListener = ListenThread::Create();
+    logicServerListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), nullptr, nullptr, [=](sock fd) {
+        WrapAddNetSession(service, fd, std::make_shared<LogicServerSession>(connectionServerConfig.id(), connectionServerConfig.logicserverloginpassword()), 10000, 32 * 1024 * 1024);
+    });
 
     /*  同步etcd  */
-    std::map<string, string> etcdKV;
+    std::map<std::string, std::string> etcdKV;
 
     etcdKV["value"] = buffer.str();
     etcdKV["ttl"] = std::to_string(15); /*存活时间为15秒*/
@@ -82,7 +72,7 @@ int main()
     {
         if (app_kbhit())
         {
-            string input;
+            std::string input;
             std::getline(std::cin, input);
             gDailyLogger->warn("console input {}", input);
 
@@ -94,7 +84,7 @@ int main()
 
         for (auto& etcd : connectionServerConfig.etcdservers())
         {
-            if (!etcdSet(etcd.ip(), etcd.port(), string("ConnectionServerList/") + std::to_string(connectionServerConfig.id()), etcdKV, 5000).getBody().empty())
+            if (!etcdSet(etcd.ip(), etcd.port(), std::string("ConnectionServerList/") + std::to_string(connectionServerConfig.id()), etcdKV, 5000).getBody().empty())
             {
                 break;
             }
@@ -103,10 +93,10 @@ int main()
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));   /*5s 重设一次*/
     }
 
-    gListenClient->closeListenThread();
-    gListenLogic->closeListenThread();
-    gServer->getService()->closeListenThread();
-    gServer->getService()->stopWorkerThread();
+    clientListener->closeListenThread();
+    logicServerListener->closeListenThread();
+    service->getService()->closeListenThread();
+    service->getService()->stopWorkerThread();
     gDailyLogger->stop();
 
     return 0;

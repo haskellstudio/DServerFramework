@@ -2,9 +2,8 @@
 
 #include "ClientSessionMgr.h"
 
-std::unordered_map<int64_t, ConnectionClientSession::PTR>   gAllClientObject;   //所有的客户端对象,key为运行时ID
-std::mutex                                                  gAllClientObjectLock;
-extern WrapServer::PTR                                      gServer;
+static std::unordered_map<int64_t, ConnectionClientSession::PTR>   gAllClientObject;   //所有的客户端对象,key为运行时ID
+static std::mutex                                                  gAllClientObjectLock;
 
 ConnectionClientSession::PTR ClientSessionMgr::FindClientByRuntimeID(int64_t runtimeID)
 {
@@ -42,11 +41,7 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
     ConnectionClientSession::PTR p = FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
-        int64_t socketID = p->getSocketID();
-        if (socketID != -1)
-        {
-            gServer->getService()->disConnect(socketID);
-        }
+        p->postClose();
     }
 }
 

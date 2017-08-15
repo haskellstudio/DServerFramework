@@ -275,7 +275,7 @@ private:
         mDiskLogger->force_log(log.type, log.msg->c_str());
     }
 private:
-    dodo::MsgQueue<ThreadLog>       mLogQueue;
+    brynet::MsgQueue<ThreadLog>       mLogQueue;
 
     std::shared_ptr<spdlog::logger> mConsoleLogger; /*TODO::可以改为异步,不会阻塞硬盘日志的写入*/
     std::shared_ptr<spdlog::logger> mDiskLogger;

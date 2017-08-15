@@ -16,8 +16,8 @@ using namespace std;
 #include "UsePacketSingleNetSession.h"
 #include "../test/ClientExtOP.h"
 
-WrapServer::PTR                         gTCPService;
-dodo::TimerMgr::PTR                     gTimerMgr;
+WrapTcpService::PTR                         gTCPService;
+brynet::TimerMgr::PTR                     gTimerMgr;
 dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>   gRPC;
 
 class SimulateClient : public UsePacketSingleNetSession
@@ -35,7 +35,9 @@ public:
 
     virtual void    onEnter()
     {
-        FixedPacket<1024 * 16> packet(CLIENT_OP_TEST);
+        std::cout << "connect success" << std::endl;
+
+        FixedPacket<1024 * 16> packet(static_cast<PACKET_OP_TYPE>(CLIENT_OP::CLIENT_OP_TEST));
         packet.writeBinary("test");
         sendPacket(packet.getData(), packet.getLen());
     }
@@ -94,9 +96,9 @@ private:
         static int starttime = GetTickCount();
         num++;
 
-        if (op == CLIENT_OP_TEST)
+        if (op == static_cast<PACKET_OP_TYPE>(CLIENT_OP::CLIENT_OP_TEST))
         {
-            FixedPacket<1024 * 16> packet(CLIENT_OP_TEST);
+            FixedPacket<1024 * 16> packet(static_cast<PACKET_OP_TYPE>(CLIENT_OP::CLIENT_OP_TEST));
             packet.writeBinary("test");
             sendPacket(packet.getData(), packet.getLen());
         }
@@ -109,20 +111,28 @@ private:
         }
     }
 
-    dodo::Timer::WeakPtr  mSendTimer;
+    brynet::Timer::WeakPtr  mSendTimer;
 };
 
 int main()
 {
-    gTimerMgr = std::make_shared<dodo::TimerMgr>();
-    gTCPService = std::make_shared<WrapServer>();
-    gTCPService->startWorkThread(1, [](EventLoop&){
+    gTimerMgr = std::make_shared<brynet::TimerMgr>();
+    gTCPService = std::make_shared<WrapTcpService>();
+    gTCPService->startWorkThread(1, [](EventLoop::PTR){
         gTimerMgr->schedule();
     });
 
     /*Ä£Äâ¿Í»§¶Ë*/
-    sock fd = ox_socket_connect(false, "127.0.0.1", 29071);
-    WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), 10000, 32*1024*1024);
+    sock fd = ox_socket_connect(false, "127.0.0.1", 8001);
+    if (SOCKET_ERROR != fd)
+    {
+        WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), 10000, 32 * 1024 * 1024);
+    }
+    else
+    {
+        std::cerr << "connect failed" << std::endl;
+    }
+
     std::cin.get();
     return 0;
 }

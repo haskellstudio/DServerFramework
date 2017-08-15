@@ -16,7 +16,7 @@ class ReadPacket;
 
 /*内部服务器链接中心服务器的会话*/
 
-class CenterServerSession : public BaseLogicSession, public std::enable_shared_from_this<CenterServerSession>
+class CenterServerSession : public BaseLogicSession
 {
 public:
     typedef std::shared_ptr<CenterServerSession> PTR;
@@ -54,7 +54,7 @@ public:
     {
         if (info.getRequestID() != -1)
         {
-            string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc()->reply(info.getRequestID(), args...);
+            std::string rpcstr = CenterServerSessionGlobalData::getCenterServerSessionRpc()->reply(info.getRequestID(), args...);
             sendv(CENTERSERVER_SEND_OP_RPC, rpcstr);
 
             info.setRequestID(-1);

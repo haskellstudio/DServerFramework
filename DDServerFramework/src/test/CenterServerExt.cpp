@@ -53,9 +53,10 @@ void initCenterServerExt()
     });
 
     /*处理来自内部服务器发送的OP消息*/
-    CenterServerSessionGlobalData::registerUserMsgHandle(CENTER_SERVER_EXT_RECV_OP_TEST, [](CenterServerSession::PTR&, ReadPacket& rp){
-        std::string a = rp.readBinary();
-        int b = rp.readINT32();
-        gDailyLogger->info("test op : {} : {}", a, b);
-    });
+    CenterServerSessionGlobalData::registerUserMsgHandle(static_cast<PACKET_OP_TYPE>(CENTER_SERVER_EXT_RECV_OP::CENTER_SERVER_EXT_RECV_OP_TEST),
+        [](CenterServerSession::PTR&, ReadPacket& rp){
+            std::string a = rp.readBinary();
+            int b = rp.readINT32();
+            gDailyLogger->info("test op : {} : {}", a, b);
+        });
 }

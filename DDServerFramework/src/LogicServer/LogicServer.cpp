@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-using namespace std;
 
 #include "WrapTCPService.h"
 #include "Timer.h"
@@ -10,24 +9,14 @@ using namespace std;
 #include "etcdclient.h"
 #include "WrapJsonValue.h"
 #include "app_status.h"
-#include "lua_readtable.h"
 
 #include "HelpFunction.h"
 #include "AutoConnectionServer.h"
 
 #include "ClientMirror.h"
 #include "ConnectionServerConnection.h"
-#include "CenterServerConnection.h"
 #include "google/protobuf/util/json_util.h"
-#include "../../ServerConfig/ServerConfig.pb.h"
-
-ServerConfig::CenterServerConfig centerServerConfig;
-ServerConfig::LogicServerConfig logicServerConfig;
-
-WrapLog::PTR                                gDailyLogger;
-dodo::TimerMgr::PTR                         gTimerMgr;
-WrapServer::PTR                             gServer;
-shared_ptr<EventLoop> mainLoop;
+#include "GlobalValue.h"
 
 extern void initLogicServerExt();
 
@@ -36,7 +25,7 @@ int main()
     srand(time(nullptr));
 
     std::stringstream buffer;
-    ifstream  logicServerConfigFile("ServerConfig/LogicServerConfig.json");
+    std::ifstream  logicServerConfigFile("ServerConfig/LogicServerConfig.json");
     buffer << logicServerConfigFile.rdbuf();
 
     google::protobuf::util::Status status = google::protobuf::util::JsonStringToMessage(buffer.str(), &logicServerConfig);
@@ -47,7 +36,7 @@ int main()
     }
     buffer.str("");
 
-    ifstream  centerServerConfigFile("ServerConfig/CenterServerConfig.json");
+    std::ifstream  centerServerConfigFile("ServerConfig/CenterServerConfig.json");
     buffer << centerServerConfigFile.rdbuf();
 
     status = google::protobuf::util::JsonStringToMessage(buffer.str(), &centerServerConfig);
@@ -58,8 +47,8 @@ int main()
     }
 
     gDailyLogger = std::make_shared<WrapLog>();
-    gServer = std::make_shared<WrapServer>();
-    gTimerMgr = std::make_shared<dodo::TimerMgr>();
+    gServer = std::make_shared<WrapTcpService>();
+    gLogicTimerMgr = std::make_shared<brynet::TimerMgr>();
     gClientMirrorMgr = std::make_shared<ClientMirrorMgr>();
     
     ox_dir_create("logs");
@@ -70,20 +59,30 @@ int main()
 
     gDailyLogger->info("server start!");
 
-    mainLoop = std::make_shared<EventLoop>();
+    gMainLoop = std::make_shared<EventLoop>();
 
-    gServer->startWorkThread(ox_getcpunum(), [](EventLoop&)
+    gServer->startWorkThread(ox_getcpunum(), [](EventLoop::PTR)
     {
-        syncNet2LogicMsgList(mainLoop);
+        syncNet2LogicMsgList(gMainLoop);
     });
 
     {
         gDailyLogger->info("try connect center server: {}:{}", centerServerConfig.bindip(), centerServerConfig.listenport());
         /*链接中心服务器*/
-        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger, gServer, centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
+        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger,
+            gServer, 
+            centerServerConfig.enableipv6(), 
+            centerServerConfig.bindip(), 
+            centerServerConfig.listenport());
     }
 
     initLogicServerExt();
+
+    {
+        std::unordered_map<int32_t, std::tuple<std::string, int, std::string>> testConnectionServer;
+        testConnectionServer[0] = std::tuple<std::string, int, std::string>("127.0.0.1", 5777, "hello");
+        tryCompareConnect(testConnectionServer);
+    }
 
     /*轮询etcd*/
     bool etcdPullIsClose = false;
@@ -96,35 +95,41 @@ int main()
             for (auto& etcd : logicServerConfig.etcdservers())
             {
                 HTTPParser result = etcdGet(etcd.ip(), etcd.port(), "ConnectionServerList", 5000);
-                if (!result.getBody().empty())
+                if (result.getBody().empty())
                 {
-                    unordered_map<int32_t, std::tuple<string, int, string>> currentServer;
-
-                    gDailyLogger->info("list server json:{}", result.getBody());
-                    rapidjson::Document doc;
-                    doc.Parse<0>(result.getBody().c_str());
-                    auto it = doc.FindMember("node");
-                    if (it != doc.MemberEnd())
-                    {
-                        it = doc.FindMember("node")->value.FindMember("nodes");
-                        if (it != doc.FindMember("node")->value.MemberEnd())
-                        {
-                            rapidjson::Value& nodes = doc.FindMember("node")->value.FindMember("nodes")->value;
-                            for (rapidjson::SizeType i = 0; i < nodes.Size(); i++)
-                            {
-                                rapidjson::Value& oneServer = nodes[i].FindMember("value")->value;
-                                ServerConfig::ConnectionServerConfig oneConnectionServerConfig;
-                                if (google::protobuf::util::JsonStringToMessage(oneServer.GetString(), &oneConnectionServerConfig).ok())
-                                {
-                                    currentServer[oneConnectionServerConfig.id()] = std::make_tuple(oneConnectionServerConfig.bindip(), oneConnectionServerConfig.portforlogicserver(), oneConnectionServerConfig.logicserverloginpassword());
-                                }
-                            }
-                        }
-                    }
-
-                    tryCompareConnect(currentServer);
-                    break;
+                    continue;
                 }
+
+                std::unordered_map<int32_t, std::tuple<std::string, int, std::string>> currentServer;
+
+                gDailyLogger->info("list server json:{}", result.getBody());
+                rapidjson::Document doc;
+                doc.Parse<0>(result.getBody().c_str());
+                auto it = doc.FindMember("node");
+                if (it == doc.MemberEnd())
+                {
+                    continue;
+                }
+
+                it = doc.FindMember("node")->value.FindMember("nodes");
+                if (it == doc.FindMember("node")->value.MemberEnd())
+                {
+                    continue;
+                }
+
+                rapidjson::Value& nodes = doc.FindMember("node")->value.FindMember("nodes")->value;
+                for (rapidjson::SizeType i = 0; i < nodes.Size(); i++)
+                {
+                    rapidjson::Value& oneServer = nodes[i].FindMember("value")->value;
+                    ServerConfig::ConnectionServerConfig oneConnectionServerConfig;
+                    if (google::protobuf::util::JsonStringToMessage(oneServer.GetString(), &oneConnectionServerConfig).ok())
+                    {
+                        currentServer[oneConnectionServerConfig.id()] = std::make_tuple(oneConnectionServerConfig.bindip(), oneConnectionServerConfig.portforlogicserver(), oneConnectionServerConfig.logicserverloginpassword());
+                    }
+                }
+
+                tryCompareConnect(currentServer);
+                break;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(2500));
         }
@@ -134,7 +139,7 @@ int main()
     {
         if (app_kbhit())
         {
-            string input;
+            std::string input;
             std::getline(std::cin, input);
             gDailyLogger->warn("console input {}", input);
 
@@ -144,9 +149,9 @@ int main()
             }
         }
 
-        mainLoop->loop(gTimerMgr->isEmpty() ? 1 : gTimerMgr->nearEndMs());
+        gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : gLogicTimerMgr->nearEndMs());
 
-        gTimerMgr->schedule();
+        gLogicTimerMgr->schedule();
 
         procNet2LogicMsgList();
     }

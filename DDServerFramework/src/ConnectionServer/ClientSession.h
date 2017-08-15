@@ -11,7 +11,7 @@ class ConnectionClientSession : public UsePacketSingleNetSession
 public:
     typedef std::shared_ptr<ConnectionClientSession> PTR;
 
-    ConnectionClientSession();
+    ConnectionClientSession(int32_t connectionServerID);
     ~ConnectionClientSession();
 
     void                setSlaveServerID(int id);
@@ -27,6 +27,7 @@ private:
     void                claimRuntimeID();
 
 private:
+    const int32_t       mConnectionServerID;
     int64_t             mRuntimeID;
     int                 mPrimaryServerID;
     int                 mSlaveServerID;

@@ -25,6 +25,7 @@ size_t UsePacketExtNetSession::onMsg(const char* buffer, size_t len)
                 left_len -= packet_len;
                 flag = true;
             }
+            rp.skipAll();
         }
 
         if (!flag)

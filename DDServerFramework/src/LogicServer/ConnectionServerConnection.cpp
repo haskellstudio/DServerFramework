@@ -13,69 +13,31 @@ using namespace std;
 
 #include "UsePacketExtNetSession.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
+#include "GlobalValue.h"
 #include "ConnectionServerConnection.h"
 
-extern ServerConfig::LogicServerConfig logicServerConfig;
-extern ClientMirrorMgr::PTR   gClientMirrorMgr;
-extern WrapServer::PTR   gServer;
-extern WrapLog::PTR gDailyLogger;
-extern dodo::TimerMgr::PTR    gTimerMgr;
-unordered_map<int32_t, ConnectionServerConnection::PTR>     gAllLogicConnectionServerClient;
+static unordered_map<int32_t, ConnectionServerConnection::PTR>     gAllLogicConnectionServerClient;
+static unordered_map<int32_t, std::tuple<string, int>> alreadyConnectingServers;
+static std::mutex alreadyConnectingServersLock;
 
-unordered_map<int32_t, std::tuple<string, int>> alreadyConnectingServers;
-std::mutex alreadyConnectingServersLock;
-
-bool isAlreadyConnecting(int32_t id)
+static bool isAlreadyConnecting(int32_t id)
 {
+    std::lock_guard<std::mutex> lck(alreadyConnectingServersLock);
     bool ret = false;
-    alreadyConnectingServersLock.lock();
     ret = alreadyConnectingServers.find(id) != alreadyConnectingServers.end();
-    alreadyConnectingServersLock.unlock();
     return ret;
 }
 
-void eraseConnectingServer(int32_t id)
+static void eraseConnectingServer(int32_t id)
 {
-    alreadyConnectingServersLock.lock();
+    std::lock_guard<std::mutex> lck(alreadyConnectingServersLock);
     alreadyConnectingServers.erase(id);
-    alreadyConnectingServersLock.unlock();
 }
 
-void addConnectingServer(int32_t id, string& ip, int port)
+static void addConnectingServer(int32_t id, string& ip, int port)
 {
-    alreadyConnectingServersLock.lock();
+    std::lock_guard<std::mutex> lck(alreadyConnectingServersLock);
     alreadyConnectingServers[id] = std::make_tuple(ip, port);
-    alreadyConnectingServersLock.unlock();
-}
-
-void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int, string>>& servers)
-{
-    alreadyConnectingServersLock.lock();
-    for (auto& v : servers)
-    {
-        if (alreadyConnectingServers.find(v.first) == alreadyConnectingServers.end())
-        {
-            int idInEtcd = v.first;
-            string ip = std::get<0>(v.second);
-            int port = std::get<1>(v.second);
-            string password = std::get<2>(v.second);
-
-            thread([ip, port, idInEtcd, password](){
-                gDailyLogger->info("ready connect connection server id:{}, addr :{}:{}", idInEtcd, ip, port);
-                sock fd = ox_socket_connect(false, ip.c_str(), port);
-                if (fd != SOCKET_ERROR)
-                {
-                    gDailyLogger->info("connect success {}:{}", ip, port);
-                    WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port, password)), 10000, 32 * 1024 * 1024);
-                }
-                else
-                {
-                    gDailyLogger->error("connect failed {}:{}", ip, port);
-                }
-            }).detach();
-        }
-    }
-    alreadyConnectingServersLock.unlock();
 }
 
 ConnectionServerConnection::ConnectionServerConnection(int idInEtcd, int port, std::string password) : BaseLogicSession()
@@ -121,8 +83,8 @@ void ConnectionServerConnection::ping()
 
     sendPacket(p);
 
-    mPingTimer = gTimerMgr->addTimer(5000, [this](){
-        ping();
+    mPingTimer = gLogicTimerMgr->addTimer(5000, [shared_this = std::static_pointer_cast<ConnectionServerConnection>(shared_from_this())](){
+        shared_this->ping();
     });
 }
 
@@ -141,16 +103,16 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
 {
     ReadPacket rp(data, len);
     rp.readPacketLen();
-    PACKET_OP_TYPE op = rp.readOP();
+    CONNECTION_SERVER_SEND_OP op = static_cast<CONNECTION_SERVER_SEND_OP>(rp.readOP());
 
     switch (op)
     {
-        case CONNECTION_SERVER_SEND_PONG:
+        case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_PONG:
         {
 
         }
         break;
-        case CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID:
+        case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_RECVCSID:
         {
             /*收到所链接的连接服务器的ID*/
             mConnectionServerID = rp.readINT32();
@@ -161,7 +123,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             {
                 gDailyLogger->info("登陆链接服务器 {} 成功", mConnectionServerID);
                 assert(gAllLogicConnectionServerClient.find(mConnectionServerID) == gAllLogicConnectionServerClient.end());
-                gAllLogicConnectionServerClient[mConnectionServerID] = shared_from_this();
+                gAllLogicConnectionServerClient[mConnectionServerID] = std::static_pointer_cast<ConnectionServerConnection>(shared_from_this());
             }
             else
             {
@@ -169,7 +131,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             }
         }
         break;
-        case CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR:
+        case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR:
         {
             int64_t socketID = rp.readINT64();
             int64_t runtimeID = rp.readINT64();
@@ -179,27 +141,27 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             ClientMirror::PTR p = std::make_shared<ClientMirror>(runtimeID, mConnectionServerID, socketID);
             gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
 
-            auto callback = ClientMirror::getClientEnterCallback();
+            auto callback = gClientMirrorMgr->getClientEnterCallback();
             if (callback != nullptr)
             {
                 callback(p);
             }
         }
         break;
-        case CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT:
+        case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT:
         {
             int64_t runtimeID = rp.readINT64();
             gDailyLogger->info("recv destroy client, runtime id:{}", runtimeID);
             ClientMirror::PTR client = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
             gClientMirrorMgr->DelClientByRuntimeID(runtimeID);
-            auto callback = ClientMirror::getClientDisConnectCallback();
+            auto callback = gClientMirrorMgr->getClientDisConnectCallback();
             if (callback != nullptr)
             {
                 callback(client);
             }
         }
         break;
-        case CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT:
+        case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT:
         {
             /*  表示收到链接服转发过来的客户端消息包   */
             int64_t clientRuntimeID = rp.readINT64();
@@ -227,4 +189,48 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
 void ConnectionServerConnection::sendPacket(Packet& packet)
 {
     send(packet.getData(), packet.getLen());
+}
+
+ConnectionServerConnection::PTR ConnectionServerConnection::FindConnectionServerByID(int32_t id)
+{
+    auto it = gAllLogicConnectionServerClient.find(id);
+    if (it != gAllLogicConnectionServerClient.end())
+    {
+        return (*it).second;
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int, string>>& servers)
+{
+    std::lock_guard<std::mutex> lck(alreadyConnectingServersLock);
+    for (auto& v : servers)
+    {
+        if (alreadyConnectingServers.find(v.first) != alreadyConnectingServers.end())
+        {
+            continue;
+        }
+
+        int idInEtcd = v.first;
+        string ip = std::get<0>(v.second);
+        int port = std::get<1>(v.second);
+        string password = std::get<2>(v.second);
+
+        thread([ip, port, idInEtcd, password]() {
+            gDailyLogger->info("ready connect connection server id:{}, addr :{}:{}", idInEtcd, ip, port);
+            sock fd = ox_socket_connect(false, ip.c_str(), port);
+            if (fd != SOCKET_ERROR)
+            {
+                gDailyLogger->info("connect success {}:{}", ip, port);
+                WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port, password)), 10000, 32 * 1024 * 1024);
+            }
+            else
+            {
+                gDailyLogger->error("connect failed {}:{}", ip, port);
+            }
+        }).detach();
+    }
 }

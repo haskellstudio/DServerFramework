@@ -10,17 +10,9 @@ using namespace std;
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
+#include "GlobalValue.h"
 #include "CenterServerConnection.h"
 
-extern ServerConfig::CenterServerConfig centerServerConfig;
-extern ServerConfig::LogicServerConfig logicServerConfig;
-extern ClientMirrorMgr::PTR   gClientMirrorMgr;
-extern dodo::TimerMgr::PTR   gTimerMgr;
-extern dodo::net::WrapServer::PTR   gServer;
-extern WrapLog::PTR  gDailyLogger;
-
-CenterServerConnection* gLogicCenterServerClient = nullptr;
-dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>    gCenterServerConnectioinRpc;
 std::unordered_map<PACKET_OP_TYPE, CenterServerConnection::USER_MSG_HANDLE>  CenterServerConnection::sUserMsgHandlers;
 
 CenterServerConnection::CenterServerConnection() : BaseLogicSession()
@@ -35,7 +27,8 @@ CenterServerConnection::~CenterServerConnection()
         mPingTimer.lock()->cancel();
     }
 
-    gTimerMgr->addTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
+    // 开启重连定时器
+    gLogicTimerMgr->addTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
         centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
 }
 
@@ -49,25 +42,25 @@ void CenterServerConnection::onEnter()
 {
     gDailyLogger->warn("connect to center server success!");
 
-    TinyPacket sp(CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN);
+    TinyPacket sp(static_cast<PACKET_OP_TYPE>(CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN));
     sp.writeBinary(centerServerConfig.logicserverloginpassword());
     sp.writeINT32(logicServerConfig.id());
 
     sendPacket(sp);
 
-    gLogicCenterServerClient = this;
+    gLogicCenterServerClient = std::static_pointer_cast<CenterServerConnection>(shared_from_this());
 
     ping();
 }
 
 void CenterServerConnection::ping()
 {
-    TinyPacket p(CENTERSERVER_RECV_OP_PING);
+    TinyPacket p(static_cast<PACKET_OP_TYPE>(CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_PING));
 
     sendPacket(p);
 
-    mPingTimer = gTimerMgr->addTimer(5000, [this](){
-        ping();
+    mPingTimer = gLogicTimerMgr->addTimer(5000, [shared_this = std::static_pointer_cast<CenterServerConnection>(shared_from_this())](){
+        shared_this->ping();
     });
 }
 
@@ -135,10 +128,10 @@ void CenterServerConnection::onCenterServerSendPacket2Client(ReadPacket& rp)
         for (int i = 0; i < destNum; ++i)
         {
             int64_t runtimeID = rp.readINT64();
-            ClientMirror::PTR p = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
-            if (p != nullptr)
+            ClientMirror::PTR user = gClientMirrorMgr->FindClientByRuntimeID(runtimeID);
+            if (user != nullptr)
             {
-                p->sendPacket(s, len);
+                user->sendPacket(s, len);
             }
         }
     }
@@ -172,7 +165,7 @@ void CenterServerConnection::sendPacket(Packet& packet)
 
 void CenterServerConnection::sendUserPacket(Packet& subPacket)
 {
-    BigPacket packet(CENTERSERVER_RECV_OP_USER);
+    BigPacket packet(static_cast<PACKET_OP_TYPE>(CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_USER));
     packet.writeBinary(subPacket.getData(), subPacket.getLen());
 
     sendPacket(packet);

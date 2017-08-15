@@ -2,13 +2,14 @@
 #define _LOGIC_NET_SESSION_H
 
 #include <stdint.h>
+#include <memory>
 #include "WrapTCPService.h"
 
 #define USE_DELAY_SEND
 
-using namespace dodo::net;
+using namespace brynet::net;
 
-class BaseLogicSession
+class BaseLogicSession : public std::enable_shared_from_this<BaseLogicSession>
 {
 public:
     typedef std::shared_ptr<BaseLogicSession> PTR;
@@ -20,7 +21,7 @@ public:
     virtual ~BaseLogicSession()
     {}
 
-    void            setSession(WrapServer::PTR server, int64_t socketID, const std::string& ip)
+    void            setSession(WrapTcpService::PTR server, int64_t socketID, const std::string& ip)
     {
         mServer = server;
         mSocketID = socketID;
@@ -67,8 +68,9 @@ public:
     {
         return mIP;
     }
+
 private:
-    WrapServer::PTR     mServer;
+    WrapTcpService::PTR mServer;
     int64_t             mSocketID;
     std::string         mIP;
 };

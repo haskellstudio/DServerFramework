@@ -1,9 +1,9 @@
-[submodule "DDServerFramework/accumulation-dev"]
-	path = DDServerFramework/accumulation-dev
-	url = https://github.com/IronsDu/accumulation-dev.git
-[submodule "DDServerFramework/3rdparty/accumulation-dev"]
-	path = DDServerFramework/3rdparty/accumulation-dev
-	url = https://github.com/IronsDu/accumulation-dev.git
 [submodule "DDServerFramework/3rdparty/lua_tinker"]
 	path = DDServerFramework/3rdparty/lua_tinker
 	url = https://github.com/IronsDu/lua_tinker.git
+[submodule "DDServerFramework/3rdparty/brynet"]
+	path = DDServerFramework/3rdparty/brynet
+	url = https://github.com/IronsDu/brynet.git
+[submodule "DDServerFramework/3rdparty/drpc"]
+	path = DDServerFramework/3rdparty/drpc
+	url = https://github.com/IronsDu/drpc.git

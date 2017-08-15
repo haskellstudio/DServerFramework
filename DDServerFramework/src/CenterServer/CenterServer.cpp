@@ -11,14 +11,9 @@ using namespace std;
 #include "CenterServerSession.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
 #include "google/protobuf/util/json_util.h"
+#include "GlobalValue.h"
 
-WrapLog::PTR            gDailyLogger;
-dodo::net::WrapServer::PTR         gServer;
-dodo::TimerMgr::PTR           gLogicTimerMgr;
 ServerConfig::CenterServerConfig centerServerConfig;
-
-/*  主线程,其他扩展模块可以引用它,譬如集成外部数据库时,可以在数据库线程向此主线程投递异步回调  */
-std::shared_ptr<EventLoop> mainLoop;
 
 extern void initCenterServerExt();
 
@@ -35,9 +30,9 @@ int main()
         exit(-1);
     }
 
-    gLogicTimerMgr = std::make_shared<dodo::TimerMgr>();
+    gLogicTimerMgr = std::make_shared<brynet::TimerMgr>();
     gDailyLogger = std::make_shared<WrapLog>();
-    gServer = std::make_shared<dodo::net::WrapServer>();
+    gServer = std::make_shared<brynet::net::WrapTcpService>();
     CenterServerSessionGlobalData::init();
 
     spdlog::set_level(spdlog::level::info);
@@ -47,16 +42,16 @@ int main()
     gDailyLogger->setFile("", "logs/CenterServer/daily");
 
     {
-        mainLoop = std::make_shared<EventLoop>();
+        gMainLoop = std::make_shared<EventLoop>();
         /*开启内部监听服务器，处理逻辑服务器的链接*/
         gDailyLogger->info("listen logic server port:{}", centerServerConfig.bindip());
-        ListenThread    logicServerListen;
-        logicServerListen.startListen(centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport(), nullptr, nullptr, [&](sock fd){
+        auto logicServerListen = ListenThread::Create();
+        logicServerListen->startListen(centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport(), nullptr, nullptr, [&](sock fd){
             WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 10000, 32 * 1024 * 1024);
         });
 
-        gServer->startWorkThread(ox_getcpunum(), [](EventLoop& el){
-            syncNet2LogicMsgList(mainLoop);
+        gServer->startWorkThread(ox_getcpunum(), [](EventLoop::PTR el){
+            syncNet2LogicMsgList(gMainLoop);
         });
 
         gDailyLogger->info("server start!");
@@ -77,14 +72,14 @@ int main()
                 }
             }
 
-            mainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : gLogicTimerMgr->nearEndMs());
+            gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : gLogicTimerMgr->nearEndMs());
 
             gLogicTimerMgr->schedule();
 
             procNet2LogicMsgList();
         }
 
-        logicServerListen.closeListenThread();
+        logicServerListen->closeListenThread();
     }
 
     gServer->getService()->stopWorkerThread();

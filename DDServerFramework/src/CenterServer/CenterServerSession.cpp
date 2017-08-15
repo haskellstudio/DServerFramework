@@ -58,26 +58,26 @@ void CenterServerSession::onMsg(const char* data, size_t len)
 {
     ReadPacket rp(data, len);
     rp.readPacketLen();
-    PACKET_OP_TYPE op = rp.readOP();
+    CENTER_SERVER_RECV_OP op = static_cast<CENTER_SERVER_RECV_OP>(rp.readOP());
 
-    gDailyLogger->info("recv {} ,op :{}", getIP(), op);
+    gDailyLogger->info("recv {} ,op :{}", getIP(), static_cast<PACKET_OP_TYPE>(op));
 
     switch (op)
     {
-        case CENTERSERVER_RECV_OP_PING:
+        case CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_PING:
             onPing(rp);
             break;
-        case CENTERSERVER_RECV_OP_RPC:
+        case CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_RPC:
             onLogicServerRpc(rp);
             break;
-        case CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN:
+        case CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_LOGICSERVER_LOGIN:
             onLogicServerLogin(rp);
             break;
-        case CENTERSERVER_RECV_OP_USER:
+        case CENTER_SERVER_RECV_OP::CENTERSERVER_RECV_OP_USER:
             onUserMsg(rp);
             break;
         default:
-            gDailyLogger->error("recv error op :{}", op);
+            gDailyLogger->error("recv error op :{}", static_cast<PACKET_OP_TYPE>(op));
             break;
     }
 
@@ -118,7 +118,7 @@ void CenterServerSession::onLogicServerRpc(ReadPacket& rp)
     size_t len = 0;
     if (rp.readBinary(msg, len))
     {
-        CenterServerSessionGlobalData::setRpcFrommer(shared_from_this());
+        CenterServerSessionGlobalData::setRpcFrommer(std::static_pointer_cast<CenterServerSession>(shared_from_this()));
         CenterServerSessionGlobalData::getCenterServerSessionRpc()->handleRpc(msg, len);
     }
 }
@@ -144,7 +144,7 @@ void CenterServerSession::onLogicServerLogin(ReadPacket& rp)
                 sp.writeINT32(mID);
                 sendPacket(sp);
 
-                CenterServerSessionGlobalData::insertLogicServer(shared_from_this(), mID);
+                CenterServerSessionGlobalData::insertLogicServer(std::static_pointer_cast<CenterServerSession>(shared_from_this()), mID);
             }
             else
             {
@@ -181,7 +181,7 @@ void CenterServerSession::onUserMsg(ReadPacket& rp)
         auto handle = CenterServerSessionGlobalData::findUserMsgHandle(subOP);
         if (handle != nullptr)
         {
-            handle(shared_from_this(), subRP);
+            handle(std::static_pointer_cast<CenterServerSession>(shared_from_this()), subRP);
         }
         else
         {

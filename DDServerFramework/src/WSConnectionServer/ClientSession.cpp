@@ -199,7 +199,7 @@ void ConnectionClientSession::helpSendPacket(uint32_t op, const char* data, size
     packet.writeINT8('}');
 
     auto frame = std::make_shared<std::string>();
-    if (WebSocketFormat::wsFrameBuild(packet.getData(), packet.getPos(), *frame, WebSocketFormat::WebSocketFrameType::TEXT_FRAME))
+    if (WebSocketFormat::wsFrameBuild(std::string(packet.getData(), packet.getPos()), *frame, WebSocketFormat::WebSocketFrameType::TEXT_FRAME))
     {
         sendPacket(frame);
     }

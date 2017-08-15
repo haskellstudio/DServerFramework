@@ -18,180 +18,158 @@
 // @@protoc_insertion_point(includes)
 
 namespace ServerConfig {
+class CenterServerConfigDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<CenterServerConfig> {
+} _CenterServerConfig_default_instance_;
+class EtcdAddrDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<EtcdAddr> {
+} _EtcdAddr_default_instance_;
+class ConnectionServerConfigDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<ConnectionServerConfig> {
+} _ConnectionServerConfig_default_instance_;
+class LogicServerConfigDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<LogicServerConfig> {
+} _LogicServerConfig_default_instance_;
+
+namespace protobuf_ServerConfig_2eproto {
+
 
 namespace {
 
-const ::google::protobuf::Descriptor* CenterServerConfig_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  CenterServerConfig_reflection_ = NULL;
-const ::google::protobuf::Descriptor* EtcdAddr_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  EtcdAddr_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ConnectionServerConfig_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ConnectionServerConfig_reflection_ = NULL;
-const ::google::protobuf::Descriptor* LogicServerConfig_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  LogicServerConfig_reflection_ = NULL;
+::google::protobuf::Metadata file_level_metadata[4];
 
 }  // namespace
 
+const ::google::protobuf::uint32 TableStruct::offsets[] = {
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, enableipv6_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, bindip_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, listenport_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, logicserverloginpassword_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, ip_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, port_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, enableipv6_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, bindip_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, portforclient_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, portforlogicserver_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, etcdservers_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, logicserverloginpassword_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, isprimary_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, etcdservers_),
+};
 
-void protobuf_AssignDesc_ServerConfig_2eproto() GOOGLE_ATTRIBUTE_COLD;
-void protobuf_AssignDesc_ServerConfig_2eproto() {
-  protobuf_AddDesc_ServerConfig_2eproto();
-  const ::google::protobuf::FileDescriptor* file =
-    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-      "ServerConfig.proto");
-  GOOGLE_CHECK(file != NULL);
-  CenterServerConfig_descriptor_ = file->message_type(0);
-  static const int CenterServerConfig_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, enableipv6_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, bindip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, listenport_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, logicserverloginpassword_),
-  };
-  CenterServerConfig_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      CenterServerConfig_descriptor_,
-      CenterServerConfig::default_instance_,
-      CenterServerConfig_offsets_,
-      -1,
-      -1,
-      -1,
-      sizeof(CenterServerConfig),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, _internal_metadata_),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CenterServerConfig, _is_default_instance_));
-  EtcdAddr_descriptor_ = file->message_type(1);
-  static const int EtcdAddr_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, ip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, port_),
-  };
-  EtcdAddr_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      EtcdAddr_descriptor_,
-      EtcdAddr::default_instance_,
-      EtcdAddr_offsets_,
-      -1,
-      -1,
-      -1,
-      sizeof(EtcdAddr),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, _internal_metadata_),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EtcdAddr, _is_default_instance_));
-  ConnectionServerConfig_descriptor_ = file->message_type(2);
-  static const int ConnectionServerConfig_offsets_[7] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, enableipv6_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, bindip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, portforclient_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, portforlogicserver_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, id_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, etcdservers_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, logicserverloginpassword_),
-  };
-  ConnectionServerConfig_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      ConnectionServerConfig_descriptor_,
-      ConnectionServerConfig::default_instance_,
-      ConnectionServerConfig_offsets_,
-      -1,
-      -1,
-      -1,
-      sizeof(ConnectionServerConfig),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, _internal_metadata_),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ConnectionServerConfig, _is_default_instance_));
-  LogicServerConfig_descriptor_ = file->message_type(3);
-  static const int LogicServerConfig_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, id_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, isprimary_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, etcdservers_),
-  };
-  LogicServerConfig_reflection_ =
-    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      LogicServerConfig_descriptor_,
-      LogicServerConfig::default_instance_,
-      LogicServerConfig_offsets_,
-      -1,
-      -1,
-      -1,
-      sizeof(LogicServerConfig),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, _internal_metadata_),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LogicServerConfig, _is_default_instance_));
-}
+static const ::google::protobuf::internal::MigrationSchema schemas[] = {
+  { 0, -1, sizeof(CenterServerConfig)},
+  { 8, -1, sizeof(EtcdAddr)},
+  { 14, -1, sizeof(ConnectionServerConfig)},
+  { 25, -1, sizeof(LogicServerConfig)},
+};
+
+static ::google::protobuf::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::google::protobuf::Message*>(&_CenterServerConfig_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_EtcdAddr_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_ConnectionServerConfig_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_LogicServerConfig_default_instance_),
+};
 
 namespace {
 
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
-inline void protobuf_AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-                 &protobuf_AssignDesc_ServerConfig_2eproto);
+void protobuf_AssignDescriptors() {
+  AddDescriptors();
+  ::google::protobuf::MessageFactory* factory = NULL;
+  AssignDescriptors(
+      "ServerConfig.proto", schemas, file_default_instances, TableStruct::offsets, factory,
+      file_level_metadata, NULL, NULL);
+}
+
+void protobuf_AssignDescriptorsOnce() {
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &protobuf_AssignDescriptors);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      CenterServerConfig_descriptor_, &CenterServerConfig::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      EtcdAddr_descriptor_, &EtcdAddr::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      ConnectionServerConfig_descriptor_, &ConnectionServerConfig::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      LogicServerConfig_descriptor_, &LogicServerConfig::default_instance());
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 4);
 }
 
 }  // namespace
 
-void protobuf_ShutdownFile_ServerConfig_2eproto() {
-  delete CenterServerConfig::default_instance_;
-  delete CenterServerConfig_reflection_;
-  delete EtcdAddr::default_instance_;
-  delete EtcdAddr_reflection_;
-  delete ConnectionServerConfig::default_instance_;
-  delete ConnectionServerConfig_reflection_;
-  delete LogicServerConfig::default_instance_;
-  delete LogicServerConfig_reflection_;
+void TableStruct::Shutdown() {
+  _CenterServerConfig_default_instance_.Shutdown();
+  delete file_level_metadata[0].reflection;
+  _EtcdAddr_default_instance_.Shutdown();
+  delete file_level_metadata[1].reflection;
+  _ConnectionServerConfig_default_instance_.Shutdown();
+  delete file_level_metadata[2].reflection;
+  _LogicServerConfig_default_instance_.Shutdown();
+  delete file_level_metadata[3].reflection;
 }
 
-void protobuf_AddDesc_ServerConfig_2eproto() GOOGLE_ATTRIBUTE_COLD;
-void protobuf_AddDesc_ServerConfig_2eproto() {
-  static bool already_here = false;
-  if (already_here) return;
-  already_here = true;
+void TableStruct::InitDefaultsImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\022ServerConfig.proto\022\014ServerConfig\"n\n\022Ce"
-    "nterServerConfig\022\022\n\nenableIPV6\030\001 \001(\010\022\016\n\006"
-    "bindIP\030\002 \001(\t\022\022\n\nlistenPort\030\003 \001(\005\022 \n\030logi"
-    "cServerLoginPassword\030\004 \001(\t\"$\n\010EtcdAddr\022\n"
-    "\n\002ip\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\"\312\001\n\026ConnectionS"
-    "erverConfig\022\022\n\nenableIPV6\030\001 \001(\010\022\016\n\006bindI"
-    "P\030\002 \001(\t\022\025\n\rportForClient\030\003 \001(\005\022\032\n\022portFo"
-    "rLogicServer\030\004 \001(\005\022\n\n\002id\030\005 \001(\005\022+\n\013etcdse"
-    "rvers\030\006 \003(\0132\026.ServerConfig.EtcdAddr\022 \n\030l"
-    "ogicServerLoginPassword\030\007 \001(\t\"_\n\021LogicSe"
-    "rverConfig\022\n\n\002id\030\001 \001(\005\022\021\n\tisPrimary\030\002 \001("
-    "\010\022+\n\013etcdservers\030\003 \003(\0132\026.ServerConfig.Et"
-    "cdAddrb\006proto3", 494);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "ServerConfig.proto", &protobuf_RegisterTypes);
-  CenterServerConfig::default_instance_ = new CenterServerConfig();
-  EtcdAddr::default_instance_ = new EtcdAddr();
-  ConnectionServerConfig::default_instance_ = new ConnectionServerConfig();
-  LogicServerConfig::default_instance_ = new LogicServerConfig();
-  CenterServerConfig::default_instance_->InitAsDefaultInstance();
-  EtcdAddr::default_instance_->InitAsDefaultInstance();
-  ConnectionServerConfig::default_instance_->InitAsDefaultInstance();
-  LogicServerConfig::default_instance_->InitAsDefaultInstance();
-  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_ServerConfig_2eproto);
+  ::google::protobuf::internal::InitProtobufDefaults();
+  _CenterServerConfig_default_instance_.DefaultConstruct();
+  _EtcdAddr_default_instance_.DefaultConstruct();
+  _ConnectionServerConfig_default_instance_.DefaultConstruct();
+  _LogicServerConfig_default_instance_.DefaultConstruct();
 }
 
+void InitDefaults() {
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &TableStruct::InitDefaultsImpl);
+}
+void AddDescriptorsImpl() {
+  InitDefaults();
+  static const char descriptor[] = {
+      "\n\022ServerConfig.proto\022\014ServerConfig\"n\n\022Ce"
+      "nterServerConfig\022\022\n\nenableIPV6\030\001 \001(\010\022\016\n\006"
+      "bindIP\030\002 \001(\t\022\022\n\nlistenPort\030\003 \001(\005\022 \n\030logi"
+      "cServerLoginPassword\030\004 \001(\t\"$\n\010EtcdAddr\022\n"
+      "\n\002ip\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\"\312\001\n\026ConnectionS"
+      "erverConfig\022\022\n\nenableIPV6\030\001 \001(\010\022\016\n\006bindI"
+      "P\030\002 \001(\t\022\025\n\rportForClient\030\003 \001(\005\022\032\n\022portFo"
+      "rLogicServer\030\004 \001(\005\022\n\n\002id\030\005 \001(\005\022+\n\013etcdse"
+      "rvers\030\006 \003(\0132\026.ServerConfig.EtcdAddr\022 \n\030l"
+      "ogicServerLoginPassword\030\007 \001(\t\"_\n\021LogicSe"
+      "rverConfig\022\n\n\002id\030\001 \001(\005\022\021\n\tisPrimary\030\002 \001("
+      "\010\022+\n\013etcdservers\030\003 \003(\0132\026.ServerConfig.Et"
+      "cdAddrb\006proto3"
+  };
+  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
+      descriptor, 494);
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
+    "ServerConfig.proto", &protobuf_RegisterTypes);
+  ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
+}
+
+void AddDescriptors() {
+  static GOOGLE_PROTOBUF_DECLARE_ONCE(once);
+  ::google::protobuf::GoogleOnceInit(&once, &AddDescriptorsImpl);
+}
 // Force AddDescriptors() to be called at static initialization time.
-struct StaticDescriptorInitializer_ServerConfig_2eproto {
-  StaticDescriptorInitializer_ServerConfig_2eproto() {
-    protobuf_AddDesc_ServerConfig_2eproto();
+struct StaticDescriptorInitializer {
+  StaticDescriptorInitializer() {
+    AddDescriptors();
   }
-} static_descriptor_initializer_ServerConfig_2eproto_;
+} static_descriptor_initializer;
+
+}  // namespace protobuf_ServerConfig_2eproto
+
 
 // ===================================================================
 
@@ -204,30 +182,37 @@ const int CenterServerConfig::kLogicServerLoginPasswordFieldNumber;
 
 CenterServerConfig::CenterServerConfig()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ServerConfig_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ServerConfig.CenterServerConfig)
 }
-
-void CenterServerConfig::InitAsDefaultInstance() {
-  _is_default_instance_ = true;
-}
-
 CenterServerConfig::CenterServerConfig(const CenterServerConfig& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  MergeFrom(from);
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  bindip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.bindip().size() > 0) {
+    bindip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bindip_);
+  }
+  logicserverloginpassword_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.logicserverloginpassword().size() > 0) {
+    logicserverloginpassword_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.logicserverloginpassword_);
+  }
+  ::memcpy(&enableipv6_, &from.enableipv6_,
+    reinterpret_cast<char*>(&listenport_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(listenport_));
   // @@protoc_insertion_point(copy_constructor:ServerConfig.CenterServerConfig)
 }
 
 void CenterServerConfig::SharedCtor() {
-    _is_default_instance_ = false;
-  ::google::protobuf::internal::GetEmptyString();
-  _cached_size_ = 0;
-  enableipv6_ = false;
   bindip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  listenport_ = 0;
   logicserverloginpassword_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&enableipv6_, 0, reinterpret_cast<char*>(&listenport_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(listenport_));
+  _cached_size_ = 0;
 }
 
 CenterServerConfig::~CenterServerConfig() {
@@ -238,8 +223,6 @@ CenterServerConfig::~CenterServerConfig() {
 void CenterServerConfig::SharedDtor() {
   bindip_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   logicserverloginpassword_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (this != default_instance_) {
-  }
 }
 
 void CenterServerConfig::SetCachedSize(int size) const {
@@ -248,16 +231,14 @@ void CenterServerConfig::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* CenterServerConfig::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return CenterServerConfig_descriptor_;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[0].descriptor;
 }
 
 const CenterServerConfig& CenterServerConfig::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_ServerConfig_2eproto();
-  return *default_instance_;
+  protobuf_ServerConfig_2eproto::InitDefaults();
+  return *internal_default_instance();
 }
-
-CenterServerConfig* CenterServerConfig::default_instance_ = NULL;
 
 CenterServerConfig* CenterServerConfig::New(::google::protobuf::Arena* arena) const {
   CenterServerConfig* n = new CenterServerConfig;
@@ -269,29 +250,10 @@ CenterServerConfig* CenterServerConfig::New(::google::protobuf::Arena* arena) co
 
 void CenterServerConfig::Clear() {
 // @@protoc_insertion_point(message_clear_start:ServerConfig.CenterServerConfig)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(CenterServerConfig, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<CenterServerConfig*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&first, 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
-  ZR_(enableipv6_, listenport_);
   bindip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   logicserverloginpassword_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-
-#undef ZR_HELPER_
-#undef ZR_
-
+  ::memset(&enableipv6_, 0, reinterpret_cast<char*>(&listenport_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(listenport_));
 }
 
 bool CenterServerConfig::MergePartialFromCodedStream(
@@ -300,28 +262,26 @@ bool CenterServerConfig::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ServerConfig.CenterServerConfig)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional bool enableIPV6 = 1;
+      // bool enableIPV6 = 1;
       case 1: {
-        if (tag == 8) {
+        if (tag == 8u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &enableipv6_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_bindIP;
         break;
       }
 
-      // optional string bindIP = 2;
+      // string bindIP = 2;
       case 2: {
-        if (tag == 18) {
-         parse_bindIP:
+        if (tag == 18u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_bindip()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -331,29 +291,25 @@ bool CenterServerConfig::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_listenPort;
         break;
       }
 
-      // optional int32 listenPort = 3;
+      // int32 listenPort = 3;
       case 3: {
-        if (tag == 24) {
-         parse_listenPort:
+        if (tag == 24u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &listenport_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(34)) goto parse_logicServerLoginPassword;
         break;
       }
 
-      // optional string logicServerLoginPassword = 4;
+      // string logicServerLoginPassword = 4;
       case 4: {
-        if (tag == 34) {
-         parse_logicServerLoginPassword:
+        if (tag == 34u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_logicserverloginpassword()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -363,7 +319,6 @@ bool CenterServerConfig::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -391,12 +346,12 @@ failure:
 void CenterServerConfig::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ServerConfig.CenterServerConfig)
-  // optional bool enableIPV6 = 1;
+  // bool enableIPV6 = 1;
   if (this->enableipv6() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->enableipv6(), output);
   }
 
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->bindip().data(), this->bindip().length(),
@@ -406,12 +361,12 @@ void CenterServerConfig::SerializeWithCachedSizes(
       2, this->bindip(), output);
   }
 
-  // optional int32 listenPort = 3;
+  // int32 listenPort = 3;
   if (this->listenport() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->listenport(), output);
   }
 
-  // optional string logicServerLoginPassword = 4;
+  // string logicServerLoginPassword = 4;
   if (this->logicserverloginpassword().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->logicserverloginpassword().data(), this->logicserverloginpassword().length(),
@@ -426,13 +381,14 @@ void CenterServerConfig::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* CenterServerConfig::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ServerConfig.CenterServerConfig)
-  // optional bool enableIPV6 = 1;
+  // bool enableIPV6 = 1;
   if (this->enableipv6() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->enableipv6(), target);
   }
 
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->bindip().data(), this->bindip().length(),
@@ -443,12 +399,12 @@ void CenterServerConfig::SerializeWithCachedSizes(
         2, this->bindip(), target);
   }
 
-  // optional int32 listenPort = 3;
+  // int32 listenPort = 3;
   if (this->listenport() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->listenport(), target);
   }
 
-  // optional string logicServerLoginPassword = 4;
+  // string logicServerLoginPassword = 4;
   if (this->logicserverloginpassword().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->logicserverloginpassword().data(), this->logicserverloginpassword().length(),
@@ -463,48 +419,47 @@ void CenterServerConfig::SerializeWithCachedSizes(
   return target;
 }
 
-int CenterServerConfig::ByteSize() const {
+size_t CenterServerConfig::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ServerConfig.CenterServerConfig)
-  int total_size = 0;
+  size_t total_size = 0;
 
-  // optional bool enableIPV6 = 1;
-  if (this->enableipv6() != 0) {
-    total_size += 1 + 1;
-  }
-
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->bindip());
   }
 
-  // optional int32 listenPort = 3;
-  if (this->listenport() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->listenport());
-  }
-
-  // optional string logicServerLoginPassword = 4;
+  // string logicServerLoginPassword = 4;
   if (this->logicserverloginpassword().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->logicserverloginpassword());
   }
 
+  // bool enableIPV6 = 1;
+  if (this->enableipv6() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // int32 listenPort = 3;
+  if (this->listenport() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->listenport());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void CenterServerConfig::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ServerConfig.CenterServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
-  const CenterServerConfig* source = 
+  GOOGLE_DCHECK_NE(&from, this);
+  const CenterServerConfig* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const CenterServerConfig>(
           &from);
   if (source == NULL) {
@@ -518,22 +473,21 @@ void CenterServerConfig::MergeFrom(const ::google::protobuf::Message& from) {
 
 void CenterServerConfig::MergeFrom(const CenterServerConfig& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ServerConfig.CenterServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
-  if (from.enableipv6() != 0) {
-    set_enableipv6(from.enableipv6());
-  }
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.bindip().size() > 0) {
 
     bindip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bindip_);
   }
-  if (from.listenport() != 0) {
-    set_listenport(from.listenport());
-  }
   if (from.logicserverloginpassword().size() > 0) {
 
     logicserverloginpassword_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.logicserverloginpassword_);
+  }
+  if (from.enableipv6() != 0) {
+    set_enableipv6(from.enableipv6());
+  }
+  if (from.listenport() != 0) {
+    set_listenport(from.listenport());
   }
 }
 
@@ -552,7 +506,6 @@ void CenterServerConfig::CopyFrom(const CenterServerConfig& from) {
 }
 
 bool CenterServerConfig::IsInitialized() const {
-
   return true;
 }
 
@@ -561,74 +514,78 @@ void CenterServerConfig::Swap(CenterServerConfig* other) {
   InternalSwap(other);
 }
 void CenterServerConfig::InternalSwap(CenterServerConfig* other) {
-  std::swap(enableipv6_, other->enableipv6_);
   bindip_.Swap(&other->bindip_);
-  std::swap(listenport_, other->listenport_);
   logicserverloginpassword_.Swap(&other->logicserverloginpassword_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(enableipv6_, other->enableipv6_);
+  std::swap(listenport_, other->listenport_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata CenterServerConfig::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = CenterServerConfig_descriptor_;
-  metadata.reflection = CenterServerConfig_reflection_;
-  return metadata;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[0];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // CenterServerConfig
 
-// optional bool enableIPV6 = 1;
+// bool enableIPV6 = 1;
 void CenterServerConfig::clear_enableipv6() {
   enableipv6_ = false;
 }
- bool CenterServerConfig::enableipv6() const {
+bool CenterServerConfig::enableipv6() const {
   // @@protoc_insertion_point(field_get:ServerConfig.CenterServerConfig.enableIPV6)
   return enableipv6_;
 }
- void CenterServerConfig::set_enableipv6(bool value) {
+void CenterServerConfig::set_enableipv6(bool value) {
   
   enableipv6_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.CenterServerConfig.enableIPV6)
 }
 
-// optional string bindIP = 2;
+// string bindIP = 2;
 void CenterServerConfig::clear_bindip() {
   bindip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- const ::std::string& CenterServerConfig::bindip() const {
+const ::std::string& CenterServerConfig::bindip() const {
   // @@protoc_insertion_point(field_get:ServerConfig.CenterServerConfig.bindIP)
-  return bindip_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return bindip_.GetNoArena();
 }
- void CenterServerConfig::set_bindip(const ::std::string& value) {
+void CenterServerConfig::set_bindip(const ::std::string& value) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:ServerConfig.CenterServerConfig.bindIP)
 }
- void CenterServerConfig::set_bindip(const char* value) {
+#if LANG_CXX11
+void CenterServerConfig::set_bindip(::std::string&& value) {
+  
+  bindip_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ServerConfig.CenterServerConfig.bindIP)
+}
+#endif
+void CenterServerConfig::set_bindip(const char* value) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:ServerConfig.CenterServerConfig.bindIP)
 }
- void CenterServerConfig::set_bindip(const char* value, size_t size) {
+void CenterServerConfig::set_bindip(const char* value, size_t size) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:ServerConfig.CenterServerConfig.bindIP)
 }
- ::std::string* CenterServerConfig::mutable_bindip() {
+::std::string* CenterServerConfig::mutable_bindip() {
   
   // @@protoc_insertion_point(field_mutable:ServerConfig.CenterServerConfig.bindIP)
   return bindip_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* CenterServerConfig::release_bindip() {
+::std::string* CenterServerConfig::release_bindip() {
   // @@protoc_insertion_point(field_release:ServerConfig.CenterServerConfig.bindIP)
   
   return bindip_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void CenterServerConfig::set_allocated_bindip(::std::string* bindip) {
+void CenterServerConfig::set_allocated_bindip(::std::string* bindip) {
   if (bindip != NULL) {
     
   } else {
@@ -638,55 +595,63 @@ void CenterServerConfig::clear_bindip() {
   // @@protoc_insertion_point(field_set_allocated:ServerConfig.CenterServerConfig.bindIP)
 }
 
-// optional int32 listenPort = 3;
+// int32 listenPort = 3;
 void CenterServerConfig::clear_listenport() {
   listenport_ = 0;
 }
- ::google::protobuf::int32 CenterServerConfig::listenport() const {
+::google::protobuf::int32 CenterServerConfig::listenport() const {
   // @@protoc_insertion_point(field_get:ServerConfig.CenterServerConfig.listenPort)
   return listenport_;
 }
- void CenterServerConfig::set_listenport(::google::protobuf::int32 value) {
+void CenterServerConfig::set_listenport(::google::protobuf::int32 value) {
   
   listenport_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.CenterServerConfig.listenPort)
 }
 
-// optional string logicServerLoginPassword = 4;
+// string logicServerLoginPassword = 4;
 void CenterServerConfig::clear_logicserverloginpassword() {
   logicserverloginpassword_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- const ::std::string& CenterServerConfig::logicserverloginpassword() const {
+const ::std::string& CenterServerConfig::logicserverloginpassword() const {
   // @@protoc_insertion_point(field_get:ServerConfig.CenterServerConfig.logicServerLoginPassword)
-  return logicserverloginpassword_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return logicserverloginpassword_.GetNoArena();
 }
- void CenterServerConfig::set_logicserverloginpassword(const ::std::string& value) {
+void CenterServerConfig::set_logicserverloginpassword(const ::std::string& value) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:ServerConfig.CenterServerConfig.logicServerLoginPassword)
 }
- void CenterServerConfig::set_logicserverloginpassword(const char* value) {
+#if LANG_CXX11
+void CenterServerConfig::set_logicserverloginpassword(::std::string&& value) {
+  
+  logicserverloginpassword_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ServerConfig.CenterServerConfig.logicServerLoginPassword)
+}
+#endif
+void CenterServerConfig::set_logicserverloginpassword(const char* value) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:ServerConfig.CenterServerConfig.logicServerLoginPassword)
 }
- void CenterServerConfig::set_logicserverloginpassword(const char* value, size_t size) {
+void CenterServerConfig::set_logicserverloginpassword(const char* value, size_t size) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:ServerConfig.CenterServerConfig.logicServerLoginPassword)
 }
- ::std::string* CenterServerConfig::mutable_logicserverloginpassword() {
+::std::string* CenterServerConfig::mutable_logicserverloginpassword() {
   
   // @@protoc_insertion_point(field_mutable:ServerConfig.CenterServerConfig.logicServerLoginPassword)
   return logicserverloginpassword_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* CenterServerConfig::release_logicserverloginpassword() {
+::std::string* CenterServerConfig::release_logicserverloginpassword() {
   // @@protoc_insertion_point(field_release:ServerConfig.CenterServerConfig.logicServerLoginPassword)
   
   return logicserverloginpassword_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void CenterServerConfig::set_allocated_logicserverloginpassword(::std::string* logicserverloginpassword) {
+void CenterServerConfig::set_allocated_logicserverloginpassword(::std::string* logicserverloginpassword) {
   if (logicserverloginpassword != NULL) {
     
   } else {
@@ -707,28 +672,29 @@ const int EtcdAddr::kPortFieldNumber;
 
 EtcdAddr::EtcdAddr()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ServerConfig_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ServerConfig.EtcdAddr)
 }
-
-void EtcdAddr::InitAsDefaultInstance() {
-  _is_default_instance_ = true;
-}
-
 EtcdAddr::EtcdAddr(const EtcdAddr& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  MergeFrom(from);
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.ip().size() > 0) {
+    ip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.ip_);
+  }
+  port_ = from.port_;
   // @@protoc_insertion_point(copy_constructor:ServerConfig.EtcdAddr)
 }
 
 void EtcdAddr::SharedCtor() {
-    _is_default_instance_ = false;
-  ::google::protobuf::internal::GetEmptyString();
-  _cached_size_ = 0;
   ip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   port_ = 0;
+  _cached_size_ = 0;
 }
 
 EtcdAddr::~EtcdAddr() {
@@ -738,8 +704,6 @@ EtcdAddr::~EtcdAddr() {
 
 void EtcdAddr::SharedDtor() {
   ip_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (this != default_instance_) {
-  }
 }
 
 void EtcdAddr::SetCachedSize(int size) const {
@@ -748,16 +712,14 @@ void EtcdAddr::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* EtcdAddr::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return EtcdAddr_descriptor_;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[1].descriptor;
 }
 
 const EtcdAddr& EtcdAddr::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_ServerConfig_2eproto();
-  return *default_instance_;
+  protobuf_ServerConfig_2eproto::InitDefaults();
+  return *internal_default_instance();
 }
-
-EtcdAddr* EtcdAddr::default_instance_ = NULL;
 
 EtcdAddr* EtcdAddr::New(::google::protobuf::Arena* arena) const {
   EtcdAddr* n = new EtcdAddr;
@@ -779,13 +741,13 @@ bool EtcdAddr::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ServerConfig.EtcdAddr)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional string ip = 1;
+      // string ip = 1;
       case 1: {
-        if (tag == 10) {
+        if (tag == 10u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_ip()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -795,22 +757,19 @@ bool EtcdAddr::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_port;
         break;
       }
 
-      // optional int32 port = 2;
+      // int32 port = 2;
       case 2: {
-        if (tag == 16) {
-         parse_port:
+        if (tag == 16u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &port_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -838,7 +797,7 @@ failure:
 void EtcdAddr::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ServerConfig.EtcdAddr)
-  // optional string ip = 1;
+  // string ip = 1;
   if (this->ip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->ip().data(), this->ip().length(),
@@ -848,7 +807,7 @@ void EtcdAddr::SerializeWithCachedSizes(
       1, this->ip(), output);
   }
 
-  // optional int32 port = 2;
+  // int32 port = 2;
   if (this->port() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->port(), output);
   }
@@ -858,8 +817,9 @@ void EtcdAddr::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* EtcdAddr::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ServerConfig.EtcdAddr)
-  // optional string ip = 1;
+  // string ip = 1;
   if (this->ip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->ip().data(), this->ip().length(),
@@ -870,7 +830,7 @@ void EtcdAddr::SerializeWithCachedSizes(
         1, this->ip(), target);
   }
 
-  // optional int32 port = 2;
+  // int32 port = 2;
   if (this->port() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->port(), target);
   }
@@ -879,36 +839,35 @@ void EtcdAddr::SerializeWithCachedSizes(
   return target;
 }
 
-int EtcdAddr::ByteSize() const {
+size_t EtcdAddr::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ServerConfig.EtcdAddr)
-  int total_size = 0;
+  size_t total_size = 0;
 
-  // optional string ip = 1;
+  // string ip = 1;
   if (this->ip().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->ip());
   }
 
-  // optional int32 port = 2;
+  // int32 port = 2;
   if (this->port() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->port());
   }
 
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void EtcdAddr::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ServerConfig.EtcdAddr)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
-  const EtcdAddr* source = 
+  GOOGLE_DCHECK_NE(&from, this);
+  const EtcdAddr* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const EtcdAddr>(
           &from);
   if (source == NULL) {
@@ -922,9 +881,8 @@ void EtcdAddr::MergeFrom(const ::google::protobuf::Message& from) {
 
 void EtcdAddr::MergeFrom(const EtcdAddr& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ServerConfig.EtcdAddr)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.ip().size() > 0) {
 
     ip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.ip_);
@@ -949,7 +907,6 @@ void EtcdAddr::CopyFrom(const EtcdAddr& from) {
 }
 
 bool EtcdAddr::IsInitialized() const {
-
   return true;
 }
 
@@ -960,56 +917,60 @@ void EtcdAddr::Swap(EtcdAddr* other) {
 void EtcdAddr::InternalSwap(EtcdAddr* other) {
   ip_.Swap(&other->ip_);
   std::swap(port_, other->port_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata EtcdAddr::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = EtcdAddr_descriptor_;
-  metadata.reflection = EtcdAddr_reflection_;
-  return metadata;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[1];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // EtcdAddr
 
-// optional string ip = 1;
+// string ip = 1;
 void EtcdAddr::clear_ip() {
   ip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- const ::std::string& EtcdAddr::ip() const {
+const ::std::string& EtcdAddr::ip() const {
   // @@protoc_insertion_point(field_get:ServerConfig.EtcdAddr.ip)
-  return ip_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return ip_.GetNoArena();
 }
- void EtcdAddr::set_ip(const ::std::string& value) {
+void EtcdAddr::set_ip(const ::std::string& value) {
   
   ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:ServerConfig.EtcdAddr.ip)
 }
- void EtcdAddr::set_ip(const char* value) {
+#if LANG_CXX11
+void EtcdAddr::set_ip(::std::string&& value) {
+  
+  ip_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ServerConfig.EtcdAddr.ip)
+}
+#endif
+void EtcdAddr::set_ip(const char* value) {
   
   ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:ServerConfig.EtcdAddr.ip)
 }
- void EtcdAddr::set_ip(const char* value, size_t size) {
+void EtcdAddr::set_ip(const char* value, size_t size) {
   
   ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:ServerConfig.EtcdAddr.ip)
 }
- ::std::string* EtcdAddr::mutable_ip() {
+::std::string* EtcdAddr::mutable_ip() {
   
   // @@protoc_insertion_point(field_mutable:ServerConfig.EtcdAddr.ip)
   return ip_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* EtcdAddr::release_ip() {
+::std::string* EtcdAddr::release_ip() {
   // @@protoc_insertion_point(field_release:ServerConfig.EtcdAddr.ip)
   
   return ip_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void EtcdAddr::set_allocated_ip(::std::string* ip) {
+void EtcdAddr::set_allocated_ip(::std::string* ip) {
   if (ip != NULL) {
     
   } else {
@@ -1019,15 +980,15 @@ void EtcdAddr::clear_ip() {
   // @@protoc_insertion_point(field_set_allocated:ServerConfig.EtcdAddr.ip)
 }
 
-// optional int32 port = 2;
+// int32 port = 2;
 void EtcdAddr::clear_port() {
   port_ = 0;
 }
- ::google::protobuf::int32 EtcdAddr::port() const {
+::google::protobuf::int32 EtcdAddr::port() const {
   // @@protoc_insertion_point(field_get:ServerConfig.EtcdAddr.port)
   return port_;
 }
- void EtcdAddr::set_port(::google::protobuf::int32 value) {
+void EtcdAddr::set_port(::google::protobuf::int32 value) {
   
   port_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.EtcdAddr.port)
@@ -1049,32 +1010,38 @@ const int ConnectionServerConfig::kLogicServerLoginPasswordFieldNumber;
 
 ConnectionServerConfig::ConnectionServerConfig()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ServerConfig_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ServerConfig.ConnectionServerConfig)
 }
-
-void ConnectionServerConfig::InitAsDefaultInstance() {
-  _is_default_instance_ = true;
-}
-
 ConnectionServerConfig::ConnectionServerConfig(const ConnectionServerConfig& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  MergeFrom(from);
+      _internal_metadata_(NULL),
+      etcdservers_(from.etcdservers_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  bindip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.bindip().size() > 0) {
+    bindip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bindip_);
+  }
+  logicserverloginpassword_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.logicserverloginpassword().size() > 0) {
+    logicserverloginpassword_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.logicserverloginpassword_);
+  }
+  ::memcpy(&enableipv6_, &from.enableipv6_,
+    reinterpret_cast<char*>(&id_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(id_));
   // @@protoc_insertion_point(copy_constructor:ServerConfig.ConnectionServerConfig)
 }
 
 void ConnectionServerConfig::SharedCtor() {
-    _is_default_instance_ = false;
-  ::google::protobuf::internal::GetEmptyString();
-  _cached_size_ = 0;
-  enableipv6_ = false;
   bindip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  portforclient_ = 0;
-  portforlogicserver_ = 0;
-  id_ = 0;
   logicserverloginpassword_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&enableipv6_, 0, reinterpret_cast<char*>(&id_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(id_));
+  _cached_size_ = 0;
 }
 
 ConnectionServerConfig::~ConnectionServerConfig() {
@@ -1085,8 +1052,6 @@ ConnectionServerConfig::~ConnectionServerConfig() {
 void ConnectionServerConfig::SharedDtor() {
   bindip_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   logicserverloginpassword_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (this != default_instance_) {
-  }
 }
 
 void ConnectionServerConfig::SetCachedSize(int size) const {
@@ -1095,16 +1060,14 @@ void ConnectionServerConfig::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* ConnectionServerConfig::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ConnectionServerConfig_descriptor_;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[2].descriptor;
 }
 
 const ConnectionServerConfig& ConnectionServerConfig::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_ServerConfig_2eproto();
-  return *default_instance_;
+  protobuf_ServerConfig_2eproto::InitDefaults();
+  return *internal_default_instance();
 }
-
-ConnectionServerConfig* ConnectionServerConfig::default_instance_ = NULL;
 
 ConnectionServerConfig* ConnectionServerConfig::New(::google::protobuf::Arena* arena) const {
   ConnectionServerConfig* n = new ConnectionServerConfig;
@@ -1116,30 +1079,11 @@ ConnectionServerConfig* ConnectionServerConfig::New(::google::protobuf::Arena* a
 
 void ConnectionServerConfig::Clear() {
 // @@protoc_insertion_point(message_clear_start:ServerConfig.ConnectionServerConfig)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(ConnectionServerConfig, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<ConnectionServerConfig*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&first, 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
-  ZR_(enableipv6_, id_);
+  etcdservers_.Clear();
   bindip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   logicserverloginpassword_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-
-#undef ZR_HELPER_
-#undef ZR_
-
-  etcdservers_.Clear();
+  ::memset(&enableipv6_, 0, reinterpret_cast<char*>(&id_) -
+    reinterpret_cast<char*>(&enableipv6_) + sizeof(id_));
 }
 
 bool ConnectionServerConfig::MergePartialFromCodedStream(
@@ -1148,28 +1092,26 @@ bool ConnectionServerConfig::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ServerConfig.ConnectionServerConfig)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional bool enableIPV6 = 1;
+      // bool enableIPV6 = 1;
       case 1: {
-        if (tag == 8) {
+        if (tag == 8u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &enableipv6_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_bindIP;
         break;
       }
 
-      // optional string bindIP = 2;
+      // string bindIP = 2;
       case 2: {
-        if (tag == 18) {
-         parse_bindIP:
+        if (tag == 18u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_bindip()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -1179,76 +1121,64 @@ bool ConnectionServerConfig::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_portForClient;
         break;
       }
 
-      // optional int32 portForClient = 3;
+      // int32 portForClient = 3;
       case 3: {
-        if (tag == 24) {
-         parse_portForClient:
+        if (tag == 24u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &portforclient_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(32)) goto parse_portForLogicServer;
         break;
       }
 
-      // optional int32 portForLogicServer = 4;
+      // int32 portForLogicServer = 4;
       case 4: {
-        if (tag == 32) {
-         parse_portForLogicServer:
+        if (tag == 32u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &portforlogicserver_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(40)) goto parse_id;
         break;
       }
 
-      // optional int32 id = 5;
+      // int32 id = 5;
       case 5: {
-        if (tag == 40) {
-         parse_id:
+        if (tag == 40u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &id_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(50)) goto parse_etcdservers;
         break;
       }
 
       // repeated .ServerConfig.EtcdAddr etcdservers = 6;
       case 6: {
-        if (tag == 50) {
-         parse_etcdservers:
+        if (tag == 50u) {
           DO_(input->IncrementRecursionDepth());
-         parse_loop_etcdservers:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
                 input, add_etcdservers()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(50)) goto parse_loop_etcdservers;
         input->UnsafeDecrementRecursionDepth();
-        if (input->ExpectTag(58)) goto parse_logicServerLoginPassword;
         break;
       }
 
-      // optional string logicServerLoginPassword = 7;
+      // string logicServerLoginPassword = 7;
       case 7: {
-        if (tag == 58) {
-         parse_logicServerLoginPassword:
+        if (tag == 58u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_logicserverloginpassword()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -1258,7 +1188,6 @@ bool ConnectionServerConfig::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -1286,12 +1215,12 @@ failure:
 void ConnectionServerConfig::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ServerConfig.ConnectionServerConfig)
-  // optional bool enableIPV6 = 1;
+  // bool enableIPV6 = 1;
   if (this->enableipv6() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->enableipv6(), output);
   }
 
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->bindip().data(), this->bindip().length(),
@@ -1301,17 +1230,17 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
       2, this->bindip(), output);
   }
 
-  // optional int32 portForClient = 3;
+  // int32 portForClient = 3;
   if (this->portforclient() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->portforclient(), output);
   }
 
-  // optional int32 portForLogicServer = 4;
+  // int32 portForLogicServer = 4;
   if (this->portforlogicserver() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->portforlogicserver(), output);
   }
 
-  // optional int32 id = 5;
+  // int32 id = 5;
   if (this->id() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->id(), output);
   }
@@ -1322,7 +1251,7 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
       6, this->etcdservers(i), output);
   }
 
-  // optional string logicServerLoginPassword = 7;
+  // string logicServerLoginPassword = 7;
   if (this->logicserverloginpassword().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->logicserverloginpassword().data(), this->logicserverloginpassword().length(),
@@ -1337,13 +1266,14 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ConnectionServerConfig::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ServerConfig.ConnectionServerConfig)
-  // optional bool enableIPV6 = 1;
+  // bool enableIPV6 = 1;
   if (this->enableipv6() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->enableipv6(), target);
   }
 
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->bindip().data(), this->bindip().length(),
@@ -1354,17 +1284,17 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
         2, this->bindip(), target);
   }
 
-  // optional int32 portForClient = 3;
+  // int32 portForClient = 3;
   if (this->portforclient() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->portforclient(), target);
   }
 
-  // optional int32 portForLogicServer = 4;
+  // int32 portForLogicServer = 4;
   if (this->portforlogicserver() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->portforlogicserver(), target);
   }
 
-  // optional int32 id = 5;
+  // int32 id = 5;
   if (this->id() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->id(), target);
   }
@@ -1376,7 +1306,7 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
         6, this->etcdservers(i), false, target);
   }
 
-  // optional string logicServerLoginPassword = 7;
+  // string logicServerLoginPassword = 7;
   if (this->logicserverloginpassword().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->logicserverloginpassword().data(), this->logicserverloginpassword().length(),
@@ -1391,70 +1321,72 @@ void ConnectionServerConfig::SerializeWithCachedSizes(
   return target;
 }
 
-int ConnectionServerConfig::ByteSize() const {
+size_t ConnectionServerConfig::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ServerConfig.ConnectionServerConfig)
-  int total_size = 0;
+  size_t total_size = 0;
 
-  // optional bool enableIPV6 = 1;
-  if (this->enableipv6() != 0) {
-    total_size += 1 + 1;
+  // repeated .ServerConfig.EtcdAddr etcdservers = 6;
+  {
+    unsigned int count = this->etcdservers_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->etcdservers(i));
+    }
   }
 
-  // optional string bindIP = 2;
+  // string bindIP = 2;
   if (this->bindip().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->bindip());
   }
 
-  // optional int32 portForClient = 3;
-  if (this->portforclient() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->portforclient());
-  }
-
-  // optional int32 portForLogicServer = 4;
-  if (this->portforlogicserver() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->portforlogicserver());
-  }
-
-  // optional int32 id = 5;
-  if (this->id() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->id());
-  }
-
-  // optional string logicServerLoginPassword = 7;
+  // string logicServerLoginPassword = 7;
   if (this->logicserverloginpassword().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->logicserverloginpassword());
   }
 
-  // repeated .ServerConfig.EtcdAddr etcdservers = 6;
-  total_size += 1 * this->etcdservers_size();
-  for (int i = 0; i < this->etcdservers_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->etcdservers(i));
+  // bool enableIPV6 = 1;
+  if (this->enableipv6() != 0) {
+    total_size += 1 + 1;
   }
 
+  // int32 portForClient = 3;
+  if (this->portforclient() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->portforclient());
+  }
+
+  // int32 portForLogicServer = 4;
+  if (this->portforlogicserver() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->portforlogicserver());
+  }
+
+  // int32 id = 5;
+  if (this->id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->id());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void ConnectionServerConfig::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ServerConfig.ConnectionServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
-  const ConnectionServerConfig* source = 
+  GOOGLE_DCHECK_NE(&from, this);
+  const ConnectionServerConfig* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const ConnectionServerConfig>(
           &from);
   if (source == NULL) {
@@ -1468,16 +1400,19 @@ void ConnectionServerConfig::MergeFrom(const ::google::protobuf::Message& from) 
 
 void ConnectionServerConfig::MergeFrom(const ConnectionServerConfig& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ServerConfig.ConnectionServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
   etcdservers_.MergeFrom(from.etcdservers_);
-  if (from.enableipv6() != 0) {
-    set_enableipv6(from.enableipv6());
-  }
   if (from.bindip().size() > 0) {
 
     bindip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bindip_);
+  }
+  if (from.logicserverloginpassword().size() > 0) {
+
+    logicserverloginpassword_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.logicserverloginpassword_);
+  }
+  if (from.enableipv6() != 0) {
+    set_enableipv6(from.enableipv6());
   }
   if (from.portforclient() != 0) {
     set_portforclient(from.portforclient());
@@ -1487,10 +1422,6 @@ void ConnectionServerConfig::MergeFrom(const ConnectionServerConfig& from) {
   }
   if (from.id() != 0) {
     set_id(from.id());
-  }
-  if (from.logicserverloginpassword().size() > 0) {
-
-    logicserverloginpassword_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.logicserverloginpassword_);
   }
 }
 
@@ -1509,7 +1440,6 @@ void ConnectionServerConfig::CopyFrom(const ConnectionServerConfig& from) {
 }
 
 bool ConnectionServerConfig::IsInitialized() const {
-
   return true;
 }
 
@@ -1518,77 +1448,81 @@ void ConnectionServerConfig::Swap(ConnectionServerConfig* other) {
   InternalSwap(other);
 }
 void ConnectionServerConfig::InternalSwap(ConnectionServerConfig* other) {
-  std::swap(enableipv6_, other->enableipv6_);
+  etcdservers_.UnsafeArenaSwap(&other->etcdservers_);
   bindip_.Swap(&other->bindip_);
+  logicserverloginpassword_.Swap(&other->logicserverloginpassword_);
+  std::swap(enableipv6_, other->enableipv6_);
   std::swap(portforclient_, other->portforclient_);
   std::swap(portforlogicserver_, other->portforlogicserver_);
   std::swap(id_, other->id_);
-  etcdservers_.UnsafeArenaSwap(&other->etcdservers_);
-  logicserverloginpassword_.Swap(&other->logicserverloginpassword_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata ConnectionServerConfig::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ConnectionServerConfig_descriptor_;
-  metadata.reflection = ConnectionServerConfig_reflection_;
-  return metadata;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[2];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // ConnectionServerConfig
 
-// optional bool enableIPV6 = 1;
+// bool enableIPV6 = 1;
 void ConnectionServerConfig::clear_enableipv6() {
   enableipv6_ = false;
 }
- bool ConnectionServerConfig::enableipv6() const {
+bool ConnectionServerConfig::enableipv6() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.enableIPV6)
   return enableipv6_;
 }
- void ConnectionServerConfig::set_enableipv6(bool value) {
+void ConnectionServerConfig::set_enableipv6(bool value) {
   
   enableipv6_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.enableIPV6)
 }
 
-// optional string bindIP = 2;
+// string bindIP = 2;
 void ConnectionServerConfig::clear_bindip() {
   bindip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- const ::std::string& ConnectionServerConfig::bindip() const {
+const ::std::string& ConnectionServerConfig::bindip() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.bindIP)
-  return bindip_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return bindip_.GetNoArena();
 }
- void ConnectionServerConfig::set_bindip(const ::std::string& value) {
+void ConnectionServerConfig::set_bindip(const ::std::string& value) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.bindIP)
 }
- void ConnectionServerConfig::set_bindip(const char* value) {
+#if LANG_CXX11
+void ConnectionServerConfig::set_bindip(::std::string&& value) {
+  
+  bindip_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ServerConfig.ConnectionServerConfig.bindIP)
+}
+#endif
+void ConnectionServerConfig::set_bindip(const char* value) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:ServerConfig.ConnectionServerConfig.bindIP)
 }
- void ConnectionServerConfig::set_bindip(const char* value, size_t size) {
+void ConnectionServerConfig::set_bindip(const char* value, size_t size) {
   
   bindip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:ServerConfig.ConnectionServerConfig.bindIP)
 }
- ::std::string* ConnectionServerConfig::mutable_bindip() {
+::std::string* ConnectionServerConfig::mutable_bindip() {
   
   // @@protoc_insertion_point(field_mutable:ServerConfig.ConnectionServerConfig.bindIP)
   return bindip_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* ConnectionServerConfig::release_bindip() {
+::std::string* ConnectionServerConfig::release_bindip() {
   // @@protoc_insertion_point(field_release:ServerConfig.ConnectionServerConfig.bindIP)
   
   return bindip_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void ConnectionServerConfig::set_allocated_bindip(::std::string* bindip) {
+void ConnectionServerConfig::set_allocated_bindip(::std::string* bindip) {
   if (bindip != NULL) {
     
   } else {
@@ -1598,43 +1532,43 @@ void ConnectionServerConfig::clear_bindip() {
   // @@protoc_insertion_point(field_set_allocated:ServerConfig.ConnectionServerConfig.bindIP)
 }
 
-// optional int32 portForClient = 3;
+// int32 portForClient = 3;
 void ConnectionServerConfig::clear_portforclient() {
   portforclient_ = 0;
 }
- ::google::protobuf::int32 ConnectionServerConfig::portforclient() const {
+::google::protobuf::int32 ConnectionServerConfig::portforclient() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.portForClient)
   return portforclient_;
 }
- void ConnectionServerConfig::set_portforclient(::google::protobuf::int32 value) {
+void ConnectionServerConfig::set_portforclient(::google::protobuf::int32 value) {
   
   portforclient_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.portForClient)
 }
 
-// optional int32 portForLogicServer = 4;
+// int32 portForLogicServer = 4;
 void ConnectionServerConfig::clear_portforlogicserver() {
   portforlogicserver_ = 0;
 }
- ::google::protobuf::int32 ConnectionServerConfig::portforlogicserver() const {
+::google::protobuf::int32 ConnectionServerConfig::portforlogicserver() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.portForLogicServer)
   return portforlogicserver_;
 }
- void ConnectionServerConfig::set_portforlogicserver(::google::protobuf::int32 value) {
+void ConnectionServerConfig::set_portforlogicserver(::google::protobuf::int32 value) {
   
   portforlogicserver_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.portForLogicServer)
 }
 
-// optional int32 id = 5;
+// int32 id = 5;
 void ConnectionServerConfig::clear_id() {
   id_ = 0;
 }
- ::google::protobuf::int32 ConnectionServerConfig::id() const {
+::google::protobuf::int32 ConnectionServerConfig::id() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.id)
   return id_;
 }
- void ConnectionServerConfig::set_id(::google::protobuf::int32 value) {
+void ConnectionServerConfig::set_id(::google::protobuf::int32 value) {
   
   id_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.id)
@@ -1670,41 +1604,49 @@ ConnectionServerConfig::etcdservers() const {
   return etcdservers_;
 }
 
-// optional string logicServerLoginPassword = 7;
+// string logicServerLoginPassword = 7;
 void ConnectionServerConfig::clear_logicserverloginpassword() {
   logicserverloginpassword_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- const ::std::string& ConnectionServerConfig::logicserverloginpassword() const {
+const ::std::string& ConnectionServerConfig::logicserverloginpassword() const {
   // @@protoc_insertion_point(field_get:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
-  return logicserverloginpassword_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return logicserverloginpassword_.GetNoArena();
 }
- void ConnectionServerConfig::set_logicserverloginpassword(const ::std::string& value) {
+void ConnectionServerConfig::set_logicserverloginpassword(const ::std::string& value) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
 }
- void ConnectionServerConfig::set_logicserverloginpassword(const char* value) {
+#if LANG_CXX11
+void ConnectionServerConfig::set_logicserverloginpassword(::std::string&& value) {
+  
+  logicserverloginpassword_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
+}
+#endif
+void ConnectionServerConfig::set_logicserverloginpassword(const char* value) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
 }
- void ConnectionServerConfig::set_logicserverloginpassword(const char* value, size_t size) {
+void ConnectionServerConfig::set_logicserverloginpassword(const char* value, size_t size) {
   
   logicserverloginpassword_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
 }
- ::std::string* ConnectionServerConfig::mutable_logicserverloginpassword() {
+::std::string* ConnectionServerConfig::mutable_logicserverloginpassword() {
   
   // @@protoc_insertion_point(field_mutable:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
   return logicserverloginpassword_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* ConnectionServerConfig::release_logicserverloginpassword() {
+::std::string* ConnectionServerConfig::release_logicserverloginpassword() {
   // @@protoc_insertion_point(field_release:ServerConfig.ConnectionServerConfig.logicServerLoginPassword)
   
   return logicserverloginpassword_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void ConnectionServerConfig::set_allocated_logicserverloginpassword(::std::string* logicserverloginpassword) {
+void ConnectionServerConfig::set_allocated_logicserverloginpassword(::std::string* logicserverloginpassword) {
   if (logicserverloginpassword != NULL) {
     
   } else {
@@ -1726,27 +1668,28 @@ const int LogicServerConfig::kEtcdserversFieldNumber;
 
 LogicServerConfig::LogicServerConfig()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_ServerConfig_2eproto::InitDefaults();
+  }
   SharedCtor();
   // @@protoc_insertion_point(constructor:ServerConfig.LogicServerConfig)
 }
-
-void LogicServerConfig::InitAsDefaultInstance() {
-  _is_default_instance_ = true;
-}
-
 LogicServerConfig::LogicServerConfig(const LogicServerConfig& from)
   : ::google::protobuf::Message(),
-    _internal_metadata_(NULL) {
-  SharedCtor();
-  MergeFrom(from);
+      _internal_metadata_(NULL),
+      etcdservers_(from.etcdservers_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&id_, &from.id_,
+    reinterpret_cast<char*>(&isprimary_) -
+    reinterpret_cast<char*>(&id_) + sizeof(isprimary_));
   // @@protoc_insertion_point(copy_constructor:ServerConfig.LogicServerConfig)
 }
 
 void LogicServerConfig::SharedCtor() {
-    _is_default_instance_ = false;
+  ::memset(&id_, 0, reinterpret_cast<char*>(&isprimary_) -
+    reinterpret_cast<char*>(&id_) + sizeof(isprimary_));
   _cached_size_ = 0;
-  id_ = 0;
-  isprimary_ = false;
 }
 
 LogicServerConfig::~LogicServerConfig() {
@@ -1755,8 +1698,6 @@ LogicServerConfig::~LogicServerConfig() {
 }
 
 void LogicServerConfig::SharedDtor() {
-  if (this != default_instance_) {
-  }
 }
 
 void LogicServerConfig::SetCachedSize(int size) const {
@@ -1765,16 +1706,14 @@ void LogicServerConfig::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* LogicServerConfig::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return LogicServerConfig_descriptor_;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[3].descriptor;
 }
 
 const LogicServerConfig& LogicServerConfig::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_ServerConfig_2eproto();
-  return *default_instance_;
+  protobuf_ServerConfig_2eproto::InitDefaults();
+  return *internal_default_instance();
 }
-
-LogicServerConfig* LogicServerConfig::default_instance_ = NULL;
 
 LogicServerConfig* LogicServerConfig::New(::google::protobuf::Arena* arena) const {
   LogicServerConfig* n = new LogicServerConfig;
@@ -1786,28 +1725,9 @@ LogicServerConfig* LogicServerConfig::New(::google::protobuf::Arena* arena) cons
 
 void LogicServerConfig::Clear() {
 // @@protoc_insertion_point(message_clear_start:ServerConfig.LogicServerConfig)
-#if defined(__clang__)
-#define ZR_HELPER_(f) \
-  _Pragma("clang diagnostic push") \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-  __builtin_offsetof(LogicServerConfig, f) \
-  _Pragma("clang diagnostic pop")
-#else
-#define ZR_HELPER_(f) reinterpret_cast<char*>(\
-  &reinterpret_cast<LogicServerConfig*>(16)->f)
-#endif
-
-#define ZR_(first, last) do {\
-  ::memset(&first, 0,\
-           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
-} while (0)
-
-  ZR_(id_, isprimary_);
-
-#undef ZR_HELPER_
-#undef ZR_
-
   etcdservers_.Clear();
+  ::memset(&id_, 0, reinterpret_cast<char*>(&isprimary_) -
+    reinterpret_cast<char*>(&id_) + sizeof(isprimary_));
 }
 
 bool LogicServerConfig::MergePartialFromCodedStream(
@@ -1816,53 +1736,46 @@ bool LogicServerConfig::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:ServerConfig.LogicServerConfig)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional int32 id = 1;
+      // int32 id = 1;
       case 1: {
-        if (tag == 8) {
+        if (tag == 8u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &id_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_isPrimary;
         break;
       }
 
-      // optional bool isPrimary = 2;
+      // bool isPrimary = 2;
       case 2: {
-        if (tag == 16) {
-         parse_isPrimary:
+        if (tag == 16u) {
+
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &isprimary_)));
-
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(26)) goto parse_etcdservers;
         break;
       }
 
       // repeated .ServerConfig.EtcdAddr etcdservers = 3;
       case 3: {
-        if (tag == 26) {
-         parse_etcdservers:
+        if (tag == 26u) {
           DO_(input->IncrementRecursionDepth());
-         parse_loop_etcdservers:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
                 input, add_etcdservers()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(26)) goto parse_loop_etcdservers;
         input->UnsafeDecrementRecursionDepth();
-        if (input->ExpectAtEnd()) goto success;
         break;
       }
 
@@ -1890,12 +1803,12 @@ failure:
 void LogicServerConfig::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ServerConfig.LogicServerConfig)
-  // optional int32 id = 1;
+  // int32 id = 1;
   if (this->id() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
   }
 
-  // optional bool isPrimary = 2;
+  // bool isPrimary = 2;
   if (this->isprimary() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->isprimary(), output);
   }
@@ -1911,13 +1824,14 @@ void LogicServerConfig::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* LogicServerConfig::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:ServerConfig.LogicServerConfig)
-  // optional int32 id = 1;
+  // int32 id = 1;
   if (this->id() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
   }
 
-  // optional bool isPrimary = 2;
+  // bool isPrimary = 2;
   if (this->isprimary() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->isprimary(), target);
   }
@@ -1933,42 +1847,44 @@ void LogicServerConfig::SerializeWithCachedSizes(
   return target;
 }
 
-int LogicServerConfig::ByteSize() const {
+size_t LogicServerConfig::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ServerConfig.LogicServerConfig)
-  int total_size = 0;
+  size_t total_size = 0;
 
-  // optional int32 id = 1;
+  // repeated .ServerConfig.EtcdAddr etcdservers = 3;
+  {
+    unsigned int count = this->etcdservers_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->etcdservers(i));
+    }
+  }
+
+  // int32 id = 1;
   if (this->id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->id());
   }
 
-  // optional bool isPrimary = 2;
+  // bool isPrimary = 2;
   if (this->isprimary() != 0) {
     total_size += 1 + 1;
   }
 
-  // repeated .ServerConfig.EtcdAddr etcdservers = 3;
-  total_size += 1 * this->etcdservers_size();
-  for (int i = 0; i < this->etcdservers_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->etcdservers(i));
-  }
-
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
+  _cached_size_ = cached_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
 void LogicServerConfig::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ServerConfig.LogicServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
-  const LogicServerConfig* source = 
+  GOOGLE_DCHECK_NE(&from, this);
+  const LogicServerConfig* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const LogicServerConfig>(
           &from);
   if (source == NULL) {
@@ -1982,9 +1898,8 @@ void LogicServerConfig::MergeFrom(const ::google::protobuf::Message& from) {
 
 void LogicServerConfig::MergeFrom(const LogicServerConfig& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ServerConfig.LogicServerConfig)
-  if (GOOGLE_PREDICT_FALSE(&from == this)) {
-    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
-  }
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
   etcdservers_.MergeFrom(from.etcdservers_);
   if (from.id() != 0) {
     set_id(from.id());
@@ -2009,7 +1924,6 @@ void LogicServerConfig::CopyFrom(const LogicServerConfig& from) {
 }
 
 bool LogicServerConfig::IsInitialized() const {
-
   return true;
 }
 
@@ -2018,47 +1932,43 @@ void LogicServerConfig::Swap(LogicServerConfig* other) {
   InternalSwap(other);
 }
 void LogicServerConfig::InternalSwap(LogicServerConfig* other) {
+  etcdservers_.UnsafeArenaSwap(&other->etcdservers_);
   std::swap(id_, other->id_);
   std::swap(isprimary_, other->isprimary_);
-  etcdservers_.UnsafeArenaSwap(&other->etcdservers_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata LogicServerConfig::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = LogicServerConfig_descriptor_;
-  metadata.reflection = LogicServerConfig_reflection_;
-  return metadata;
+  protobuf_ServerConfig_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_ServerConfig_2eproto::file_level_metadata[3];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // LogicServerConfig
 
-// optional int32 id = 1;
+// int32 id = 1;
 void LogicServerConfig::clear_id() {
   id_ = 0;
 }
- ::google::protobuf::int32 LogicServerConfig::id() const {
+::google::protobuf::int32 LogicServerConfig::id() const {
   // @@protoc_insertion_point(field_get:ServerConfig.LogicServerConfig.id)
   return id_;
 }
- void LogicServerConfig::set_id(::google::protobuf::int32 value) {
+void LogicServerConfig::set_id(::google::protobuf::int32 value) {
   
   id_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.LogicServerConfig.id)
 }
 
-// optional bool isPrimary = 2;
+// bool isPrimary = 2;
 void LogicServerConfig::clear_isprimary() {
   isprimary_ = false;
 }
- bool LogicServerConfig::isprimary() const {
+bool LogicServerConfig::isprimary() const {
   // @@protoc_insertion_point(field_get:ServerConfig.LogicServerConfig.isPrimary)
   return isprimary_;
 }
- void LogicServerConfig::set_isprimary(bool value) {
+void LogicServerConfig::set_isprimary(bool value) {
   
   isprimary_ = value;
   // @@protoc_insertion_point(field_set:ServerConfig.LogicServerConfig.isPrimary)

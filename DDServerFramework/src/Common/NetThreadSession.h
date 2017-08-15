@@ -12,7 +12,7 @@
 /*将网络层（线程）事件转换为消息，放入消息队列，提供给逻辑线程处理*/
 
 /*网络消息类型*/
-enum Net2LogicMsgType
+enum class Net2LogicMsgType
 {
     Net2LogicMsgTypeNONE,
     Net2LogicMsgTypeEnter,

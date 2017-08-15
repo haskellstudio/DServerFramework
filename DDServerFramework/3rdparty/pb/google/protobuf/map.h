@@ -28,6 +28,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// This file defines the map container and its helpers to support protobuf maps.
+//
+// The Map and MapIterator types are provided by this header file.
+// Please avoid using other types defined here, unless they are public
+// types within Map or MapIterator, such as Map::value_type.
+
 #ifndef GOOGLE_PROTOBUF_MAP_H__
 #define GOOGLE_PROTOBUF_MAP_H__
 
@@ -50,9 +56,6 @@
 namespace google {
 namespace protobuf {
 
-// The Map and MapIterator types are provided by this header file.
-// Please avoid using other types defined here, unless they are public
-// types within Map or MapIterator, such as Map::value_type.
 template <typename Key, typename T>
 class Map;
 
@@ -520,13 +523,13 @@ class Map {
   typedef size_t size_type;
   typedef hash<Key> hasher;
 
-  explicit Map(bool old_style = true)
+  explicit Map(bool old_style = false)
       : arena_(NULL),
         default_enum_value_(0),
         old_style_(old_style) {
     Init();
   }
-  explicit Map(Arena* arena, bool old_style = true)
+  explicit Map(Arena* arena, bool old_style = false)
       : arena_(arena),
         default_enum_value_(0),
         old_style_(old_style) {
@@ -540,7 +543,7 @@ class Map {
     insert(other.begin(), other.end());
   }
   template <class InputIt>
-  Map(const InputIt& first, const InputIt& last, bool old_style = true)
+  Map(const InputIt& first, const InputIt& last, bool old_style = false)
       : arena_(NULL),
         default_enum_value_(0),
         old_style_(old_style) {
@@ -562,7 +565,7 @@ class Map {
   void Init() {
     if (old_style_)
       deprecated_elements_ = Arena::Create<DeprecatedInnerMap>(
-          arena_, 0, hasher(), equal_to<Key>(),
+          arena_, 0, hasher(), std::equal_to<Key>(),
           MapAllocator<std::pair<const Key, MapPair<Key, T>*> >(arena_));
     else
       elements_ =
@@ -589,11 +592,11 @@ class Map {
     MapAllocator(const MapAllocator<X>& allocator)
         : arena_(allocator.arena()) {}
 
-    pointer allocate(size_type n, const_pointer hint = 0) {
+    pointer allocate(size_type n, const void* hint = 0) {
       // If arena is not given, malloc needs to be called which doesn't
       // construct element object.
       if (arena_ == NULL) {
-        return reinterpret_cast<pointer>(malloc(n * sizeof(value_type)));
+        return static_cast<pointer>(::operator new(n * sizeof(value_type)));
       } else {
         return reinterpret_cast<pointer>(
             Arena::CreateArray<uint8>(arena_, n * sizeof(value_type)));
@@ -602,13 +605,16 @@ class Map {
 
     void deallocate(pointer p, size_type n) {
       if (arena_ == NULL) {
-        free(p);
+#if defined(__GXX_DELETE_WITH_SIZE__) || defined(__cpp_sized_deallocation)
+        ::operator delete(p, n * sizeof(value_type));
+#else
+        ::operator delete(p);
+#endif
       }
     }
 
 #if __cplusplus >= 201103L && !defined(GOOGLE_PROTOBUF_OS_APPLE) && \
     !defined(GOOGLE_PROTOBUF_OS_NACL) &&                            \
-    !defined(GOOGLE_PROTOBUF_OS_ANDROID) &&                         \
     !defined(GOOGLE_PROTOBUF_OS_EMSCRIPTEN)
     template<class NodeType, class... Args>
     void construct(NodeType* p, Args&&... args) {
@@ -647,7 +653,8 @@ class Map {
 
     // To support Visual Studio 2008
     size_type max_size() const {
-      return std::numeric_limits<size_type>::max();
+      // parentheses around (std::...:max) prevents macro warning of max()
+      return (std::numeric_limits<size_type>::max)();
     }
 
     // To support gcc-4.4, which does not properly
@@ -671,7 +678,7 @@ class Map {
 
     const Key& key() const { return k_; }
     Key& key() { return k_; }
-    value_type* const value() const { return v_; }
+    value_type* value() const { return v_; }
     value_type*& value() { return v_; }
 
    private:
@@ -1077,8 +1084,9 @@ class Map {
         // index_of_first_non_null_, so we skip the code to update it.
         return InsertUniqueInTree(b, node);
       }
+      // parentheses around (std::min) prevents macro expansion of min(...)
       index_of_first_non_null_ =
-          std::min(index_of_first_non_null_, result.bucket_index_);
+          (std::min)(index_of_first_non_null_, result.bucket_index_);
       return result;
     }
 
@@ -1282,7 +1290,9 @@ class Map {
     // Return a power of two no less than max(kMinTableSize, n).
     // Assumes either n < kMinTableSize or n is a power of two.
     size_type TableSize(size_type n) {
-      return n < kMinTableSize ? kMinTableSize : n;
+      return n < static_cast<size_type>(kMinTableSize)
+                 ? static_cast<size_type>(kMinTableSize)
+                 : n;
     }
 
     // Use alloc_ to allocate an array of n objects of type U.
@@ -1348,7 +1358,7 @@ class Map {
     GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(InnerMap);
   };  // end of class InnerMap
 
-  typedef hash_map<Key, value_type*, hash<Key>, equal_to<Key>,
+  typedef hash_map<Key, value_type*, hash<Key>, std::equal_to<Key>,
                    MapAllocator<std::pair<const Key, MapPair<Key, T>*> > >
       DeprecatedInnerMap;
 
@@ -1525,8 +1535,9 @@ class Map {
 
   // Lookup
   size_type count(const key_type& key) const {
-    if (find(key) != end()) assert(key == find(key)->first);
-    return find(key) == end() ? 0 : 1;
+    const_iterator it = find(key);
+    GOOGLE_DCHECK(it == end() || key == it->first);
+    return it == end() ? 0 : 1;
   }
   const_iterator find(const key_type& key) const {
     return old_style_ ? const_iterator(deprecated_elements_->find(key))
@@ -1717,12 +1728,19 @@ struct hash<google::protobuf::MapKey> {
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_STRING:
         return hash<string>()(map_key.GetStringValue());
+#if defined(GOOGLE_PROTOBUF_HAVE_64BIT_HASH)
       case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
         return hash< ::google::protobuf::int64>()(map_key.GetInt64Value());
-      case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
-        return hash< ::google::protobuf::int32>()(map_key.GetInt32Value());
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
         return hash< ::google::protobuf::uint64>()(map_key.GetUInt64Value());
+#else
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
+      case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
+        GOOGLE_LOG(FATAL) << "Unsupported on this platform.";
+        break;
+#endif
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
+        return hash< ::google::protobuf::int32>()(map_key.GetInt32Value());
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
         return hash< ::google::protobuf::uint32>()(map_key.GetUInt32Value());
       case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:

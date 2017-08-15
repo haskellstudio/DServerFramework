@@ -14,7 +14,7 @@ class LogicServerSession : public UsePacketSingleNetSession
 public:
     typedef std::shared_ptr<LogicServerSession> PTR;
 
-    LogicServerSession();
+    LogicServerSession(int32_t connectionServerID, std::string password);
 
 private:
     virtual     void    onEnter() override;
@@ -39,6 +39,9 @@ private:
     void                sendLogicServerLoginResult(bool isSuccess, const std::string& reason);
 
 private:
+    const int32_t       mConnectionServerID;
+    const std::string   mPassword;
+
     bool                mIsPrimary;
     int                 mID;
 };

@@ -10,7 +10,7 @@
 class Packet;
 
 /*链接到链接服务器*/
-class ConnectionServerConnection : public BaseLogicSession, public std::enable_shared_from_this<ConnectionServerConnection>
+class ConnectionServerConnection : public BaseLogicSession
 {
 public:
     typedef std::shared_ptr<ConnectionServerConnection> PTR;
@@ -20,6 +20,8 @@ public:
     ~ConnectionServerConnection();
 
     void            sendPacket(Packet&);
+    
+    static ConnectionServerConnection::PTR FindConnectionServerByID(int32_t id);
 
 private:
     virtual void    onEnter() final;
@@ -34,10 +36,8 @@ private:
     int             mIDInEtcd;
     int32_t         mConnectionServerID;
     std::string     mPassword;
-    dodo::Timer::WeakPtr  mPingTimer;
+    brynet::Timer::WeakPtr  mPingTimer;
 };
-
-extern std::unordered_map<int32_t, ConnectionServerConnection::PTR> gAllLogicConnectionServerClient;
 
 void    tryCompareConnect(std::unordered_map<int32_t, std::tuple<std::string, int, std::string>>& servers);
 

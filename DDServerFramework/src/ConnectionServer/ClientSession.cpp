@@ -11,12 +11,10 @@
 
 #include "ClientSession.h"
 
-extern ServerConfig::ConnectionServerConfig     connectionServerConfig;
 extern WrapLog::PTR                             gDailyLogger;
-extern WrapServer::PTR                          gServer;
 static std::atomic<int32_t> incRuntimeID = ATOMIC_VAR_INIT(0);
 
-ConnectionClientSession::ConnectionClientSession()
+ConnectionClientSession::ConnectionClientSession(int32_t connectionServerID) : mConnectionServerID(connectionServerID)
 {
     mRuntimeID = -1;
     mPrimaryServerID = -1;
@@ -24,13 +22,10 @@ ConnectionClientSession::ConnectionClientSession()
 
     mRecvSerialID = 0;
     mSendSerialID = 0;
-
-    gDailyLogger->info("ConnectionClientSession : {}, {}", getSocketID(), getIP());
 }
 
 ConnectionClientSession::~ConnectionClientSession()
 {
-    gDailyLogger->info("~ ConnectionClientSession : {}, {}", getSocketID(), getIP());
 }
 
 union CLIENT_RUNTIME_ID
@@ -46,44 +41,47 @@ union CLIENT_RUNTIME_ID
 
 void ConnectionClientSession::claimRuntimeID()
 {
-    if (mRuntimeID == -1)
+    if (mRuntimeID != -1)
     {
-        static_assert(sizeof(union CLIENT_RUNTIME_ID) == sizeof(((CLIENT_RUNTIME_ID*)nullptr)->id), "");
+        return;
+    }
 
-        CLIENT_RUNTIME_ID tmp;
-        tmp.humman.serverID = connectionServerConfig.id();
-        tmp.humman.incID = std::atomic_fetch_add(&incRuntimeID, 1);
-        tmp.humman.time = static_cast<int32_t>(time(nullptr));
+    static_assert(sizeof(union CLIENT_RUNTIME_ID) == sizeof(((CLIENT_RUNTIME_ID*)nullptr)->id), "");
 
-        mRuntimeID = tmp.id;
-        ClientSessionMgr::AddClientByRuntimeID(std::static_pointer_cast<ConnectionClientSession>(shared_from_this()), mRuntimeID);
+    CLIENT_RUNTIME_ID tmp;
+    tmp.humman.serverID = mConnectionServerID;
+    tmp.humman.incID = std::atomic_fetch_add(&incRuntimeID, 1);
+    tmp.humman.time = static_cast<int32_t>(time(nullptr));
 
-        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR);
-        packet.writeINT64(getSocketID());
-        packet.writeINT64(mRuntimeID);
+    mRuntimeID = tmp.id;
+    ClientSessionMgr::AddClientByRuntimeID(std::static_pointer_cast<ConnectionClientSession>(shared_from_this()), mRuntimeID);
 
-        mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
-        if (mPrimaryServer != nullptr)
-        {
-            mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
-        }
+    BigPacket packet(static_cast<PACKET_OP_TYPE>(CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_INIT_CLIENTMIRROR));
+    packet.writeINT64(getSocketID());
+    packet.writeINT64(mRuntimeID);
+
+    mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
+    if (mPrimaryServer != nullptr)
+    {
+        mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
     }
 }
 
 void ConnectionClientSession::claimPrimaryServer()
 {
-    assert(mRuntimeID != -1);
-    if (mRuntimeID != -1 && mPrimaryServer == nullptr)
+    if (mPrimaryServer != nullptr)
     {
-        mPrimaryServerID = LogicServerSessionMgr::ClaimPrimaryLogicServer();
-        if (mPrimaryServerID != -1)
-        {
-            mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
-        }
-        else
-        {
-            gDailyLogger->error("分配主逻辑服务器失败");
-        }
+        return;
+    }
+
+    mPrimaryServerID = LogicServerSessionMgr::ClaimPrimaryLogicServer();
+    if (mPrimaryServerID != -1)
+    {
+        mPrimaryServer = LogicServerSessionMgr::FindPrimaryLogicServer(mPrimaryServerID);
+    }
+    else
+    {
+        gDailyLogger->error("分配主逻辑服务器失败");
     }
 }
 
@@ -105,14 +103,14 @@ void ConnectionClientSession::setSlaveServerID(int id)
 
 void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen)
 {
-    if (mRuntimeID == -1)
-    {
-        claimRuntimeID();
-    }
-
     if (mPrimaryServerID == -1)
     {
         claimPrimaryServer();
+    }
+
+    if (mRuntimeID == -1)
+    {
+        claimRuntimeID();
     }
 
     if (mSlaveServerID != -1)
@@ -129,17 +127,18 @@ void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PA
 
     if (mPrimaryServerID != -1)
     {
-        BigPacket packet(CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT);
+        BigPacket packet(static_cast<PACKET_OP_TYPE>(CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT));
         packet.writeINT64(mRuntimeID);
-        packet.writeBinary(body, bodyLen);
+        packet.writeBinary(body- PACKET_HEAD_LEN, bodyLen+ PACKET_HEAD_LEN);
+        packet.getLen();
 
         if (mSlaveServer != nullptr)
         {
-            mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
+            mSlaveServer->sendPacket(packet.getData(), packet.getLen());
         }
         else if (mPrimaryServer != nullptr)
         {
-            mSlaveServer->sendPacket(packet.getData(), packet.getLen());
+            mPrimaryServer->sendPacket(packet.getData(), packet.getLen());
         }
     }
 }
@@ -156,7 +155,7 @@ void ConnectionClientSession::onClose()
     {
         ClientSessionMgr::EraseClientByRuntimeID(mRuntimeID);
 
-        TinyPacket sp(CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT);
+        TinyPacket sp(static_cast<PACKET_OP_TYPE>(CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT));
         sp.writeINT64(mRuntimeID);
         sp.getLen();
 

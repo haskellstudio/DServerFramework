@@ -1,6 +1,6 @@
 #include "NetThreadSession.h"
 
-dodo::MsgQueue<Net2LogicMsg>  gNet2LogicMsgList;
+brynet::MsgQueue<Net2LogicMsg>  gNet2LogicMsgList;
 std::mutex              gNet2LogicMsgListLock;
 
 void ExtNetSession::pushDataMsgToLogicThread(const char* data, size_t len)
@@ -11,22 +11,22 @@ void ExtNetSession::pushDataMsgToLogicThread(const char* data, size_t len)
 void ExtNetSession::onEnter()
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
-    mLogicSession->setSession(getServer(), getSocketID(), getIP());
-    Net2LogicMsg tmp(mLogicSession, Net2LogicMsgTypeEnter);
+    mLogicSession->setSession(getService(), getSocketID(), getIP());
+    Net2LogicMsg tmp(mLogicSession, Net2LogicMsgType::Net2LogicMsgTypeEnter);
     gNet2LogicMsgList.push(tmp);
 }
 
 void ExtNetSession::onClose()
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
-    Net2LogicMsg tmp(mLogicSession, Net2LogicMsgTypeClose);
+    Net2LogicMsg tmp(mLogicSession, Net2LogicMsgType::Net2LogicMsgTypeClose);
     gNet2LogicMsgList.push(tmp);
 }
 
 void pushDataMsg2LogicMsgList(BaseLogicSession::PTR session, const char* data, size_t len)
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
-    Net2LogicMsg tmp(session, Net2LogicMsgTypeData);
+    Net2LogicMsg tmp(session, Net2LogicMsgType::Net2LogicMsgTypeData);
     tmp.setData(data, len);
     gNet2LogicMsgList.push(tmp);
 }
@@ -34,7 +34,7 @@ void pushDataMsg2LogicMsgList(BaseLogicSession::PTR session, const char* data, s
 void pushCompleteCallback2LogicMsgList(const DataSocket::PACKED_SENDED_CALLBACK& callback)
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
-    Net2LogicMsg tmp(nullptr, Net2LogicMsgTypeCompleteCallback);
+    Net2LogicMsg tmp(nullptr, Net2LogicMsgType::Net2LogicMsgTypeCompleteCallback);
     tmp.mSendCompleteCallback = callback;
     gNet2LogicMsgList.push(tmp);
 }
@@ -59,22 +59,22 @@ void procNet2LogicMsgList()
     {
         switch (msg.mMsgType)
         {
-            case Net2LogicMsgTypeEnter:
+            case Net2LogicMsgType::Net2LogicMsgTypeEnter:
             {
                 msg.mSession->onEnter();
             }
             break;
-            case Net2LogicMsgTypeData:
+            case Net2LogicMsgType::Net2LogicMsgTypeData:
             {
                 msg.mSession->onMsg(msg.mPacket.c_str(), msg.mPacket.size());
             }
             break;
-            case Net2LogicMsgTypeClose:
+            case Net2LogicMsgType::Net2LogicMsgTypeClose:
             {
                 msg.mSession->onClose();
             }
             break;
-            case Net2LogicMsgTypeCompleteCallback:
+            case Net2LogicMsgType::Net2LogicMsgTypeCompleteCallback:
             {
                 (*msg.mSendCompleteCallback)();
             }
