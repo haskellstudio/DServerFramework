@@ -3,7 +3,8 @@
 
 #include <memory>
 #include <string>
-#include "NetSession.h"
+
+#include <brynet/net/NetSession.h>
 #include "UsePacketSingleNetSession.h"
 
 class ReadPacket;
@@ -15,6 +16,7 @@ public:
     typedef std::shared_ptr<LogicServerSession> PTR;
 
     LogicServerSession(int32_t connectionServerID, std::string password);
+    int                 getID() const;
 
 private:
     virtual     void    onEnter() override;
@@ -29,6 +31,7 @@ private:
     void                onPacket2ClientByRuntimeID(ReadPacket& rp);
     void                onPacket2ClientBySocketInfo(ReadPacket& rp);
 
+    void                onPrimaryServerIsSetClient(ReadPacket& rp);
     void                onSlaveServerIsSetClient(ReadPacket& rp);
     /*  强制踢出某RuntimeID所标识的客户端   */
     void                onKickClientByRuntimeID(ReadPacket& rp);

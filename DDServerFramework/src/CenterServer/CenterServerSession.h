@@ -6,9 +6,9 @@
 #include <string>
 #include <stdint.h>
 
+#include <brynet/utils/packet.h>
 #include "LogicNetSession.h"
 #include "memberrpc.h"
-#include "packet.h"
 #include "CenterServerSendOP.h"
 
 class Packet;

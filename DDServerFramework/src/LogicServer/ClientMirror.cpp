@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "packet.h"
+#include <brynet/utils/packet.h>
 #include "ConnectionServerConnection.h"
 #include "CenterServerConnection.h"
 #include "ConnectionServerRecvOP.h"

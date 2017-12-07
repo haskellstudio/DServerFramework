@@ -9,14 +9,13 @@ ConnectionClientSession::PTR ClientSessionMgr::FindClientByRuntimeID(int64_t run
 {
     ConnectionClientSession::PTR ret = nullptr;
 
-    gAllClientObjectLock.lock();
+    std::lock_guard<std::mutex> lck(gAllClientObjectLock);
 
     auto it = gAllClientObject.find(runtimeID);
     if (it != gAllClientObject.end())
     {
         ret = it->second;
     }
-    gAllClientObjectLock.unlock();
 
     return ret;
 }
@@ -24,16 +23,14 @@ ConnectionClientSession::PTR ClientSessionMgr::FindClientByRuntimeID(int64_t run
 void ClientSessionMgr::AddClientByRuntimeID(ConnectionClientSession::PTR client, int64_t runtimeID)
 {
     assert(FindClientByRuntimeID(runtimeID) == nullptr);
-    gAllClientObjectLock.lock();
+    std::lock_guard<std::mutex> lck(gAllClientObjectLock);
     gAllClientObject[runtimeID] = client;
-    gAllClientObjectLock.unlock();
 }
 
 void ClientSessionMgr::EraseClientByRuntimeID(int64_t runtimeID)
 {
-    gAllClientObjectLock.lock();
+    std::lock_guard<std::mutex> lck(gAllClientObjectLock);
     gAllClientObject.erase(runtimeID);
-    gAllClientObjectLock.unlock();
 }
 
 void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
@@ -41,7 +38,11 @@ void ClientSessionMgr::KickClientByRuntimeID(int64_t runtimeID)
     ConnectionClientSession::PTR p = FindClientByRuntimeID(runtimeID);
     if (p != nullptr)
     {
-        p->postClose();
+        p->postDisConnect();
+        //只要被踢,无条件立即投递发送玩家断开的回调
+        p->getEventLoop()->pushAsyncProc([=]() {
+            p->notifyExit();
+        });
     }
 }
 

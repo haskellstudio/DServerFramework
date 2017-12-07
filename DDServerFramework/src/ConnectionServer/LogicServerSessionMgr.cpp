@@ -1,6 +1,7 @@
 #include <unordered_map>
-
 #include "LogicServerSessionMgr.h"
+
+using namespace brynet::net;
 
 std::unordered_map<int, LogicServerSession::PTR>        gAllPrimaryServers;
 std::mutex                                              gAllPrimaryServersLock;
@@ -10,17 +11,26 @@ std::mutex                                              gAllSlaveServersLock;
 
 void LogicServerSessionMgr::AddPrimaryLogicServer(int id, LogicServerSession::PTR p)
 {
-    gAllPrimaryServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllPrimaryServersLock);
     gAllPrimaryServers[id] = p;
-    gAllPrimaryServersLock.unlock();
 }
 
 LogicServerSession::PTR LogicServerSessionMgr::FindPrimaryLogicServer(int id)
 {
     LogicServerSession::PTR tmp;
 
-    gAllPrimaryServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllPrimaryServersLock);
     tmp = gAllPrimaryServers[id];
+
+    return tmp;
+}
+
+std::unordered_map<int, LogicServerSession::PTR> LogicServerSessionMgr::GetAllPrimaryLogicServer()
+{
+    std::unordered_map<int, LogicServerSession::PTR> tmp;
+
+    gAllPrimaryServersLock.lock();
+    tmp = gAllPrimaryServers;
     gAllPrimaryServersLock.unlock();
 
     return tmp;
@@ -28,15 +38,14 @@ LogicServerSession::PTR LogicServerSessionMgr::FindPrimaryLogicServer(int id)
 
 void LogicServerSessionMgr::RemovePrimaryLogicServer(int id)
 {
-    gAllPrimaryServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllPrimaryServersLock);
     gAllPrimaryServers.erase(id);
-    gAllPrimaryServersLock.unlock();
 }
 
 int LogicServerSessionMgr::ClaimPrimaryLogicServer()
 {
     int ret = -1;
-    gAllPrimaryServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllPrimaryServersLock);
     if (!gAllPrimaryServers.empty())
     {
         int randnum = rand() % gAllPrimaryServers.size();
@@ -51,32 +60,39 @@ int LogicServerSessionMgr::ClaimPrimaryLogicServer()
             }
         }
     }
-    gAllPrimaryServersLock.unlock();
 
     return ret;
 }
 
 void LogicServerSessionMgr::AddSlaveLogicServer(int id, LogicServerSession::PTR p)
 {
-    gAllSlaveServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllSlaveServersLock);
     gAllSlaveServers[id] = p;
-    gAllSlaveServersLock.unlock();
 }
 
 LogicServerSession::PTR LogicServerSessionMgr::FindSlaveLogicServer(int id)
 {
     LogicServerSession::PTR tmp;
 
-    gAllSlaveServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllSlaveServersLock);
     tmp = gAllSlaveServers[id];
-    gAllSlaveServersLock.unlock();
 
     return tmp;
 }
 
 void LogicServerSessionMgr::RemoveSlaveLogicServer(int id)
 {
-    gAllSlaveServersLock.lock();
+    std::lock_guard<std::mutex> lck(gAllSlaveServersLock);
     gAllSlaveServers.erase(id);
+}
+
+std::unordered_map<int, LogicServerSession::PTR> LogicServerSessionMgr::GetAllSlaveLogicServer()
+{
+    std::unordered_map<int, LogicServerSession::PTR> tmp;
+
+    gAllSlaveServersLock.lock();
+    tmp = gAllSlaveServers;
     gAllSlaveServersLock.unlock();
+
+    return tmp;
 }

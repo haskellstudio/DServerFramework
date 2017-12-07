@@ -1,14 +1,14 @@
 #include <iostream>
 using namespace std;
 
-#include "packet.h"
+#include <brynet/utils/packet.h> 
+#include <brynet/timer/timer.h>
 #include "ConnectionServerRecvOP.h"
 #include "ConnectionServerSendOP.h"
 #include "CenterServerRecvOP.h"
 
 #include "CenterServerConnection.h"
 #include "ClientMirror.h"
-#include "Timer.h"
 #include "WrapLog.h"
 
 #include "UsePacketExtNetSession.h"
@@ -83,7 +83,7 @@ void ConnectionServerConnection::ping()
 
     sendPacket(p);
 
-    mPingTimer = gLogicTimerMgr->addTimer(5000, [shared_this = std::static_pointer_cast<ConnectionServerConnection>(shared_from_this())](){
+    mPingTimer = gLogicTimerMgr->addTimer(std::chrono::microseconds(5000), [shared_this = std::static_pointer_cast<ConnectionServerConnection>(shared_from_this())](){
         shared_this->ping();
     });
 }
@@ -96,6 +96,25 @@ void ConnectionServerConnection::onClose()
     if (mIsSuccess)
     {
         eraseConnectingServer(mIDInEtcd);
+    }
+}
+
+void ConnectionServerConnection::initClient(int64_t runtimeID, int64_t socketID)
+{
+    gDailyLogger->info("init client {} :{}", socketID, runtimeID);
+
+    if (gClientMirrorMgr->FindClientByRuntimeID(runtimeID) != nullptr)
+    {
+        return;
+    }
+
+    ClientMirror::PTR p = std::make_shared<ClientMirror>(runtimeID, mConnectionServerID, socketID);
+    gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
+
+    auto callback = gClientMirrorMgr->getClientEnterCallback();
+    if (callback != nullptr)
+    {
+        callback(p);
     }
 }
 
@@ -136,16 +155,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             int64_t socketID = rp.readINT64();
             int64_t runtimeID = rp.readINT64();
 
-            gDailyLogger->info("recv init client {} :{}", socketID, runtimeID);
-
-            ClientMirror::PTR p = std::make_shared<ClientMirror>(runtimeID, mConnectionServerID, socketID);
-            gClientMirrorMgr->AddClientOnRuntimeID(p, runtimeID);
-
-            auto callback = gClientMirrorMgr->getClientEnterCallback();
-            if (callback != nullptr)
-            {
-                callback(p);
-            }
+            initClient(runtimeID, socketID);
         }
         break;
         case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_DESTROY_CLIENT:
@@ -164,6 +174,7 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
         case CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT:
         {
             /*  表示收到链接服转发过来的客户端消息包   */
+            int64_t clientSocketID = rp.readINT64();
             int64_t clientRuntimeID = rp.readINT64();
             const char* s = nullptr;
             size_t len = 0;
@@ -171,6 +182,12 @@ void ConnectionServerConnection::onMsg(const char* data, size_t len)
             if (s != nullptr)
             {
                 ClientMirror::PTR client = gClientMirrorMgr->FindClientByRuntimeID(clientRuntimeID);
+                if (client == nullptr)
+                {
+                    initClient(clientRuntimeID, clientSocketID);
+                    client = gClientMirrorMgr->FindClientByRuntimeID(clientRuntimeID);
+                }
+
                 if (client != nullptr)
                 {
                     client->procData(s, len);
@@ -225,7 +242,9 @@ void tryCompareConnect(unordered_map<int32_t, std::tuple<string, int, string>>& 
             if (fd != SOCKET_ERROR)
             {
                 gDailyLogger->info("connect success {}:{}", ip, port);
-                WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port, password)), 10000, 32 * 1024 * 1024);
+                WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<ConnectionServerConnection>(idInEtcd, port, password)), 
+                    std::chrono::microseconds(10000),
+                    32 * 1024 * 1024);
             }
             else
             {

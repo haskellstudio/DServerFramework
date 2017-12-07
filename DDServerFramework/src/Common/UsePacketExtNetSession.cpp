@@ -1,4 +1,4 @@
-#include "packet.h"
+#include <brynet/utils/packet.h>
 
 #include "UsePacketExtNetSession.h"
 

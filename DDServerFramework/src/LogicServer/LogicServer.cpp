@@ -2,13 +2,14 @@
 #include <iostream>
 #include <sstream>
 
-#include "WrapTCPService.h"
-#include "Timer.h"
-#include "ox_file.h"
+#include <brynet/net/WrapTCPService.h>
+#include <brynet/timer/Timer.h>
+#include <brynet/utils/ox_file.h>
+#include <brynet/utils/app_status.h>
+
+#include "../Common/etcdclient.h"
 #include "WrapLog.h"
-#include "etcdclient.h"
 #include "WrapJsonValue.h"
-#include "app_status.h"
 
 #include "HelpFunction.h"
 #include "AutoConnectionServer.h"
@@ -61,7 +62,7 @@ int main()
 
     gMainLoop = std::make_shared<EventLoop>();
 
-    gServer->startWorkThread(ox_getcpunum(), [](EventLoop::PTR)
+    gServer->startWorkThread(std::thread::hardware_concurrency(), [](EventLoop::PTR)
     {
         syncNet2LogicMsgList(gMainLoop);
     });
@@ -149,7 +150,8 @@ int main()
             }
         }
 
-        gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : gLogicTimerMgr->nearEndMs());
+        auto tmp = std::chrono::duration_cast<std::chrono::microseconds>(gLogicTimerMgr->nearLeftTime());
+        gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : tmp.count());
 
         gLogicTimerMgr->schedule();
 

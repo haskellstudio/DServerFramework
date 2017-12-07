@@ -4,7 +4,7 @@
 #include <string>
 #include <thread>
 
-#include "WrapTCPService.h"
+#include <brynet/net/WrapTCPService.h>
 #include "WrapLog.h"
 #include "UsePacketExtNetSession.h"
 
@@ -15,7 +15,7 @@ struct MyFuck
 {
     static void foo(WrapTcpService::PTR server, sock fd)
     {
-        WrapAddNetSession(server, fd, std::make_shared<T>(std::make_shared<TT>()), 10000, 32 * 1024 * 1024);
+        WrapAddNetSession(server, fd, std::make_shared<T>(std::make_shared<TT>()), std::chrono::milliseconds(10000), 32 * 1024 * 1024);
     }
 };
 

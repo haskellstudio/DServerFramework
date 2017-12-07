@@ -11,7 +11,7 @@ void ExtNetSession::pushDataMsgToLogicThread(const char* data, size_t len)
 void ExtNetSession::onEnter()
 {
     std::lock_guard<std::mutex> lck(gNet2LogicMsgListLock);
-    mLogicSession->setSession(getService(), getSocketID(), getIP());
+    mLogicSession->setSession(getService()->getService(), getSocketID(), getIP());
     Net2LogicMsg tmp(mLogicSession, Net2LogicMsgType::Net2LogicMsgTypeEnter);
     gNet2LogicMsgList.push(tmp);
 }
@@ -52,7 +52,7 @@ void syncNet2LogicMsgList(std::shared_ptr<EventLoop> eventLoop)
 
 void procNet2LogicMsgList()
 {
-    gNet2LogicMsgList.syncRead(0);
+    gNet2LogicMsgList.syncRead(std::chrono::microseconds::zero());
 
     Net2LogicMsg msg;
     while (gNet2LogicMsgList.popFront(msg))

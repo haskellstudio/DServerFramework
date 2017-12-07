@@ -5,10 +5,11 @@
 #include <functional>
 #include <memory>
 
+#include <brynet/utils/packet.h>
+
 #include "LogicNetSession.h"
 #include "MsgpackRpc.h"
 #include "RpcService.h"
-#include "packet.h"
 #include "CenterServerRecvOP.h"
 
 class Packet;

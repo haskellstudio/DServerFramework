@@ -4,21 +4,22 @@
 
 using namespace std;
 
-#include "NetSession.h"
-#include "WrapTCPService.h"
-#include "socketlibfunction.h"
-#include "platform.h"
-#include "packet.h"
-#include "Timer.h"
+#include <brynet/net/NetSession.h>
+#include <brynet/net/WrapTCPService.h>
+#include <brynet/net/socketlibfunction.h>
+#include <brynet/net/platform.h>
+#include <brynet/utils/packet.h>
+#include <brynet/timer/Timer.h>
 #include "MsgpackRpc.h"
 #include "RpcService.h"
-#include "WrapTCPService.h"
 #include "UsePacketSingleNetSession.h"
 #include "../test/ClientExtOP.h"
 
-WrapTcpService::PTR                         gTCPService;
-brynet::TimerMgr::PTR                     gTimerMgr;
-dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>   gRPC;
+using namespace brynet::net;
+
+brynet::net::WrapTcpService::PTR                        gTCPService;
+brynet::TimerMgr::PTR                                   gTimerMgr;
+dodo::rpc::RpcService<dodo::rpc::MsgpackProtocol>       gRPC;
 
 class SimulateClient : public UsePacketSingleNetSession
 {
@@ -39,7 +40,7 @@ public:
 
         FixedPacket<1024 * 16> packet(static_cast<PACKET_OP_TYPE>(CLIENT_OP::CLIENT_OP_TEST));
         packet.writeBinary("test");
-        sendPacket(packet.getData(), packet.getLen());
+        send(packet.getData(), packet.getLen());
     }
 
     void    onPingReply(const string& value)
@@ -81,13 +82,13 @@ public:
     {
         FixedPacket<1024 * 16> packet(1);
         packet.writeBinary(value);
-        sendPacket(packet.getData(), packet.getLen());
+        send(packet.getData(), packet.getLen());
     }
     void            sendGameServerRpcString(const string& value)
     {
         FixedPacket<1024 * 16> packet(1);
         packet.writeBinary(value);
-        sendPacket(packet.getData(), packet.getLen());
+        send(packet.getData(), packet.getLen());
     }
 private:
     void            procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen)
@@ -100,7 +101,7 @@ private:
         {
             FixedPacket<1024 * 16> packet(static_cast<PACKET_OP_TYPE>(CLIENT_OP::CLIENT_OP_TEST));
             packet.writeBinary("test");
-            sendPacket(packet.getData(), packet.getLen());
+            send(packet.getData(), packet.getLen());
         }
 
         if ((GetTickCount() - starttime) >= 1000)
@@ -126,7 +127,7 @@ int main()
     sock fd = ox_socket_connect(false, "127.0.0.1", 8001);
     if (SOCKET_ERROR != fd)
     {
-        WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), 10000, 32 * 1024 * 1024);
+        WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), std::chrono::seconds(30), 32 * 1024 * 1024);
     }
     else
     {

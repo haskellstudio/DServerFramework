@@ -1,11 +1,13 @@
 #include <unordered_map>
 #include <set>
 
+#include <brynet/utils/packet.h>
+#include <brynet/net/DataSocket.h>
+
 #include "ConnectionServerSendOP.h"
 #include "ConnectionServerRecvOP.h"
 #include "ClientSession.h"
 #include "WrapLog.h"
-#include "packet.h"
 
 #include "../../ServerConfig/ServerConfig.pb.h"
 
@@ -14,6 +16,7 @@
 
 #include "LogicServerSession.h"
 
+using namespace brynet::net;
 extern WrapLog::PTR                         gDailyLogger;
 
 LogicServerSession::LogicServerSession(int32_t connectionServerID, std::string password) :
@@ -49,6 +52,11 @@ void LogicServerSession::onClose()
     }
 }
 
+int LogicServerSession::getID() const
+{
+    return mID;
+}
+
 bool LogicServerSession::checkPassword(const std::string& password)
 {
     return password == mPassword;
@@ -60,7 +68,7 @@ void LogicServerSession::sendLogicServerLoginResult(bool isSuccess, const std::s
     sp.writeINT32(mConnectionServerID);
     sp.writeBool(isSuccess);
     sp.writeBinary(reason);
-    sendPacket(sp.getData(), sp.getLen());
+    send(sp.getData(), sp.getLen());
 }
 
 void LogicServerSession::procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen)
@@ -93,6 +101,11 @@ void LogicServerSession::procPacket(PACKET_OP_TYPE op, const char* body, PACKET_
     case CONNECTION_SERVER_RECV_IS_SETCLIENT_SLAVEID:
     {
         onSlaveServerIsSetClient(rp);
+    }
+    break;
+    case CONNECTION_SERVER_RECV_IS_SETCLIENT_PRIMARYID:
+    {
+        onPrimaryServerIsSetClient(rp);
     }
     break;
     case CONNECTION_SERVER_RECV_KICKCLIENT_BYRUNTIMEID:
@@ -248,14 +261,25 @@ void LogicServerSession::onPacket2ClientByRuntimeID(ReadPacket& rp)
     }
 }
 
+void LogicServerSession::onPrimaryServerIsSetClient(ReadPacket& rp)
+{
+    int64_t runtimeID = rp.readINT64();
+    bool isSet = rp.readBool();
+    auto client = ClientSessionMgr::FindClientByRuntimeID(runtimeID);
+    if (client != nullptr)
+    {
+        client->setPrimaryServerID(isSet ? mID : -1);
+    }
+}
+
 void LogicServerSession::onSlaveServerIsSetClient(ReadPacket& rp)
 {
     int64_t runtimeID = rp.readINT64();
     bool isSet = rp.readBool();
-    auto p = ClientSessionMgr::FindClientByRuntimeID(runtimeID);
-    if (p != nullptr)
+    auto client = ClientSessionMgr::FindClientByRuntimeID(runtimeID);
+    if (client != nullptr)
     {
-        p->setSlaveServerID(isSet ? mID : -1);
+        client->setSlaveServerID(isSet ? mID : -1);
     }
 }
 
@@ -270,5 +294,5 @@ void LogicServerSession::onPing(ReadPacket& rp)
     gDailyLogger->info("recv ping from logic server, id :{}", mID);
 
     TinyPacket sp(static_cast<PACKET_OP_TYPE>(CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_PONG));
-    sendPacket(sp.getData(), sp.getLen());
+    send(sp.getData(), sp.getLen());
 }

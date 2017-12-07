@@ -1,9 +1,9 @@
 #ifndef _LOGIC_SERVER_GLOBAL_
 #define _LOGIC_SERVER_GLOBAL_
 
-#include "WrapTCPService.h"
+#include <brynet/net/WrapTCPService.h> 
+#include <brynet/timer/Timer.h>
 #include "WrapLog.h"
-#include "Timer.h"
 #include "CenterServerConnection.h"
 #include "ClientMirror.h"
 #include "../../ServerConfig/ServerConfig.pb.h"

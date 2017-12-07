@@ -4,14 +4,16 @@
 #include <iostream>
 #include <sstream>
 
-#include "WrapTCPService.h"
-#include "Timer.h"
-#include "ox_file.h"
+#include <brynet/net/WrapTCPService.h>
+#include <brynet/timer/Timer.h>
+#include <brynet/utils/app_status.h>
+#include <brynet/utils/ox_file.h>
+
+#include "../Common/etcdclient.h"
+
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"
-#include "etcdclient.h"
 #include "WrapJsonValue.h"
-#include "app_status.h"
 #include "ClientSession.h"
 #include "LogicServerSession.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
@@ -25,43 +27,8 @@ WrapLog::PTR                            gDailyLogger;
     2：负责处理客户端和内部逻辑服务器的链接，转发客户端和内部服务器之间的通信
 */
 
-int main()
+static void loop(const std::stringstream& buffer, const ServerConfig::ConnectionServerConfig& connectionServerConfig)
 {
-    std::ifstream  connetionServerConfigFile("ServerConfig/ConnetionServerConfig.json");
-    std::stringstream buffer;
-    buffer << connetionServerConfigFile.rdbuf();
-
-    ServerConfig::ConnectionServerConfig connectionServerConfig;
-    google::protobuf::util::Status s = google::protobuf::util::JsonStringToMessage(buffer.str(), &connectionServerConfig);
-    if (!s.ok())
-    {
-        std::cerr << "load config error:" << s.error_message() << std::endl;
-        exit(-1);
-    }
-
-    ox_dir_create("logs");
-    ox_dir_create("logs/ConnectionServer");
-
-    gDailyLogger = std::make_shared<WrapLog>();
-    gDailyLogger->setFile("", "logs/ConnectionServer/daily");
-
-    auto service = std::make_shared<WrapTcpService>();
-    
-    service->startWorkThread(ox_getcpunum(), [](EventLoop::PTR) {
-    });
-
-    /*开启对外客户端端口*/
-    auto clientListener = ListenThread::Create();
-    clientListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforclient(), nullptr, nullptr, [=](sock fd) {
-        WrapAddNetSession(service, fd, std::make_shared<ConnectionClientSession>(connectionServerConfig.id()), -1, 32 * 1024);
-    });
-
-    /*开启对内逻辑服务器端口*/
-    auto logicServerListener = ListenThread::Create();
-    logicServerListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), nullptr, nullptr, [=](sock fd) {
-        WrapAddNetSession(service, fd, std::make_shared<LogicServerSession>(connectionServerConfig.id(), connectionServerConfig.logicserverloginpassword()), 10000, 32 * 1024 * 1024);
-    });
-
     /*  同步etcd  */
     std::map<std::string, std::string> etcdKV;
 
@@ -92,10 +59,55 @@ int main()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));   /*5s 重设一次*/
     }
+}
 
-    clientListener->closeListenThread();
-    logicServerListener->closeListenThread();
-    service->getService()->closeListenThread();
+int main()
+{
+    std::ifstream  connetionServerConfigFile("ServerConfig/ConnetionServerConfig.json");
+    std::stringstream buffer;
+    buffer << connetionServerConfigFile.rdbuf();
+
+    ServerConfig::ConnectionServerConfig connectionServerConfig;
+    google::protobuf::util::Status s = google::protobuf::util::JsonStringToMessage(buffer.str(), &connectionServerConfig);
+    if (!s.ok())
+    {
+        std::cerr << "load config error:" << s.error_message() << std::endl;
+        exit(-1);
+    }
+
+    ox_dir_create("logs");
+    ox_dir_create("logs/ConnectionServer");
+
+    gDailyLogger = std::make_shared<WrapLog>();
+    gDailyLogger->setFile("", "logs/ConnectionServer/daily");
+
+    auto service = std::make_shared<WrapTcpService>();
+    
+    service->startWorkThread(std::thread::hardware_concurrency(), [](EventLoop::PTR) {
+    });
+
+    /*开启对外客户端端口*/
+    auto clientListener = ListenThread::Create();
+    clientListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforclient(), [=](sock fd) {
+        WrapAddNetSession(service, fd, std::make_shared<ConnectionClientSession>(connectionServerConfig.id()), std::chrono::nanoseconds::zero(), 32 * 1024);
+    });
+
+    /*开启对内逻辑服务器端口*/
+    auto logicServerListener = ListenThread::Create();
+    logicServerListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), [=](sock fd) {
+        WrapAddNetSession(service, 
+            fd, 
+            std::make_shared<LogicServerSession>(connectionServerConfig.id(), 
+                connectionServerConfig.logicserverloginpassword()), 
+            std::chrono::nanoseconds::zero(),
+            32 * 1024 * 1024);
+    });
+
+    loop(buffer, connectionServerConfig);
+
+    clientListener->stopListen();
+    logicServerListener->stopListen();
+    service->getService()->stopWorkerThread();
     service->getService()->stopWorkerThread();
     gDailyLogger->stop();
 

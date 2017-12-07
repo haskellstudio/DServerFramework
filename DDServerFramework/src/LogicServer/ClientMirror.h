@@ -6,12 +6,13 @@
 #include <memory>
 #include <functional>
 
-#include "packet.h"
+#include <brynet/utils/packet.h>
 #include "ConnectionServerConnection.h"
 
 class ReadPacket;
 class Packet;
 
+/*  TODO::超时移除    */
 /*  logic server上的客户端网络镜像 */
 class ClientMirror : public std::enable_shared_from_this<ClientMirror>
 {

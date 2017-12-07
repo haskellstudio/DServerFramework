@@ -1,7 +1,8 @@
 #include <iostream>
 using namespace std;
 
-#include "packet.h"
+#include <brynet/utils/packet.h>
+
 #include "CenterServerRecvOP.h"
 #include "CenterServerSendOP.h"
 #include "ConnectionServerConnection.h"
@@ -28,7 +29,7 @@ CenterServerConnection::~CenterServerConnection()
     }
 
     // 开启重连定时器
-    gLogicTimerMgr->addTimer(AUTO_CONNECT_DELAY, startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer, 
+    gLogicTimerMgr->addTimer(std::chrono::microseconds(AUTO_CONNECT_DELAY), startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer,
         centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
 }
 
@@ -59,7 +60,7 @@ void CenterServerConnection::ping()
 
     sendPacket(p);
 
-    mPingTimer = gLogicTimerMgr->addTimer(5000, [shared_this = std::static_pointer_cast<CenterServerConnection>(shared_from_this())](){
+    mPingTimer = gLogicTimerMgr->addTimer(std::chrono::microseconds(5000), [shared_this = std::static_pointer_cast<CenterServerConnection>(shared_from_this())](){
         shared_this->ping();
     });
 }

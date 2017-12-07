@@ -4,10 +4,12 @@
 #include <string>
 #include <memory>
 
-#include "MsgQueue.h"
+#include <brynet/utils/MsgQueue.h>
+#include <brynet/net/NetSession.h>
+#include <brynet/net/EventLoop.h>
+#include <brynet/net/DataSocket.h>
+
 #include "LogicNetSession.h"
-#include "NetSession.h"
-#include "EventLoop.h"
 
 /*将网络层（线程）事件转换为消息，放入消息队列，提供给逻辑线程处理*/
 

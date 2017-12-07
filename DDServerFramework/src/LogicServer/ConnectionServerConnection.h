@@ -29,6 +29,7 @@ private:
     virtual void    onMsg(const char* data, size_t len) final;
 
     void            ping();
+    void            initClient(int64_t runtimeID, int64_t socketID);
 
 private:
     bool            mIsSuccess;

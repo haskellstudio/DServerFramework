@@ -1,13 +1,13 @@
 #include <string>
 
+#include <brynet/utils/packet.h>
+
 #include "../LogicServer/ClientMirror.h"
 #include "../LogicServer/CenterServerConnection.h"
-
-#include "packet.h"
+#include "../LogicServer/GlobalValue.h"
 
 #include "ClientExtOP.h"
 #include "CenterServerExtRecvOP.h"
-#include "../LogicServer/GlobalValue.h"
 
 void initLogicServerExt()
 {

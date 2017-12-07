@@ -2,7 +2,8 @@
 
 using namespace std;
 
-#include "packet.h"
+#include <brynet/utils/packet.h>
+
 #include "CenterServerRecvOP.h"
 #include "CenterServerSendOP.h"
 #include "WrapLog.h"

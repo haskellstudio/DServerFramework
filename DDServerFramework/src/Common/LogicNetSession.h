@@ -3,9 +3,8 @@
 
 #include <stdint.h>
 #include <memory>
-#include "WrapTCPService.h"
 
-#define USE_DELAY_SEND
+#include <brynet/net/WrapTCPService.h>
 
 using namespace brynet::net;
 
@@ -21,7 +20,7 @@ public:
     virtual ~BaseLogicSession()
     {}
 
-    void            setSession(WrapTcpService::PTR server, int64_t socketID, const std::string& ip)
+    void            setSession(TcpService::PTR server, int64_t socketID, const std::string& ip)
     {
         mServer = server;
         mSocketID = socketID;
@@ -34,34 +33,17 @@ public:
 
     void            send(const char* buffer, size_t len, const DataSocket::PACKED_SENDED_CALLBACK& callback = nullptr)
     {
-        mServer->getService()->send(mSocketID, DataSocket::makePacket(buffer, len), callback);
+        mServer->send(mSocketID, DataSocket::makePacket(buffer, len), callback);
     }
 
     void            send(const DataSocket::PACKET_PTR& packet, const DataSocket::PACKED_SENDED_CALLBACK& callback = nullptr)
     {
-        mServer->getService()->send(mSocketID, packet, callback);
+        mServer->send(mSocketID, packet, callback);
     }
 
     int64_t         getSocketID() const
     {
         return mSocketID;
-    }
-
-    void            cacheSend(const char* buffer, int len, const DataSocket::PACKED_SENDED_CALLBACK& callback = nullptr)
-    {
-#ifdef USE_DELAY_SEND
-        mServer->getService()->cacheSend(mSocketID, DataSocket::makePacket(buffer, len), callback);
-#else
-        mServer->getService()->send(mSocketID, DataSocket::makePacket(buffer, len), callback);
-#endif
-    }
-    void            cacheSend(const DataSocket::PACKET_PTR& packet, const DataSocket::PACKED_SENDED_CALLBACK& callback = nullptr)
-    {
-#ifdef USE_DELAY_SEND
-        mServer->getService()->cacheSend(mSocketID, packet, callback);
-#else
-        mServer->getService()->send(mSocketID, packet, callback);
-#endif
     }
 
     std::string         getIP()
@@ -70,7 +52,7 @@ public:
     }
 
 private:
-    WrapTcpService::PTR mServer;
+    TcpService::PTR     mServer;
     int64_t             mSocketID;
     std::string         mIP;
 };

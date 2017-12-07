@@ -8,6 +8,7 @@ class LogicServerSessionMgr
 public:
     static  void    AddPrimaryLogicServer(int id, LogicServerSession::PTR);
     static  LogicServerSession::PTR FindPrimaryLogicServer(int id);
+    static  std::unordered_map<int, LogicServerSession::PTR> GetAllPrimaryLogicServer();
 
     static  void    RemovePrimaryLogicServer(int id);
     static  int     ClaimPrimaryLogicServer();
@@ -15,6 +16,7 @@ public:
     static  void    AddSlaveLogicServer(int id, LogicServerSession::PTR);
     static  LogicServerSession::PTR FindSlaveLogicServer(int id);
     static  void    RemoveSlaveLogicServer(int id);
+    static std::unordered_map<int, LogicServerSession::PTR> GetAllSlaveLogicServer();
 };
 
 #endif

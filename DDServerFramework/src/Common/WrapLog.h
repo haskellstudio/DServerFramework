@@ -6,7 +6,7 @@
 #include <thread>
 #include <memory>
 
-#include "MsgQueue.h"
+#include <brynet/utils/MsgQueue.h>
 #include "spdlog/spdlog.h"
 
 /*TODO::console和硬盘日志分开--因为console必须使用异步且可丢弃*/
@@ -94,7 +94,7 @@ public:
                 ThreadLog tmp;
                 while (!mIsClose)
                 {
-                    mLogQueue.syncRead(5);
+                    mLogQueue.syncRead(std::chrono::microseconds(5));
                     const int maxConsole = 100;
                     try
                     {
