@@ -51,7 +51,6 @@ include_directories("${PROJECT_SOURCE_DIR}/src/Common/prototol")
 
 set(connection_server_src_list
   ${PROJECT_SOURCE_DIR}/ServerConfig/ServerConfig.pb.cc
-  ${PROJECT_SOURCE_DIR}/src/Common/UsePacketSingleNetSession.cpp
   ${PROJECT_SOURCE_DIR}/src/ConnectionServer/ClientSession.cpp
   ${PROJECT_SOURCE_DIR}/src/ConnectionServer/ClientSessionMgr.cpp
   ${PROJECT_SOURCE_DIR}/src/ConnectionServer/ConnectionServer.cpp
@@ -61,7 +60,6 @@ set(connection_server_src_list
 
 set(logic_server_src_list
   ${PROJECT_SOURCE_DIR}/ServerConfig/ServerConfig.pb.cc
-  ${PROJECT_SOURCE_DIR}/src/Common/UsePacketSingleNetSession.cpp
   ${PROJECT_SOURCE_DIR}/src/LogicServer/CenterServerConnection.cpp
   ${PROJECT_SOURCE_DIR}/src/LogicServer/ClientMirror.cpp
   ${PROJECT_SOURCE_DIR}/src/LogicServer/ConnectionServerConnection.cpp
@@ -70,20 +68,13 @@ set(logic_server_src_list
   ${PROJECT_SOURCE_DIR}/src/test/LogicServerExt.cpp
 )
 
-set(common_src_list
-  ${PROJECT_SOURCE_DIR}/src/Common/NetThreadSession.cpp
-  ${PROJECT_SOURCE_DIR}/src/Common/UsePacketExtNetSession.cpp
-)
-
 set(client_src_list
   ${PROJECT_SOURCE_DIR}/src/SimulatePlayer/SimulateClient.cpp
-  ${PROJECT_SOURCE_DIR}/src/Common/UsePacketSingleNetSession.cpp
 )
 
 set(center_server_src_list
   ${PROJECT_SOURCE_DIR}/src/CenterServer/CenterServer.cpp
   ${PROJECT_SOURCE_DIR}/src/CenterServer/CenterServerSession.cpp
-  ${PROJECT_SOURCE_DIR}/src/Common/UsePacketSingleNetSession.cpp
   ${PROJECT_SOURCE_DIR}/src/test/CenterServerExt.cpp
   ${PROJECT_SOURCE_DIR}/ServerConfig/ServerConfig.pb.cc
 )
@@ -101,7 +92,7 @@ elseif(UNIX)
   target_link_libraries(connectionserver Threads::Threads)
 endif()
 
-add_executable(logicserver ${common_src_list} ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${logic_server_src_list})
+add_executable(logicserver ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${logic_server_src_list})
 if(WIN32)
   target_link_libraries(logicserver ws2_32 libprotobufd)
 elseif(UNIX)
@@ -109,7 +100,7 @@ elseif(UNIX)
   target_link_libraries(logicserver Threads::Threads)
 endif()
 
-add_executable(centerserver ${common_src_list} ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${center_server_src_list})
+add_executable(centerserver ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${center_server_src_list})
 if(WIN32)
   target_link_libraries(centerserver ws2_32 libprotobufd)
 elseif(UNIX)
@@ -117,7 +108,7 @@ elseif(UNIX)
   target_link_libraries(centerserver Threads::Threads)
 endif()
 
-add_executable(client ${common_src_list} ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${client_src_list})
+add_executable(client ${net_src_list} ${timer_src_list} ${utils_src_list} ${http_src_list} ${base_src_list} ${client_src_list})
 if(WIN32)
   target_link_libraries(client ws2_32 libprotobufd)
 elseif(UNIX)
