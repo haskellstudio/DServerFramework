@@ -9,11 +9,11 @@ using namespace std;
 #include <brynet/net/ListenThread.h>
 
 #include "WrapLog.h"
-#include "AutoConnectionServer.h"
 #include "CenterServerSession.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
 #include "google/protobuf/util/json_util.h"
 #include "GlobalValue.h"
+#include "../Common/SocketSession.h"
 
 using namespace brynet::net;
 
@@ -50,14 +50,75 @@ int main()
         /*开启内部监听服务器，处理逻辑服务器的链接*/
         gDailyLogger->info("listen logic server port:{}", centerServerConfig.bindip());
         auto logicServerListen = ListenThread::Create();
-        logicServerListen->startListen(centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport(), [&](sock fd){
-            WrapAddNetSession(gServer, fd, make_shared<UsePacketExtNetSession>(std::make_shared<CenterServerSession>()), 
-                std::chrono::milliseconds(10000), 32 * 1024 * 1024);
+        logicServerListen->startListen(centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport(), [=](sock fd){
+            gServer->addSession(fd, [](const TCPSession::PTR& session) {
+                // 构造逻辑对象
+                auto ss = std::make_shared<SocketSession>();
+
+                auto sendSession = std::make_shared<SocketSession>();
+                sendSession->childHandler([session](const Context&, const std::string& buffer, const SocketSession::INTERCEPTOR& next)  {
+                    session->send(buffer.c_str(), buffer.size());
+                });
+                auto logicSession = std::make_shared<CenterServerSession>(session->getIP(), sendSession);
+
+                gMainLoop->pushAsyncProc([logicSession]() {
+                    logicSession->onEnter();
+                });
+
+                session->setHeartBeat(std::chrono::nanoseconds::zero());
+
+                session->setDisConnectCallback([logicSession](const TCPSession::PTR& session) {
+                    gMainLoop->pushAsyncProc([logicSession]() {
+                        logicSession->onClose();
+                    });
+                });
+
+                // TODO::将解包也作为handle的一个拦截器,不过需要修改网络库的消息接收回调(因为目前的回调需要返回值)
+                session->setDataCallback([ss](const TCPSession::PTR& session, const char* buffer, size_t len) {
+                    const char* parse_str = buffer;
+                    size_t total_proc_len = 0;
+                    PACKET_LEN_TYPE left_len = static_cast<PACKET_LEN_TYPE>(len);
+
+                    while (true)
+                    {
+                        bool flag = false;
+                        if (left_len >= PACKET_HEAD_LEN)
+                        {
+                            ReadPacket rp(parse_str, left_len);
+
+                            PACKET_LEN_TYPE packet_len = rp.readPacketLen();
+                            if (left_len >= packet_len && packet_len >= PACKET_HEAD_LEN)
+                            {
+                                PACKET_OP_TYPE op = rp.readOP();
+
+                                ss->handle(std::string(parse_str, packet_len));
+                                total_proc_len += packet_len;
+                                parse_str += packet_len;
+                                left_len -= packet_len;
+                                flag = true;
+                            }
+                            rp.skipAll();
+                        }
+
+                        if (!flag)
+                        {
+                            break;
+                        }
+                    }
+
+                    return total_proc_len;
+                });
+
+                ss->childHandler([logicSession](Context& context, const std::string& buffer, const SocketSession::INTERCEPTOR& next) {
+                    gMainLoop->pushAsyncProc([logicSession, buffer]() {
+                        logicSession->onMsg(buffer.c_str(), buffer.size());
+                    });
+                    next(context, buffer);
+                });
+            }, false, nullptr, 32 * 1024);
         });
 
-        gServer->startWorkThread(std::thread::hardware_concurrency(), [](EventLoop::PTR el){
-            syncNet2LogicMsgList(gMainLoop);
-        });
+        gServer->startWorkThread(std::thread::hardware_concurrency());
 
         gDailyLogger->info("server start!");
 
@@ -81,8 +142,6 @@ int main()
             gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : tmp.count());
 
             gLogicTimerMgr->schedule();
-
-            procNet2LogicMsgList();
         }
 
         logicServerListen->stopListen();

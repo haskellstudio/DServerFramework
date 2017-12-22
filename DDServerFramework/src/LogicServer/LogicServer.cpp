@@ -62,15 +62,12 @@ int main()
 
     gMainLoop = std::make_shared<EventLoop>();
 
-    gServer->startWorkThread(std::thread::hardware_concurrency(), [](EventLoop::PTR)
-    {
-        syncNet2LogicMsgList(gMainLoop);
-    });
+    gServer->startWorkThread(std::thread::hardware_concurrency());
 
     {
         gDailyLogger->info("try connect center server: {}:{}", centerServerConfig.bindip(), centerServerConfig.listenport());
         /*链接中心服务器*/
-        startConnectThread<UsePacketExtNetSession, CenterServerConnection>(gDailyLogger,
+        startConnectThread< CenterServerConnection>(gDailyLogger,
             gServer, 
             centerServerConfig.enableipv6(), 
             centerServerConfig.bindip(), 
@@ -154,8 +151,6 @@ int main()
         gMainLoop->loop(gLogicTimerMgr->isEmpty() ? 1 : tmp.count());
 
         gLogicTimerMgr->schedule();
-
-        procNet2LogicMsgList();
     }
 
     gDailyLogger->stop();

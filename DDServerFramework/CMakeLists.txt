@@ -11,12 +11,11 @@ set(net_src_list
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/EventLoop.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/CurrentThread.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/DataSocket.cpp
-	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/SocketLibFunction.c
+	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/SocketLibFunction.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/TCPService.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/WrapTCPService.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/Connector.cpp
 	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/fdset.c
-  	${PROJECT_SOURCE_DIR}/3rdparty/brynet/src/brynet/net/NetSession.cpp
 )
 
 set(timer_src_list

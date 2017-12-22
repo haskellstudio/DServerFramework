@@ -1,6 +1,5 @@
 #include <iostream>
 using namespace std;
-
 #include <brynet/utils/packet.h>
 
 #include "CenterServerRecvOP.h"
@@ -12,11 +11,12 @@ using namespace std;
 #include "AutoConnectionServer.h"
 #include "../../ServerConfig/ServerConfig.pb.h"
 #include "GlobalValue.h"
+#include <wbemcli.h>
 #include "CenterServerConnection.h"
 
 std::unordered_map<PACKET_OP_TYPE, CenterServerConnection::USER_MSG_HANDLE>  CenterServerConnection::sUserMsgHandlers;
 
-CenterServerConnection::CenterServerConnection() : BaseLogicSession()
+CenterServerConnection::CenterServerConnection()
 {
     mSelfID = -1;
 }
@@ -28,9 +28,7 @@ CenterServerConnection::~CenterServerConnection()
         mPingTimer.lock()->cancel();
     }
 
-    // 开启重连定时器
-    gLogicTimerMgr->addTimer(std::chrono::microseconds(AUTO_CONNECT_DELAY), startConnectThread<UsePacketExtNetSession, CenterServerConnection>, gDailyLogger, gServer,
-        centerServerConfig.enableipv6(), centerServerConfig.bindip(), centerServerConfig.listenport());
+    // TODO::开启重连定时器
 }
 
 void CenterServerConnection::registerUserMsgHandle(PACKET_OP_TYPE op, USER_MSG_HANDLE handle)
@@ -161,7 +159,8 @@ void CenterServerConnection::onUserMsg(ReadPacket& rp)
 
 void CenterServerConnection::sendPacket(Packet& packet)
 {
-    send(packet.getData(), packet.getLen());
+    //TODO::mSD
+    //send(packet.getData(), packet.getLen());
 }
 
 void CenterServerConnection::sendUserPacket(Packet& subPacket)

@@ -20,7 +20,7 @@ static HTTPParser etcdHelp(const std::string& ip, int port, HttpRequest::HTTP_ME
     auto service = std::make_shared<WrapTcpService>();
     service->startWorkThread(1);
 
-    sock fd = ox_socket_connect(false, ip.c_str(), port);
+    sock fd = brynet::net::base::Connect(false, ip.c_str(), port);
     if (fd != SOCKET_ERROR)
     {
         service->addSession(fd, [&cv, &timer, &result, service, timeout, kv, url, protocol](const TCPSession::PTR& session) {

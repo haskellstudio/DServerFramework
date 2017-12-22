@@ -7,24 +7,25 @@
 #include <stdint.h>
 
 #include <brynet/utils/packet.h>
-#include "LogicNetSession.h"
 #include "memberrpc.h"
 #include "CenterServerSendOP.h"
+#include "../Common/SocketSession.h"
 
 class Packet;
 class ReadPacket;
 
 /*内部服务器链接中心服务器的会话*/
 
-class CenterServerSession : public BaseLogicSession
+class CenterServerSession : public std::enable_shared_from_this<CenterServerSession>
 {
 public:
     typedef std::shared_ptr<CenterServerSession> PTR;
 
-    CenterServerSession();
+    CenterServerSession(const std::string& ip, std::shared_ptr<SocketSession> session);
 
     typedef std::function<void(CenterServerSession::PTR&, ReadPacket& rp)>   USER_MSG_HANDLE;
 
+    const std::string&  getIP() const;
     int             getID() const;
 
     void            sendPacket(Packet&);
@@ -74,10 +75,9 @@ public:
         call(std::remove_reference<PBType>::type::descriptor()->full_name().c_str(), pb, args...);
     }
 
-private:
-    virtual void    onEnter() final;
-    virtual void    onClose() final;
-    virtual void    onMsg(const char* data, size_t len) final;
+    void            onEnter() ;
+    void            onClose() ;
+    void            onMsg(const char* data, size_t len) ;
 
 private:
     void            onPing(ReadPacket& rp);
@@ -87,7 +87,9 @@ private:
     void            onUserMsg(ReadPacket& rp);
 
 private:
+    const std::string mIP;
     int             mID;
+    std::shared_ptr<SocketSession>  mSendSession;
 };
 
 class CenterServerSessionGlobalData

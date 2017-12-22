@@ -2,16 +2,15 @@
 #define _CLIENT_SESSION_H
 
 #include <brynet/net/NetSession.h>
-#include "UsePacketSingleNetSession.h"
 #include "LogicServerSession.h"
 
 /*  客户端链接会话(客户端网络掉线，此对象就销毁)    */
-class ConnectionClientSession : public UsePacketSingleNetSession
+class ConnectionClientSession : std::enable_shared_from_this<ConnectionClientSession>
 {
 public:
     typedef std::shared_ptr<ConnectionClientSession> PTR;
 
-    ConnectionClientSession(int32_t connectionServerID);
+    ConnectionClientSession(int32_t connectionServerID, int64_t socketID, std::string ip);
     ~ConnectionClientSession();
 
     void                setSlaveServerID(int id);
@@ -21,14 +20,20 @@ public:
     int64_t             getRuntimeID() const;
     void                notifyExit();
 
-private:
-    virtual void        onEnter() override;
-    virtual void        onClose() override;
-    virtual void        procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen);
+public:
+    void                onEnter();
+    void                onClose();
+    void                procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen);
 
     void                claimPrimaryServer();
 
 private:
+    int64_t             getSocketID() const;
+    const std::string&  getIP() const;
+
+private:
+    const int64_t       mSocketID;
+    const std::string   mIP;
     const int32_t       mConnectionServerID;
     int64_t             mRuntimeID;
     int                 mPrimaryServerID;

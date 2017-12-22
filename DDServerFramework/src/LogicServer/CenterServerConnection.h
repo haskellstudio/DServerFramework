@@ -7,7 +7,6 @@
 
 #include <brynet/utils/packet.h>
 
-#include "LogicNetSession.h"
 #include "MsgpackRpc.h"
 #include "RpcService.h"
 #include "CenterServerRecvOP.h"
@@ -16,7 +15,7 @@ class Packet;
 class ReadPacket;
 
 /*中心服务器链接*/
-class CenterServerConnection : public BaseLogicSession
+class CenterServerConnection : public std::enable_shared_from_this<CenterServerConnection>
 {
 public:
     typedef std::shared_ptr<CenterServerConnection> PTR;
@@ -73,9 +72,9 @@ public:
     static void     registerUserMsgHandle(PACKET_OP_TYPE, USER_MSG_HANDLE);
 
 private:
-    virtual void    onEnter() final;
-    virtual void    onClose() final;
-    virtual void    onMsg(const char* buffer, size_t len) final;
+    void    onEnter() ;
+    void    onClose() ;
+    void    onMsg(const char* buffer, size_t len) ;
 
 private:
     void            ping();

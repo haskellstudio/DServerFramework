@@ -124,7 +124,7 @@ int main()
     });
 
     /*Ä£Äâ¿Í»§¶Ë*/
-    sock fd = ox_socket_connect(false, "127.0.0.1", 8001);
+    sock fd = brynet::net::base::Connect(false, "127.0.0.1", 8001);
     if (SOCKET_ERROR != fd)
     {
         WrapAddNetSession(gTCPService, fd, make_shared<SimulateClient>(), std::chrono::seconds(30), 32 * 1024 * 1024);

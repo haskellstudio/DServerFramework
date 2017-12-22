@@ -10,7 +10,9 @@
 #include <brynet/utils/ox_file.h>
 
 #include "../Common/etcdclient.h"
+#include "../Common/SocketSession.h"
 
+#include <brynet/utils/packet.h>
 #include "WrapLog.h"
 #include "AutoConnectionServer.h"
 #include "WrapJsonValue.h"
@@ -89,18 +91,125 @@ int main()
     /*开启对外客户端端口*/
     auto clientListener = ListenThread::Create();
     clientListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforclient(), [=](sock fd) {
-        WrapAddNetSession(service, fd, std::make_shared<ConnectionClientSession>(connectionServerConfig.id()), std::chrono::nanoseconds::zero(), 32 * 1024);
+        service->addSession(fd, [service](const TCPSession::PTR& session) {
+            //connection->setSession(service, session, session->getIP());
+            //connection->onEnter();
+
+            // 构造逻辑对象
+            auto ss = std::make_shared<SocketSession>();
+            auto logicSession = std::shared_ptr<ConnectionClientSession>();
+
+            logicSession->onEnter();
+
+            session->setHeartBeat(std::chrono::nanoseconds::zero());
+
+            session->setDisConnectCallback([logicSession](const TCPSession::PTR& session) {
+                logicSession->onClose();
+            });
+
+            // TODO::将解包也作为handle的一个拦截器,不过需要修改网络库的消息接收回调(因为目前的回调需要返回值)
+            session->setDataCallback([ss](const TCPSession::PTR& session, const char* buffer, size_t len) {
+                const char* parse_str = buffer;
+                size_t total_proc_len = 0;
+                PACKET_LEN_TYPE left_len = static_cast<PACKET_LEN_TYPE>(len);
+
+                while (true)
+                {
+                    bool flag = false;
+                    if (left_len >= PACKET_HEAD_LEN)
+                    {
+                        ReadPacket rp(parse_str, left_len);
+
+                        PACKET_LEN_TYPE packet_len = rp.readPacketLen();
+                        if (left_len >= packet_len && packet_len >= PACKET_HEAD_LEN)
+                        {
+                            PACKET_OP_TYPE op = rp.readOP();
+
+                            ss->handle(std::string(parse_str, packet_len));
+                            total_proc_len += packet_len;
+                            parse_str += packet_len;
+                            left_len -= packet_len;
+                            flag = true;
+                        }
+                        rp.skipAll();
+                    }
+
+                    if (!flag)
+                    {
+                        break;
+                    }
+                }
+
+                return total_proc_len;
+            });
+
+            ss->childHandler([logicSession](Context& context, const std::string& buffer, const SocketSession::INTERCEPTOR& next) {
+                ReadPacket rp(buffer.c_str(), buffer.size());
+                logicSession->procPacket(rp.readOP(), rp.getBuffer(), rp.getPos());
+                next(context, buffer);
+            });
+        }, false, nullptr, 32 * 1024);
     });
 
     /*开启对内逻辑服务器端口*/
     auto logicServerListener = ListenThread::Create();
     logicServerListener->startListen(connectionServerConfig.enableipv6(), connectionServerConfig.bindip(), connectionServerConfig.portforlogicserver(), [=](sock fd) {
-        WrapAddNetSession(service, 
-            fd, 
-            std::make_shared<LogicServerSession>(connectionServerConfig.id(), 
-                connectionServerConfig.logicserverloginpassword()), 
-            std::chrono::nanoseconds::zero(),
-            32 * 1024 * 1024);
+        service->addSession(fd, [service](const TCPSession::PTR& session) {
+
+            // 构造逻辑对象
+            auto ss = std::make_shared<SocketSession>();
+            auto logicSession = std::shared_ptr<LogicServerSession>();
+
+            logicSession->onEnter();
+
+            session->setHeartBeat(std::chrono::nanoseconds::zero());
+
+            session->setDisConnectCallback([logicSession](const TCPSession::PTR& session) {
+                logicSession->onClose();
+            });
+
+            // TODO::将解包也作为handle的一个拦截器,不过需要修改网络库的消息接收回调(因为目前的回调需要返回值)
+            session->setDataCallback([ss](const TCPSession::PTR& session, const char* buffer, size_t len) {
+                const char* parse_str = buffer;
+                size_t total_proc_len = 0;
+                PACKET_LEN_TYPE left_len = static_cast<PACKET_LEN_TYPE>(len);
+
+                while (true)
+                {
+                    bool flag = false;
+                    if (left_len >= PACKET_HEAD_LEN)
+                    {
+                        ReadPacket rp(parse_str, left_len);
+
+                        PACKET_LEN_TYPE packet_len = rp.readPacketLen();
+                        if (left_len >= packet_len && packet_len >= PACKET_HEAD_LEN)
+                        {
+                            PACKET_OP_TYPE op = rp.readOP();
+
+                            ss->handle(std::string(parse_str, packet_len));
+                            total_proc_len += packet_len;
+                            parse_str += packet_len;
+                            left_len -= packet_len;
+                            flag = true;
+                        }
+                        rp.skipAll();
+                    }
+
+                    if (!flag)
+                    {
+                        break;
+                    }
+                }
+
+                return total_proc_len;
+            });
+
+            ss->childHandler([logicSession](Context& context, const std::string& buffer, const SocketSession::INTERCEPTOR& next) {
+                ReadPacket rp(buffer.c_str(), buffer.size());
+                logicSession->procPacket(rp.readOP(), rp.getBuffer(), rp.getPos());
+                next(context, buffer);
+            });
+        }, false, nullptr, 32 * 1024);
     });
 
     loop(buffer, connectionServerConfig);

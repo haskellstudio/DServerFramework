@@ -5,12 +5,11 @@
 #include <string>
 
 #include <brynet/net/NetSession.h>
-#include "UsePacketSingleNetSession.h"
 
 class ReadPacket;
 
 /*  Âß¼­·þÎñÆ÷Á´½Ó */
-class LogicServerSession : public UsePacketSingleNetSession
+class LogicServerSession : public std::enable_shared_from_this<LogicServerSession>
 {
 public:
     typedef std::shared_ptr<LogicServerSession> PTR;
@@ -18,9 +17,8 @@ public:
     LogicServerSession(int32_t connectionServerID, std::string password);
     int                 getID() const;
 
-private:
-    virtual     void    onEnter() override;
-    virtual     void    onClose() override;
+    void                onEnter() ;
+    void                onClose() ;
 
     void                procPacket(PACKET_OP_TYPE op, const char* body, PACKET_LEN_TYPE bodyLen);
 

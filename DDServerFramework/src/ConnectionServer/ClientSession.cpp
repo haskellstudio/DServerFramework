@@ -15,7 +15,12 @@
 extern WrapLog::PTR                             gDailyLogger;
 static std::atomic<int32_t> incRuntimeID = ATOMIC_VAR_INIT(0);
 
-ConnectionClientSession::ConnectionClientSession(int32_t connectionServerID) : mConnectionServerID(connectionServerID)
+ConnectionClientSession::ConnectionClientSession(int32_t connectionServerID,
+    int64_t socketID, std::string ip) 
+    : mConnectionServerID(connectionServerID),
+    mSocketID(socketID),
+    mIP(ip)
+
 {
     mRuntimeID = -1;
     mPrimaryServerID = -1;
@@ -167,7 +172,7 @@ void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PA
     gDailyLogger->info("recv op {} from id:{}", op, mRuntimeID);
 
     BigPacket packet(static_cast<PACKET_OP_TYPE>(CONNECTION_SERVER_SEND_OP::CONNECTION_SERVER_SEND_LOGICSERVER_FROMCLIENT));
-    packet.writeINT64(getSocketID());
+    packet.writeINT64(mSocketID);
     packet.writeINT64(mRuntimeID);
     packet.writeBinary(body - PACKET_HEAD_LEN, bodyLen + PACKET_HEAD_LEN);
     packet.getLen();
@@ -226,6 +231,16 @@ void ConnectionClientSession::procPacket(PACKET_OP_TYPE op, const char* body, PA
             gDailyLogger->error("no any server process this packet cmd:{} of client {}, ip is {}", op, mRuntimeID, getIP());
         }
     }
+}
+
+int64_t ConnectionClientSession::getSocketID() const
+{
+    return mSocketID;
+}
+
+const std::string& ConnectionClientSession::getIP() const
+{
+    return mIP;
 }
 
 void ConnectionClientSession::onEnter()

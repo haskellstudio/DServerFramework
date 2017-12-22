@@ -5,12 +5,11 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include "LogicNetSession.h"
 
 class Packet;
 
 /*链接到链接服务器*/
-class ConnectionServerConnection : public BaseLogicSession
+class ConnectionServerConnection : public std::enable_shared_from_this<ConnectionServerConnection>
 {
 public:
     typedef std::shared_ptr<ConnectionServerConnection> PTR;
@@ -23,10 +22,9 @@ public:
     
     static ConnectionServerConnection::PTR FindConnectionServerByID(int32_t id);
 
-private:
-    virtual void    onEnter() final;
-    virtual void    onClose() final;
-    virtual void    onMsg(const char* data, size_t len) final;
+     void    onEnter() ;
+     void    onClose() ;
+     void    onMsg(const char* data, size_t len) ;
 
     void            ping();
     void            initClient(int64_t runtimeID, int64_t socketID);

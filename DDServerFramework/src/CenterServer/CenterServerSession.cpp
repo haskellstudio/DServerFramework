@@ -37,7 +37,9 @@ CenterServerSession::USER_MSG_HANDLE CenterServerSessionGlobalData::findUserMsgH
     return nullptr;
 }
 
-CenterServerSession::CenterServerSession() : BaseLogicSession()
+CenterServerSession::CenterServerSession(const std::string& ip, std::shared_ptr<SocketSession> session)
+    :mIP(ip),
+    mSendSession(session)
 {
     mID = -1;
 }
@@ -53,6 +55,11 @@ void CenterServerSession::onClose()
         gDailyLogger->warn("内部服务器断开, id: {}", mID);
         CenterServerSessionGlobalData::removeLogicServer(mID);
     }
+}
+
+const std::string& CenterServerSession::getIP() const
+{
+    return mIP;
 }
 
 void CenterServerSession::onMsg(const char* data, size_t len)
@@ -96,7 +103,7 @@ int CenterServerSession::getID() const
 
 void    CenterServerSession::sendPacket(Packet& packet)
 {
-    send(packet.getData(), packet.getLen());
+    mSendSession->handle(std::string(packet.getData(), packet.getLen()));
 }
 
 void CenterServerSession::sendUserPacket(Packet& subPacket)
